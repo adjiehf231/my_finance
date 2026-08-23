@@ -1,0 +1,58 @@
+my_finance/
+│
+├── app/
+├── components/
+├── features/
+├── hooks/
+├── lib/
+├── services/
+├── stores/
+├── types/
+├── schemas/
+├── config/
+│
+├── locales/
+│   ├── id/
+│   └── en/
+│
+├── public/
+│   ├── logo/
+│   ├── icons/
+│   └── images/
+│
+├── supabase/
+│   ├── migrations/
+│   ├── seed.sql
+│   └── config.toml
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── docs/
+│   ├── PRD.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   ├── API.md
+│   ├── AUTHENTICATION.md
+│   ├── RLS.md
+│   ├── UI_UX.md
+│   ├── ROADMAP.md
+│   ├── TESTING.md
+│   ├── QA_AUTOMATION.md
+│   ├── AI_SPECIFICATION.md
+│   ├── DEPLOYMENT.md
+│   └── CHANGELOG.md
+│
+├── .env.local
+├── .env.example
+├── .gitignore
+├── components.json
+├── eslint.config.mjs
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── tsconfig.json
+├── README.md
+└── my_finance.txt

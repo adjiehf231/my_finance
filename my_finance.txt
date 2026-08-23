@@ -1,0 +1,1144 @@
+MY FINANCE
+Family Finance Management Web Application
+==========================================
+
+1. OVERVIEW
+-----------
+My Finance adalah aplikasi web pencatatan dan pengelolaan keuangan keluarga.
+Aplikasi mengintegrasikan pencatatan transaksi multi-akun, budgeting,
+financial goals, laporan keuangan, analisis data, serta kolaborasi antar-
+anggota keluarga dalam satu shared workspace.
+
+Deployment:
+- Vercel
+- Supabase
+
+GitHub:
+https://github.com/adjiehf231/my_finance
+
+
+2. CORE CONCEPT
+---------------
+Struktur utama:
+
+User
+  |
+  v
+Family
+  |
+  +-- Family Members
+  |
+  +-- Wallets / Accounts
+  |
+  +-- Transactions
+  |
+  +-- Budgets
+  |
+  +-- Financial Goals
+  |
+  +-- Reports & Analytics
+
+Setiap anggota keluarga memiliki akun login masing-masing, tetapi dapat
+mengakses data keuangan keluarga yang sama berdasarkan family_id.
+
+
+3. AUTHENTICATION
+-----------------
+Login:
+- Google OAuth
+- Supabase Authentication
+- Auto-create user profile setelah login
+- User terhubung dengan family_id
+
+Role:
+- Owner
+- Admin
+- Member
+
+Login berada di luar aplikasi utama.
+
+
+4. MAIN MENU
+------------
+1. Dashboard
+2. Wallets
+3. Transactions
+4. Budgeting
+5. Financial Goals
+6. Reports & Analytics
+7. Family
+8. Profile
+
+
+5. DASHBOARD
+------------
+Dashboard menjadi halaman utama setelah user login.
+
+Summary Cards:
+- Total Balance
+- Total Income bulan berjalan
+- Total Expense bulan berjalan
+- Net Cash Flow
+- Total Savings
+- Total Debt / Installment
+
+Visualizations:
+- Monthly Cash Flow
+- Expense by Category
+- Budget vs Actual
+- Financial Goal Progress
+- Expense Contribution by Family Member
+
+Quick Actions:
+- Add Income
+- Add Expense
+- Transfer
+- Add Financial Goal
+
+
+6. WALLETS / ACCOUNTS
+---------------------
+Wallet digunakan untuk memisahkan saldo berdasarkan sumber dana.
+
+Account Types:
+- Cash
+- Bank
+- E-Wallet
+- Credit Card
+- Investment
+- Other
+
+Contoh:
+- Kas Tunai
+- BCA
+- Mandiri
+- GoPay
+- Kartu Kredit
+
+Setiap account memiliki:
+- ID
+- Family ID
+- Name
+- Type
+- Initial Balance
+- Current Balance
+- Owner / User
+- Active / Inactive Status
+- Created At
+- Updated At
+
+Saldo setiap account harus dapat dihitung berdasarkan saldo awal dan
+seluruh transaksi yang terkait.
+
+
+7. TRANSACTIONS
+---------------
+Terdapat tiga tipe transaksi utama:
+
+A. INCOME
+----------
+Contoh kategori:
+- Gaji
+- Bonus
+- Bisnis Sampingan
+- Dividen
+- Investasi
+- Lainnya
+
+Field:
+- Date
+- Account
+- Category
+- Amount
+- Description
+- Attachment
+
+B. EXPENSE
+-----------
+Contoh kategori:
+- Makanan
+- Belanja Rumah Tangga
+- Transportasi
+- Listrik
+- Air
+- Internet
+- Cicilan
+- Pendidikan
+- Kesehatan
+- Hiburan
+- Lainnya
+
+Field:
+- Date
+- Account
+- Category
+- Amount
+- Description
+- Attachment
+
+C. TRANSFER
+-----------
+Digunakan untuk perpindahan dana antar-account.
+
+Contoh:
+BCA -> Kas Tunai = Rp1.000.000
+BCA -> GoPay = Rp500.000
+
+Transfer:
+- Mengurangi saldo source account
+- Menambah saldo destination account
+- TIDAK dihitung sebagai income
+- TIDAK dihitung sebagai expense
+
+Field:
+- Date
+- From Wallet
+- To Wallet
+- Amount
+- Description
+
+Transaction type:
+- income
+- expense
+- transfer
+
+
+8. BUDGETING
+------------
+Budget dibuat berdasarkan:
+Family + Month + Category + Limit
+
+Contoh:
+Makanan       : Rp2.000.000
+Transportasi  : Rp800.000
+Belanja       : Rp1.500.000
+Internet      : Rp350.000
+
+Budget menampilkan:
+- Budget Limit
+- Actual Spending
+- Remaining Budget
+- Progress Percentage
+- Status
+
+Status:
+- Aman       : < 70%
+- Waspada    : 70% - 90%
+- Melebihi   : > 100%
+
+Progress dihitung berdasarkan:
+actual_expense / budget_limit * 100
+
+
+9. FINANCIAL GOALS
+------------------
+Financial Goals digunakan untuk target dana keluarga.
+
+Contoh:
+- Dana Darurat
+- Tabungan Pendidikan
+- Rencana Liburan
+- Kendaraan
+- Rumah
+- Pernikahan
+- Investasi
+- Custom Goal
+
+Data goal:
+- Name
+- Target Amount
+- Current Amount
+- Deadline
+- Priority
+- Status
+- Icon
+- Description
+
+Contoh:
+Dana Darurat
+Target    : Rp30.000.000
+Terkumpul : Rp12.500.000
+Progress  : 41,67%
+
+Gunakan goal_contributions untuk mencatat setiap alokasi dana ke goal.
+
+
+10. FAMILY WORKSPACE
+--------------------
+Family workspace memungkinkan suami dan istri atau anggota keluarga lain
+menggunakan login masing-masing tetapi mengelola data keuangan keluarga
+yang sama.
+
+Contoh:
+
+Family: Adjie Family
+
+- Adjie  -> Owner
+- Istri  -> Member
+
+Data yang dapat dibagikan:
+- Wallets
+- Transactions
+- Budgets
+- Financial Goals
+- Reports
+- Dashboard
+
+
+11. USER MANAGEMENT
+-------------------
+Hanya Owner/Admin yang dapat mengelola anggota keluarga.
+
+Fitur:
+- Invite Member
+- Remove Member
+- Change Role
+- Activate / Deactivate Member
+- View Activity
+
+Permission:
+
+Owner:
+- Full Access
+
+Admin:
+- Manage Transactions
+- Manage Budgets
+- Manage Goals
+- View Reports
+- Manage Members
+
+Member:
+- Add Transaction
+- View Dashboard
+- View Budgets
+- View Goals
+
+
+12. FAMILY STATUS
+-----------------
+Family memiliki status:
+- Active
+- Inactive
+
+Family dapat memiliki:
+- Family Name
+- Owner
+- Members
+- Created At
+- Updated At
+- Status
+
+
+13. USER PROFILE
+----------------
+Profile menampilkan:
+- Google Profile Photo
+- Name
+- Email
+- Phone
+- Currency
+- Timezone
+- Family
+- Role
+- Notification Settings
+
+Default:
+Currency : IDR - Indonesian Rupiah
+Timezone : Asia/Jakarta
+
+
+14. REPORTS & ANALYTICS
+-----------------------
+Reports menyediakan analisis kondisi keuangan keluarga.
+
+Minimum report:
+- Monthly Cash Flow
+- Income vs Expense
+- Expense by Category
+- Budget vs Actual
+- Savings Progress
+- Financial Goal Progress
+- Expense Contribution by Member
+- Account Balance
+
+Analisis tambahan yang disarankan:
+- Monthly spending trend
+- Highest spending category
+- Savings rate
+- Net worth
+- Debt ratio
+- Financial health score
+
+
+15. DATABASE STRUCTURE
+----------------------
+Recommended Supabase PostgreSQL tables:
+
+users
+families
+family_members
+wallets
+categories
+transactions
+budgets
+financial_goals
+goal_contributions
+notifications
+activity_logs
+
+Main relationships:
+
+families
+  |
+  +-- family_members
+  |       |
+  |       +-- users
+  |
+  +-- wallets
+  |
+  +-- transactions
+  |
+  +-- budgets
+  |
+  +-- financial_goals
+          |
+          +-- goal_contributions
+
+
+16. TRANSACTIONS TABLE
+----------------------
+Recommended fields:
+
+id
+family_id
+user_id
+wallet_id
+type
+category_id
+amount
+transaction_date
+description
+attachment_url
+created_at
+updated_at
+
+For transfer transactions:
+
+from_wallet_id
+to_wallet_id
+
+Transaction type:
+- income
+- expense
+- transfer
+
+
+17. SECURITY
+------------
+Karena My Finance menyimpan data keuangan, keamanan database menjadi
+komponen utama.
+
+Gunakan:
+- Supabase Auth
+- Google OAuth
+- PostgreSQL Row Level Security (RLS)
+
+Prinsip RLS:
+User hanya dapat membaca atau mengubah data yang memiliki family_id
+yang sama dengan family tempat user tersebut menjadi anggota.
+
+Contoh:
+User A:
+family_id = ABC123
+
+User A tidak boleh mengakses:
+family_id = XYZ789
+
+Security harus diterapkan pada database, bukan hanya frontend.
+
+
+18. SYSTEM ARCHITECTURE
+-----------------------
+Frontend
+   |
+   v
+Vercel
+   |
+   +-- Authentication
+   +-- Server Functions / API
+   |
+   v
+Supabase
+   +-- PostgreSQL
+   +-- Auth
+   +-- Storage
+   +-- Row Level Security
+
+
+19. RECOMMENDED FEATURES
+------------------------
+Fitur lanjutan yang dapat dikembangkan:
+
+- Recurring Transactions
+- Transaction Attachment / Receipt
+- Search & Filter Transactions
+- Export Excel / CSV
+- Monthly Financial Report
+- Budget Warning Notification
+- Financial Goal Notification
+- Financial Health Score
+- Net Worth Tracking
+- Debt Tracking
+- Investment Tracking
+- Dark Mode
+- Responsive Mobile UI
+- Audit / Activity Log
+- Soft Delete Transaction
+- Transaction Confirmation
+
+
+20. DEVELOPMENT ROADMAP
+-----------------------
+PHASE 1 - FOUNDATION
+- Google Login
+- Supabase Auth
+- Family
+- User / Role
+- Wallet / Account
+- RLS
+
+PHASE 2 - CORE FINANCE
+- Income
+- Expense
+- Transfer
+- Transaction History
+- Search & Filter
+- Balance Calculation
+
+PHASE 3 - FINANCIAL PLANNING
+- Budget
+- Budget Progress
+- Financial Goals
+- Goal Contributions
+
+PHASE 4 - ANALYTICS
+- Dashboard
+- Reports
+- Charts
+- Cash Flow
+- Expense Analysis
+- Family Contribution
+
+PHASE 5 - ADVANCED
+- Recurring Transactions
+- Notifications
+- Export
+- Attachment
+- Audit Log
+- Net Worth
+- Debt Tracking
+- Investment Tracking
+
+
+21. RECOMMENDED DASHBOARD LAYOUT
+--------------------------------
+Sidebar:
+- Dashboard
+- Wallets
+- Transactions
+- Budgeting
+- Financial Goals
+- Reports & Analytics
+- Family
+- Profile
+
+Main Dashboard:
+- Greeting
+- Total Balance
+- Income
+- Expense
+- Net Cash Flow
+- Cash Flow Chart
+- Expense Category Chart
+- Budget Progress
+- Financial Goals
+- Recent Transactions
+
+
+22. MVP PRIORITY
+----------------
+Prioritas MVP:
+
+1. Authentication
+2. Family Workspace
+3. User Roles
+4. Wallets
+5. Income Transactions
+6. Expense Transactions
+7. Transfer Transactions
+8. Transaction History
+9. Budgeting
+10. Financial Goals
+11. Dashboard
+12. Reports & Analytics
+13. RLS Security
+
+Tujuan MVP adalah menghasilkan aplikasi family finance yang sudah dapat
+digunakan untuk pencatatan keuangan keluarga secara nyata sebelum
+mengembangkan fitur advanced.
+
+
+23. REPOSITORY
+-------------
+GitHub:
+https://github.com/adjiehf231/my_finance
+
+Deployment:
+- Vercel
+- Supabase
+
+Project Name:
+My Finance
+
+Purpose:
+Family Finance Management Web Application
+
+
+24. TECH STACK
+--------------
+Recommended technology stack:
+
+Frontend:
+- Next.js 16
+- TypeScript
+- React
+- Tailwind CSS
+- shadcn/ui
+- Lucide React
+- Recharts
+- React Hook Form
+- Zod
+- Zustand
+- date-fns
+
+Backend / Platform:
+- Supabase
+- PostgreSQL
+- Supabase Auth
+- Google OAuth
+- Supabase Storage
+- Supabase Row Level Security (RLS)
+
+Reporting / Export:
+- PDF generation library
+- SheetJS for Excel export
+- CSV export
+
+Deployment:
+- Vercel
+
+Repository:
+- GitHub
+
+Localization:
+- Indonesian (ID)
+- English (EN)
+
+Theme:
+- Light
+- Dark
+- System
+
+
+25. UI/UX DESIGN
+----------------
+Design direction:
+- Modern
+- Minimalist
+- Elegant
+- Gen-Z
+- Professional finance experience
+- Easy to understand
+- Intuitive navigation
+- Mobile-first
+- Responsive
+- Clear visual hierarchy
+- Card-based interface
+- Consistent spacing
+- Accessible typography
+- Meaningful data visualization
+
+The interface must avoid an overly complex accounting-software appearance.
+
+Theme selector:
+- Light Mode
+- Dark Mode
+- System
+
+Language selector:
+- Bahasa Indonesia
+- English
+
+All UI text should use localization / translation keys instead of hardcoded
+strings so additional languages can be added in the future.
+
+
+26. PDF REPORT EXPORT
+--------------------
+Users can export financial reports as PDF.
+
+Report period:
+- Monthly
+- Custom date range
+
+Report contents:
+- Family information
+- Reporting period
+- Total balance
+- Total income
+- Total expense
+- Net cash flow
+- Expense breakdown
+- Budget vs actual
+- Financial goal progress
+- Account balances
+- Transaction summary
+- Family member contribution
+
+Export action:
+Reports -> Export PDF -> Select Period -> Generate PDF
+
+
+27. EXCEL AND CSV EXPORT
+------------------------
+In addition to PDF, users should be able to export:
+
+- Excel (.xlsx)
+- CSV (.csv)
+
+PDF:
+- Best for presentation and sharing
+
+Excel:
+- Best for further financial analysis
+
+CSV:
+- Best for data interoperability and processing
+
+
+28. RECURRING TRANSACTIONS
+--------------------------
+Support automatically recurring transactions.
+
+Examples:
+- Monthly salary
+- Monthly rent
+- Electricity
+- Water
+- Internet
+- Installments
+- Subscriptions
+
+Recurring transaction configuration:
+- Name
+- Type
+- Amount
+- Wallet
+- Category
+- Frequency
+- Start Date
+- End Date
+- Next Execution
+- Active / Inactive
+
+Supported frequency:
+- Daily
+- Weekly
+- Monthly
+- Yearly
+- Custom
+
+
+29. NOTIFICATION AND REMINDER
+-----------------------------
+Notification center should support:
+
+- Budget approaching limit
+- Budget exceeded
+- Financial goal progress
+- Financial goal reminder
+- Recurring transaction reminder
+- New family member
+- Important account activity
+
+Examples:
+"Food budget has reached 85% of the monthly limit."
+
+"Emergency Fund has reached 70% of the target."
+
+"Salary recurring transaction will be recorded tomorrow."
+
+
+30. TRANSACTION ATTACHMENT
+--------------------------
+Users can attach supporting documents to transactions.
+
+Supported examples:
+- Receipt
+- Invoice
+- Transfer proof
+- Shopping note
+
+Storage:
+- Supabase Storage
+
+Recommended controls:
+- File type validation
+- Maximum file size
+- Secure file access
+- Attachment preview
+- Attachment deletion
+
+
+31. SEARCH AND ADVANCED FILTER
+-----------------------------
+Transaction search should support:
+
+- Keyword
+- Date range
+- Account
+- Category
+- Transaction type
+- Family member
+- Amount range
+
+Example:
+Search all electricity transactions from January to August.
+
+Filters should be combinable.
+
+
+32. FINANCIAL HEALTH SCORE
+--------------------------
+Future dashboard feature:
+
+Financial Health Score:
+0 - 100
+
+Possible scoring components:
+- Savings
+- Budget discipline
+- Cash flow
+- Emergency fund
+- Debt
+- Savings rate
+
+Example:
+Financial Health Score: 78 / 100
+
+The system can provide actionable insights such as:
+- Positive cash flow for the last four months.
+- Spending in a category increased significantly.
+- Emergency fund is below the recommended target.
+
+
+33. NET WORTH TRACKING
+----------------------
+My Finance should support Net Worth tracking.
+
+Formula:
+
+Net Worth = Total Assets - Total Liabilities
+
+Assets:
+- Cash
+- Bank
+- E-Wallet
+- Investment
+- Property
+- Other Assets
+
+Liabilities:
+- Credit Card
+- Loan
+- Installment
+- Other Debt
+
+Example:
+
+Total Assets       Rp75.000.000
+Total Liabilities  Rp20.000.000
+Net Worth          Rp55.000.000
+
+
+34. DEBT / INSTALLMENT MANAGEMENT
+----------------------------------
+Debt and installments should be managed separately from normal expenses.
+
+Example:
+
+Motorcycle Loan
+Total Loan: Rp30.000.000
+Remaining: Rp18.000.000
+Monthly Payment: Rp1.500.000
+Remaining Period: 12 months
+
+Recommended fields:
+- Name
+- Type
+- Principal
+- Remaining Balance
+- Interest
+- Monthly Payment
+- Start Date
+- Due Date
+- End Date
+- Status
+
+
+35. ACTIVITY LOG
+----------------
+Because My Finance supports multiple family members, all important actions
+should be recorded.
+
+Examples:
+- User added transaction
+- User edited transaction
+- User deleted transaction
+- User created budget
+- User changed goal
+- Admin changed member role
+- Member joined family
+
+Activity log should contain:
+- User
+- Action
+- Entity
+- Entity ID
+- Timestamp
+- Description
+
+
+36. ONBOARDING
+-------------
+New users should receive a guided onboarding flow.
+
+Step 1:
+Welcome to My Finance
+
+Step 2:
+Create / Join Family
+
+Step 3:
+Add Wallet / Account
+
+Step 4:
+Set Initial Balance
+
+Step 5:
+Create Monthly Budget
+
+Step 6:
+Create Financial Goal
+
+Step 7:
+Workspace Ready
+
+The onboarding process should be skippable where appropriate.
+
+
+37. EMPTY STATES
+----------------
+Every major page should have a meaningful empty state.
+
+Examples:
+
+No Transactions:
+"No transactions yet. Start by adding your first income or expense."
+
+No Wallet:
+"Create your first wallet to start tracking your balance."
+
+No Budget:
+"Set your first monthly budget."
+
+No Financial Goal:
+"Create a financial goal and start saving."
+
+
+38. MOBILE RESPONSIVE
+---------------------
+My Finance must be responsive and mobile-first.
+
+Desktop:
+- Sidebar navigation
+- Dashboard content
+- Multi-column cards and charts
+
+Mobile:
+- Compact header
+- Responsive cards
+- Bottom navigation
+- Mobile-friendly forms
+- Swipe / scroll-friendly tables where appropriate
+
+Recommended mobile bottom navigation:
+- Home
+- Transactions
+- Budget
+- Goals
+- Profile
+
+
+39. PWA
+-------
+Future enhancement:
+Progressive Web App (PWA)
+
+Potential capabilities:
+- Install My Finance to home screen
+- App-like mobile experience
+- Fast loading
+- Offline-friendly experience where technically appropriate
+
+
+40. AI FINANCIAL ASSISTANT
+--------------------------
+Future feature.
+
+My Finance AI can analyze family financial data and answer questions such as:
+
+"Why is my spending higher this month?"
+
+"Can I save Rp3.000.000 this month?"
+
+"What category increased the most?"
+
+"How long will it take to reach my emergency fund target?"
+
+AI responses should be based only on authorized family data and respect
+family-level access controls.
+
+
+41. FINAL FEATURE ARCHITECTURE
+------------------------------
+MY FINANCE
+|
++-- Authentication
+|   +-- Google OAuth
+|
++-- Dashboard
+|   +-- Balance
+|   +-- Cash Flow
+|   +-- Expense
+|   +-- Budget
+|   +-- Goals
+|   +-- Financial Health
+|
++-- Wallets
+|   +-- Cash
+|   +-- Bank
+|   +-- E-Wallet
+|   +-- Credit Card
+|   +-- Investment
+|
++-- Transactions
+|   +-- Income
+|   +-- Expense
+|   +-- Transfer
+|   +-- Recurring
+|   +-- Attachments
+|
++-- Budgeting
+|
++-- Financial Goals
+|
++-- Reports & Analytics
+|   +-- Cash Flow
+|   +-- Expense Analysis
+|   +-- Budget Analysis
+|   +-- Net Worth
+|   +-- Financial Health
+|
++-- Export
+|   +-- PDF
+|   +-- Excel
+|   +-- CSV
+|
++-- Family
+|   +-- Members
+|   +-- Roles
+|   +-- Permissions
+|   +-- Activity Log
+|
++-- Notifications
+|
++-- Profile
+|
++-- Settings
+    +-- Language ID/EN
+    +-- Light/Dark/System
+    +-- Currency
+    +-- Notifications
+
+
+42. FINAL DEVELOPMENT PRIORITY
+------------------------------
+MUST HAVE - MVP:
+1. Google Authentication
+2. Family Workspace
+3. User Roles
+4. Wallets
+5. Income
+6. Expense
+7. Transfer
+8. Transaction History
+9. Budgeting
+10. Financial Goals
+11. Dashboard
+12. Reports & Analytics
+13. PDF Export
+14. Supabase RLS Security
+15. Responsive UI
+16. Light / Dark Mode
+17. Indonesian / English
+
+SHOULD HAVE:
+18. Recurring Transactions
+19. Notifications
+20. Transaction Attachments
+21. Search & Advanced Filters
+22. Excel / CSV Export
+23. Activity Log
+24. Net Worth
+25. Debt Management
+
+FUTURE:
+26. PWA
+27. Financial Health Score
+28. AI Financial Assistant
+29. Investment Tracking
+30. Financial Forecasting
+
+
+43. PRODUCT VISION
+-----------------
+My Finance should not be limited to a basic CRUD financial-recording
+application.
+
+The long-term product vision is:
+
+"Modern family financial management platform that helps families record,
+understand, plan, and improve their financial health in one shared
+workspace."
+
+The application should combine:
+- Financial recording
+- Budget management
+- Goal planning
+- Family collaboration
+- Reporting
+- Data analytics
+- Financial insights
+- Modern user experience
