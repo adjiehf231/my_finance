@@ -17,6 +17,7 @@ import {
   Sparkles,
   Activity,
   Trophy,
+  Settings,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
@@ -34,6 +35,7 @@ const NAV_ITEMS = [
   { href: "/analytics", label: "Laporan & Grafik", icon: BarChart3 },
   { href: "/gamification", label: "Level & Lencana", icon: Trophy },
   { href: "/activity", label: "Riwayat Aktivitas", icon: Activity },
+  { href: "/settings", label: "Pengaturan & Ekspor", icon: Settings },
   { href: "/categories", label: "Kategori", icon: Tags },
   { href: "/family", label: "Keluarga", icon: Users },
 ];
