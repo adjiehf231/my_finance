@@ -15,6 +15,8 @@ import {
   Tags,
   LogOut,
   Sparkles,
+  Activity,
+  Trophy,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +32,8 @@ const NAV_ITEMS = [
   { href: "/recurring", label: "Tagihan Berulang", icon: Repeat },
   { href: "/debts", label: "Hutang & Piutang", icon: CreditCard },
   { href: "/analytics", label: "Laporan & Grafik", icon: BarChart3 },
+  { href: "/gamification", label: "Level & Lencana", icon: Trophy },
+  { href: "/activity", label: "Riwayat Aktivitas", icon: Activity },
   { href: "/categories", label: "Kategori", icon: Tags },
   { href: "/family", label: "Keluarga", icon: Users },
 ];
