@@ -10,11 +10,14 @@ import {
   getCategoryBreakdownAction,
   getNetWorthSummaryAction,
 } from "@/features/analytics/actions/analytics-actions";
+import { getFinancialHealthAdviceAction } from "@/features/ai/actions/ai-actions";
 import { MetricSummaryCards } from "@/features/analytics/components/metric-summary-cards";
 import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area-chart";
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
+import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
 import { AddTransactionModal } from "@/features/transactions/components/add-transaction-modal";
+import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
 import { TransactionTable } from "@/features/transactions/components/transaction-table";
 import { Sidebar } from "@/components/navigation/sidebar";
 import { MobileNav } from "@/components/navigation/mobile-nav";
@@ -45,6 +48,7 @@ export default async function DashboardPage() {
     cashflowRes,
     breakdownRes,
     netWorthRes,
+    adviceRes,
   ] = await Promise.all([
     getWalletsAction(family.id),
     getCategoriesAction(family.id),
@@ -53,6 +57,7 @@ export default async function DashboardPage() {
     getCashflowTrendAction(family.id, "this_month"),
     getCategoryBreakdownAction(family.id, "this_month"),
     getNetWorthSummaryAction(family.id),
+    getFinancialHealthAdviceAction(family.id),
   ]);
 
   const wallets = walletsRes.data || [];
@@ -62,6 +67,7 @@ export default async function DashboardPage() {
   const cashflow = cashflowRes.data || [];
   const categoryBreakdown = breakdownRes.data || [];
   const netWorth = netWorthRes.data;
+  const advice = adviceRes.data;
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground transition-colors duration-300">
@@ -86,11 +92,18 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <AddTransactionModal
-            familyId={family.id}
-            wallets={wallets}
-            categories={categories}
-          />
+          <div className="flex items-center gap-2">
+            <ReceiptScannerModal
+              familyId={family.id}
+              wallets={wallets}
+              categories={categories}
+            />
+            <AddTransactionModal
+              familyId={family.id}
+              wallets={wallets}
+              categories={categories}
+            />
+          </div>
         </div>
 
         {/* 4 KPI Metrics */}
@@ -101,6 +114,9 @@ export default async function DashboardPage() {
           netWorth={netWorth.netWorth}
           savingsRate={summary.savingsRate}
         />
+
+        {/* AI Financial Advisor Insight */}
+        {advice && <AIAdvisorCard advice={advice} />}
 
         {/* Net Worth Card */}
         <NetWorthCard netWorth={netWorth} />

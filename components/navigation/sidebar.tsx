@@ -14,6 +14,7 @@ import {
   Users,
   Tags,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +22,7 @@ import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/advisor", label: "AI Advisor", icon: Sparkles },
   { href: "/transactions", label: "Transaksi", icon: ArrowRightLeft },
   { href: "/wallets", label: "Dompet & Rekening", icon: Wallet },
   { href: "/budgeting", label: "Anggaran", icon: PieChart },
