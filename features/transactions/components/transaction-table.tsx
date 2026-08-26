@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { deleteTransactionAction, type TransactionWithDetails } from "../actions/transaction-actions";
 import { EditTransactionModal } from "./edit-transaction-modal";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface TransactionTableProps {
@@ -34,6 +35,7 @@ interface TransactionTableProps {
 export function TransactionTable({ transactions, categories = [], onUpdate }: TransactionTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<TransactionWithDetails | null>(null);
+  const { t } = useTranslation();
 
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus transaksi ini? Saldo dompet akan disesuaikan otomatis.")) return;
@@ -56,36 +58,36 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
   if (transactions.length === 0) {
     return (
-      <div className="py-16 text-center bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-8 shadow-sm">
+      <div className="py-16 text-center bg-white/80 dark:bg-[#0E131F]/80 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] p-8 shadow-sm">
         <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center mx-auto mb-3 text-slate-400">
           <Layers className="h-7 w-7" />
         </div>
         <h4 className="text-base font-bold text-slate-900 dark:text-white">
-          Tidak Ada Transaksi Ditemukan
+          {t("transactions.noTransactions")}
         </h4>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto mt-1">
-          Belum ada mutasi yang sesuai dengan kriteria filter ini.
+        <p className="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto mt-1 font-medium">
+          {t("transactions.noTransactionsSubtitle")}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
+    <div className="bg-white/85 dark:bg-[#0E131F]/85 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm overflow-hidden">
       {/* Desktop Ledger Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800/80">
+          <thead className="bg-slate-50/70 dark:bg-slate-800/30 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-white/[0.06]">
             <tr>
-              <th className="py-4 px-6">Tanggal & Tipe</th>
-              <th className="py-4 px-6">Keterangan</th>
-              <th className="py-4 px-6">Kategori</th>
-              <th className="py-4 px-6">Rekening</th>
-              <th className="py-4 px-6 text-right">Nominal</th>
-              <th className="py-4 px-4 text-center">Aksi</th>
+              <th className="py-4 px-6">{t("transactions.dateAndType")}</th>
+              <th className="py-4 px-6">{t("common.description")}</th>
+              <th className="py-4 px-6">{t("common.category")}</th>
+              <th className="py-4 px-6">{t("transactions.account")}</th>
+              <th className="py-4 px-6 text-right">{t("common.amount")}</th>
+              <th className="py-4 px-4 text-center">{t("common.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+          <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
             {transactions.map((tx) => {
               const isIncome = tx.type === "income";
               const isTransfer = tx.type === "transfer";
@@ -93,7 +95,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
               return (
                 <tr
                   key={tx.id}
-                  className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                  className="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition-colors"
                 >
                   <td className="py-4 px-6 whitespace-nowrap">
                     <div className="flex items-center gap-3">
@@ -119,7 +121,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                           {formatDate(tx.transaction_date)}
                         </p>
                         <p className="text-[11px] text-slate-400 capitalize font-medium">
-                          {tx.type}
+                          {tx.type === "income" ? t("transactions.income") : tx.type === "expense" ? t("transactions.expense") : t("transactions.transfer")}
                         </p>
                       </div>
                     </div>
@@ -127,17 +129,17 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
                   <td className="py-4 px-6">
                     <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
-                      {tx.description || (isTransfer ? "Transfer Antar-Dompet" : "-")}
+                      {tx.description || (isTransfer ? t("transactions.transfer") : "-")}
                     </p>
-                    <p className="text-[11px] text-slate-400">
-                      Oleh: {tx.users?.full_name || "Anggota"}
+                    <p className="text-[11px] text-slate-400 font-medium">
+                      {t("transactions.byMember")}: {tx.users?.full_name || "Anggota"}
                     </p>
                   </td>
 
                   <td className="py-4 px-6 whitespace-nowrap">
                     {isTransfer ? (
-                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full">
-                        Transfer Dana
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full">
+                        {t("transactions.transfer")}
                       </span>
                     ) : (
                       <CategoryBadge category={tx.categories} />
@@ -146,13 +148,13 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
                   <td className="py-4 px-6 whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">
                     {isTransfer ? (
-                      <div className="flex items-center gap-1.5 font-medium">
+                      <div className="flex items-center gap-1.5 font-bold">
                         <span>{tx.from_wallet?.name}</span>
                         <ArrowRightLeft className="h-3 w-3 text-slate-400" />
                         <span>{tx.to_wallet?.name}</span>
                       </div>
                     ) : (
-                      <span className="font-medium bg-slate-100 dark:bg-slate-800/70 px-2.5 py-1 rounded-xl">
+                      <span className="font-bold bg-slate-100 dark:bg-slate-800/70 px-2.5 py-1 rounded-xl">
                         {tx.wallets?.name || "-"}
                       </span>
                     )}
@@ -192,18 +194,18 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                         <DropdownMenuContent align="end" className="rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
                           <DropdownMenuItem
                             onClick={() => setEditingTransaction(tx)}
-                            className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs"
+                            className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
                           >
                             <Edit3 className="h-3.5 w-3.5 mr-2 text-emerald-600" />
-                            Edit Transaksi
+                            {t("common.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDelete(tx.id)}
                             disabled={isDeleting === tx.id}
-                            className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs"
+                            className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-semibold"
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-2" />
-                            Hapus
+                            {t("common.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -217,7 +219,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
       </div>
 
       {/* Mobile Responsive Card Stream */}
-      <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/60">
+      <div className="md:hidden divide-y divide-slate-100 dark:divide-white/[0.04]">
         {transactions.map((tx) => {
           const isIncome = tx.type === "income";
           const isTransfer = tx.type === "transfer";
@@ -245,9 +247,9 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                   </div>
                   <div>
                     <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
-                      {tx.description || (isTransfer ? "Transfer Dana" : "Tanpa Judul")}
+                      {tx.description || (isTransfer ? t("transactions.transfer") : "Tanpa Judul")}
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-400 mt-0.5 font-medium">
                       {formatDate(tx.transaction_date)} • {isTransfer ? `${tx.from_wallet?.name} ➔ ${tx.to_wallet?.name}` : tx.wallets?.name}
                     </p>
                   </div>
@@ -274,8 +276,8 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                   {!isTransfer ? (
                     <CategoryBadge category={tx.categories} />
                   ) : (
-                    <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full">
-                      Transfer
+                    <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full">
+                      {t("transactions.transfer")}
                     </span>
                   )}
                 </div>
@@ -285,8 +287,8 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     <ReceiptPreviewDialog
                       url={tx.attachment_url}
                       triggerButton={
-                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800">
-                          <Receipt className="h-3 w-3 mr-1 text-emerald-600" /> Nota
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800 font-bold">
+                          <Receipt className="h-3 w-3 mr-1 text-emerald-600" /> {t("transactions.receipt")}
                         </Button>
                       }
                     />
@@ -295,18 +297,18 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     size="sm"
                     variant="outline"
                     onClick={() => setEditingTransaction(tx)}
-                    className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800"
+                    className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800 font-bold"
                   >
-                    <Edit3 className="h-3 w-3 mr-1 text-emerald-600" /> Edit
+                    <Edit3 className="h-3 w-3 mr-1 text-emerald-600" /> {t("common.edit")}
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleDelete(tx.id)}
                     disabled={isDeleting === tx.id}
-                    className="h-7 px-2 text-xs text-rose-500 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                    className="h-7 px-2 text-xs text-rose-500 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 font-bold"
                   >
-                    Hapus
+                    {t("common.delete")}
                   </Button>
                 </div>
               </div>

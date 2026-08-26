@@ -8,12 +8,14 @@ import {
   getNetWorthSummaryAction,
 } from "@/features/analytics/actions/analytics-actions";
 import { AppLayout } from "@/components/layout/app-layout";
+import { PageHeader } from "@/components/ui/page-header";
 import { MetricSummaryCards } from "@/features/analytics/components/metric-summary-cards";
 import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area-chart";
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { TimeframeSelector } from "@/features/analytics/components/timeframe-selector";
 import { type TimeframeType } from "@/lib/validations/analytics";
+import { BarChart3 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Laporan & Analisis Finansial Mendalam",
@@ -54,21 +56,15 @@ export default async function AnalyticsPage({
 
   return (
     <AppLayout>
-      {/* Navigation & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Laporan & Grafik Finansial
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Keluarga: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
-            </p>
-          </div>
-        </div>
-
+      {/* FinTech Page Header */}
+      <PageHeader
+        titleKey="analytics.title"
+        subtitleKey="analytics.subtitle"
+        icon={BarChart3}
+        familyName={family.name}
+      >
         <TimeframeSelector currentTimeframe={timeframe} />
-      </div>
+      </PageHeader>
 
       {/* 4 Key Metrics */}
       <MetricSummaryCards

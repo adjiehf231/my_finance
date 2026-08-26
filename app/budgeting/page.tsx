@@ -4,12 +4,11 @@ import { getCurrentFamilyAction } from "@/features/family/actions/family-actions
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getBudgetsAction } from "@/features/budgets/actions/budget-actions";
 import { AppLayout } from "@/components/layout/app-layout";
+import { PageHeader } from "@/components/ui/page-header";
 import { BudgetProgressCard } from "@/features/budgets/components/budget-progress-card";
 import { UpsertBudgetModal } from "@/features/budgets/components/upsert-budget-modal";
 import { MonthSelector } from "@/features/budgets/components/month-selector";
-import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { PieChart, ShieldAlert, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -47,97 +46,93 @@ export default async function BudgetingPage({
 
   return (
     <AppLayout>
-      {/* Navigation & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Anggaran Bulanan
-              </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Keluarga: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
+      {/* FinTech Page Header */}
+      <PageHeader
+        titleKey="budgeting.title"
+        subtitleKey="budgeting.subtitle"
+        icon={PieChart}
+        familyName={family.name}
+      >
+        <MonthSelector currentPeriod={currentPeriod} />
+        <UpsertBudgetModal
+          familyId={family.id}
+          periodMonth={currentPeriod}
+          expenseCategories={expenseCategories}
+        />
+      </PageHeader>
+
+      {/* Overall Budget Health Banner */}
+      <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B0F17] to-[#111827] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-xl shadow-slate-950/20">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+              Ringkasan Realisasi Total Anggaran Periode Ini
+            </p>
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight font-mono text-white">
+                {formatCurrency(summary.totalSpent)}
+              </h2>
+              <span className="text-sm font-semibold text-slate-400">
+                dari batas limit {formatCurrency(summary.totalBudget)}
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] px-5 py-3.5 rounded-2xl flex items-center gap-3.5 self-start sm:self-auto">
+            {summary.overallPercentage > 100 ? (
+              <div className="h-10 w-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                <ShieldAlert className="h-6 w-6" />
+              </div>
+            ) : (
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+            )}
+            <div>
+              <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Realisasi Pengeluaran</p>
+              <p className="text-xl font-black font-mono">
+                {summary.overallPercentage}%
               </p>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
-            <MonthSelector currentPeriod={currentPeriod} />
-            <UpsertBudgetModal
-              familyId={family.id}
-              periodMonth={currentPeriod}
-              expenseCategories={expenseCategories}
-            />
-          </div>
+      {/* Budgets Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+            Batas Anggaran Kategori ({budgets.length})
+          </h3>
         </div>
 
-        {/* Overall Budget Health Banner */}
-        <Card className="rounded-3xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 text-white p-6 sm:p-8 border-none relative overflow-hidden shadow-xl shadow-slate-900/10">
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Ringkasan Total Anggaran Periode Ini
+        {budgets.length === 0 ? (
+          <div className="rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] p-12 text-center bg-white/50 dark:bg-[#0E131F]/50 backdrop-blur-xl">
+            <div className="flex flex-col items-center">
+              <div className="h-16 w-16 rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
+                <PieChart className="h-8 w-8" />
+              </div>
+              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white mb-1">
+                Belum Ada Batas Anggaran Ditetapkan
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mb-6 font-medium">
+                Tentukan batas pengeluaran untuk pos makanan, transportasi, dan kebutuhan rumah tangga.
               </p>
-              <div className="flex items-baseline gap-3">
-                <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-                  {formatCurrency(summary.totalSpent)}
-                </h2>
-                <span className="text-sm text-slate-400">
-                  dari limit {formatCurrency(summary.totalBudget)}
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl flex items-center gap-3">
-              {summary.overallPercentage > 100 ? (
-                <ShieldAlert className="h-8 w-8 text-rose-400" />
-              ) : (
-                <CheckCircle2 className="h-8 w-8 text-emerald-400" />
-              )}
-              <div>
-                <p className="text-xs text-slate-300">Realisasi Pengeluaran</p>
-                <p className="text-xl font-black">
-                  {summary.overallPercentage}%
-                </p>
-              </div>
+              <UpsertBudgetModal
+                familyId={family.id}
+                periodMonth={currentPeriod}
+                expenseCategories={expenseCategories}
+              />
             </div>
           </div>
-        </Card>
-
-        {/* Budgets Grid */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              Batas Anggaran Kategori ({budgets.length})
-            </h3>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {budgets.map((b) => (
+              <BudgetProgressCard key={b.id} budget={b} />
+            ))}
           </div>
-
-          {budgets.length === 0 ? (
-            <Card className="rounded-3xl border-dashed border-2 border-slate-200 dark:border-slate-800 p-12 text-center">
-              <CardContent className="flex flex-col items-center">
-                <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-4">
-                  <PieChart className="h-8 w-8" />
-                </div>
-                <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                  Belum Ada Anggaran Ditetapkan
-                </h4>
-                <p className="text-sm text-slate-500 max-w-sm mb-6">
-                  Tentukan batas pengeluaran untuk pos makanan, transportasi, dan kebutuhan rumah tangga.
-                </p>
-                <UpsertBudgetModal
-                  familyId={family.id}
-                  periodMonth={currentPeriod}
-                  expenseCategories={expenseCategories}
-                />
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {budgets.map((b) => (
-                <BudgetProgressCard key={b.id} budget={b} />
-              ))}
-            </div>
-          )}
-        </div>
-      </AppLayout>
+        )}
+      </div>
+    </AppLayout>
   );
 }

@@ -5,9 +5,9 @@ import { getWalletsAction } from "@/features/wallets/actions/wallet-actions";
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getFinancialHealthAdviceAction } from "@/features/ai/actions/ai-actions";
 import { AppLayout } from "@/components/layout/app-layout";
+import { PageHeader } from "@/components/ui/page-header";
 import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
-import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -35,26 +35,20 @@ export default async function AdvisorPage() {
 
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              AI Financial Advisor
-              <Sparkles className="h-5 w-5 text-amber-500" />
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Evaluasi Kesehatan Finansial & Rekomendasi Pintar Keluarga {family.name}
-            </p>
-          </div>
-        </div>
-
+      {/* FinTech Page Header */}
+      <PageHeader
+        titleKey="ai.advisorTitle"
+        subtitleKey="ai.advisorSubtitle"
+        icon={Sparkles}
+        badgeText="AI COPILOT"
+        familyName={family.name}
+      >
         <ReceiptScannerModal
           familyId={family.id}
           wallets={wallets}
           categories={categories}
         />
-      </div>
+      </PageHeader>
 
       {/* AI Advisor Evaluation Card */}
       {advice && <AIAdvisorCard advice={advice} />}
