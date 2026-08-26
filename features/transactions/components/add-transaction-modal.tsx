@@ -155,13 +155,13 @@ export function AddTransactionModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">
+          <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
             <Plus className="h-4 w-4 stroke-[3]" />
             Catat Transaksi
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg rounded-3xl p-6 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
+      <DialogContent className="sm:max-w-lg rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">Catat Transaksi Baru</DialogTitle>
         </DialogHeader>
@@ -175,7 +175,7 @@ export function AddTransactionModal({
           }}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-3 w-full h-12 rounded-2xl p-1 bg-slate-100 dark:bg-[#06080D] border border-slate-200/40 dark:border-white/[0.04]">
+          <TabsList className="grid grid-cols-3 w-full h-12 rounded-2xl p-1 bg-slate-100 dark:bg-[#07090E] border border-slate-200/40 dark:border-white/[0.04]">
             <TabsTrigger
               value="expense"
               className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-glow-rose transition-all"
@@ -185,14 +185,14 @@ export function AddTransactionModal({
             </TabsTrigger>
             <TabsTrigger
               value="income"
-              className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-emerald-500 data-[state=active]:text-slate-950 data-[state=active]:shadow-glow transition-all"
+              className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-glow-emerald transition-all"
             >
               <TrendingUp className="h-4 w-4" />
               Pemasukan
             </TabsTrigger>
             <TabsTrigger
               value="transfer"
-              className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-glow-indigo transition-all"
+              className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
             >
               <ArrowRightLeft className="h-4 w-4" />
               Transfer
@@ -213,7 +213,7 @@ export function AddTransactionModal({
                 type="number"
                 min="1"
                 placeholder="0"
-                className="pl-12 text-2xl sm:text-3xl font-black h-14 rounded-2xl tracking-tight font-mono bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]"
+                className="pl-12 text-2xl sm:text-3xl font-black h-14 rounded-2xl tracking-tight font-mono bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
@@ -227,7 +227,7 @@ export function AddTransactionModal({
             <Input
               id="tx-date"
               type="date"
-              className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]"
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={transactionDate}
               onChange={(e) => setTransactionDate(e.target.value)}
               required
@@ -240,7 +240,7 @@ export function AddTransactionModal({
               <div className="space-y-1.5">
                 <Label htmlFor="tx-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Rekening / Dompet</Label>
                 <Select value={walletId} onValueChange={setWalletId}>
-                  <SelectTrigger id="tx-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]">
+                  <SelectTrigger id="tx-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Pilih rekening" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
@@ -256,7 +256,7 @@ export function AddTransactionModal({
               <div className="space-y-1.5">
                 <Label htmlFor="tx-category" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Kategori</Label>
                 <Select value={categoryId} onValueChange={setCategoryId}>
-                  <SelectTrigger id="tx-category" className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]">
+                  <SelectTrigger id="tx-category" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Pilih kategori" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
@@ -275,7 +275,7 @@ export function AddTransactionModal({
               <div className="space-y-1.5">
                 <Label htmlFor="tx-from-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Dari Rekening</Label>
                 <Select value={fromWalletId} onValueChange={setFromWalletId}>
-                  <SelectTrigger id="tx-from-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]">
+                  <SelectTrigger id="tx-from-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Rekening Asal" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
@@ -291,7 +291,7 @@ export function AddTransactionModal({
               <div className="space-y-1.5">
                 <Label htmlFor="tx-to-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Ke Rekening</Label>
                 <Select value={toWalletId} onValueChange={setToWalletId}>
-                  <SelectTrigger id="tx-to-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]">
+                  <SelectTrigger id="tx-to-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Rekening Tujuan" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
@@ -312,7 +312,7 @@ export function AddTransactionModal({
             <Input
               id="tx-desc"
               placeholder="Contoh: Makan siang nasi padang, bayar wifi"
-              className="rounded-2xl bg-slate-50/80 dark:bg-[#06080D]/80 border-slate-200/80 dark:border-white/[0.08]"
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -322,8 +322,8 @@ export function AddTransactionModal({
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Foto Struk / Nota (Opsional)</Label>
             <div className="flex items-center gap-3">
-              <label className="cursor-pointer border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#06080D]/80 rounded-2xl px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-white/[0.04] flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors">
-                <Upload className="h-4 w-4 text-emerald-500" />
+              <label className="cursor-pointer border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#07090E]/80 rounded-2xl px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-white/[0.04] flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors">
+                <Upload className="h-4 w-4 text-blue-500" />
                 <span>{isUploading ? "Mengunggah..." : "Unggah Gambar"}</span>
                 <input
                   type="file"
@@ -335,7 +335,7 @@ export function AddTransactionModal({
               </label>
 
               {attachmentUrl && (
-                <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-bold">
                   <ImageIcon className="h-4 w-4" />
                   <span>Struk Terlampir</span>
                 </div>
@@ -357,10 +357,10 @@ export function AddTransactionModal({
               disabled={isLoading || isUploading}
               className={`rounded-2xl font-black text-xs transition-all ${
                 type === "income"
-                  ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-glow"
+                  ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-glow-emerald"
                   : type === "expense"
-                  ? "bg-rose-500 hover:bg-rose-600 text-white shadow-glow-rose"
-                  : "bg-blue-500 hover:bg-blue-600 text-white shadow-glow-indigo"
+                  ? "bg-rose-600 hover:bg-rose-500 text-white shadow-glow-rose"
+                  : "bg-blue-600 hover:bg-blue-500 text-white shadow-glow"
               }`}
             >
               {isLoading ? (

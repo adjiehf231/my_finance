@@ -10,15 +10,15 @@ interface NetWorthCardProps {
 
 export function NetWorthCard({ netWorth }: NetWorthCardProps) {
   return (
-    <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B0F17] to-[#111827] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-2xl shadow-emerald-950/20">
+    <div className="rounded-3xl bg-gradient-to-br from-slate-950 via-[#0D111A] to-[#0A1224] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-2xl shadow-blue-950/20">
       {/* Decorative ambient glowing orbs */}
-      <div className="absolute right-0 top-0 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-teal-500/0 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-      <div className="absolute left-0 bottom-0 w-60 h-60 bg-gradient-to-tr from-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
+      <div className="absolute right-0 top-0 w-80 h-80 bg-gradient-to-br from-blue-600/20 to-cyan-500/0 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+      <div className="absolute left-0 bottom-0 w-60 h-60 bg-gradient-to-tr from-indigo-600/15 to-transparent rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
 
       <div className="relative z-10 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-2">
+            <p className="text-[11px] font-black uppercase tracking-widest text-blue-400 flex items-center gap-2 font-display">
               <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
               Kekayaan Bersih Keluarga (Net Worth)
             </p>
@@ -27,8 +27,8 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
             </h2>
           </div>
 
-          <div className="bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] px-4 py-2 rounded-2xl text-xs font-bold text-slate-200 self-start sm:self-auto flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+          <div className="bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] px-4 py-2 rounded-2xl text-xs font-black text-slate-200 self-start sm:self-auto flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-blue-400" />
             <span>Kalkulasi Aset Bersih Real-Time</span>
           </div>
         </div>

@@ -4,65 +4,65 @@
 
 @layer base {
   :root {
-    --background: 220 33% 98%; /* Pearl Frost #F7F9FC */
-    --foreground: 224 45% 12%; /* Obsidian Dark #111827 */
+    --background: 220 30% 98%; /* Pearl Frost #F8FAFC */
+    --foreground: 222 47% 11%; /* Deep Slate #0F172A */
 
     --card: 0 0% 100%;
-    --card-foreground: 224 45% 12%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 45% 12%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 158 100% 48%; /* Electric Emerald #00F5A0 */
-    --primary-foreground: 224 45% 12%;
+    --primary: 221 83% 53%; /* Executive Royal Blue #2563EB */
+    --primary-foreground: 210 40% 98%;
 
     --secondary: 220 20% 94%;
-    --secondary-foreground: 224 45% 12%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 12% 48%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 220 20% 92%;
-    --accent-foreground: 224 45% 12%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 348 100% 61%; /* Vivid Coral #FF385C */
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 346 84% 53%; /* Crimson Coral #E11D48 */
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 220 20% 90%;
-    --input: 220 20% 90%;
-    --ring: 158 100% 48%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
 
     --radius: 1.25rem;
   }
 
   .dark {
-    --background: 228 40% 4%; /* Pure Cyber Obsidian #06080D */
+    --background: 224 71% 4%; /* Obsidian Space #07090E */
     --foreground: 210 40% 98%;
 
-    --card: 225 35% 8%; /* Midnight Titanium #0B0F19 */
+    --card: 224 45% 8%; /* Midnight Titanium #0D111A */
     --card-foreground: 210 40% 98%;
 
-    --popover: 225 35% 8%;
+    --popover: 224 45% 8%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 158 100% 48%; /* Electric Emerald #00F5A0 */
-    --primary-foreground: 228 40% 4%;
+    --primary: 217 91% 60%; /* Luminous Sapphire #3B82F6 */
+    --primary-foreground: 224 71% 4%;
 
-    --secondary: 225 25% 14%;
+    --secondary: 224 30% 14%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 225 25% 14%;
+    --muted: 224 30% 14%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 225 25% 14%;
+    --accent: 224 30% 14%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 348 100% 61%;
+    --destructive: 346 84% 53%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 225 25% 14%; /* Luminous Dark Border #141B2D */
-    --input: 225 25% 14%;
-    --ring: 158 100% 48%;
+    --border: 224 25% 15%; /* Luminous Dark Border #161D2B */
+    --input: 224 25% 15%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -71,7 +71,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-300;
+    @apply bg-background text-foreground antialiased selection:bg-blue-500/30 selection:text-blue-300;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   h1, h2, h3, h4 {
@@ -80,32 +80,32 @@
 }
 
 @layer utilities {
-  /* Gen-Z & FinTech Atmospheric Lighting */
+  /* Exclusive Executive & FinTech Atmospheric Lighting */
   .bg-cyber-radial {
     background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 245, 160, 0.08) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(255, 56, 92, 0.04) 0px, transparent 50%);
+      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.04) 0px, transparent 50%);
   }
 
   .dark .bg-cyber-radial {
     background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 245, 160, 0.12) 0px, transparent 40%),
+      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 40%),
       radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 40%),
-      radial-gradient(at 50% 100%, rgba(255, 56, 92, 0.06) 0px, transparent 40%);
+      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.06) 0px, transparent 40%);
   }
 
   /* Ultra-Glass Card Surface */
   .fintech-card {
-    @apply bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm transition-all duration-300;
+    @apply bg-white/85 dark:bg-[#0D111A]/85 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm transition-all duration-300;
   }
 
   .fintech-card-hover {
-    @apply fintech-card hover:border-emerald-500/40 dark:hover:border-emerald-400/30 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1 active:scale-[0.99];
+    @apply fintech-card hover:border-blue-500/40 dark:hover:border-blue-400/30 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 active:scale-[0.99];
   }
 
-  .glow-emerald {
-    box-shadow: 0 0 35px -5px rgba(0, 245, 160, 0.35);
+  .glow-sapphire {
+    box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.35);
   }
 
   .glow-indigo {
@@ -113,7 +113,7 @@
   }
 
   .glow-rose {
-    box-shadow: 0 0 35px -5px rgba(255, 56, 92, 0.35);
+    box-shadow: 0 0 35px -5px rgba(225, 29, 72, 0.35);
   }
 
   /* Tactile Button Physics */

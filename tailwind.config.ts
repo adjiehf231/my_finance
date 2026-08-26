@@ -45,26 +45,28 @@ const config: Config = {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
 
-        // Electric FinTech Neon Palette
-        neon: {
-          emerald: "#00F5A0",
-          teal: "#00D2C4",
+        // Executive Prestige Palette
+        prestige: {
+          sapphire: "#2563EB",
+          royal: "#1D4ED8",
           indigo: "#6366F1",
-          violet: "#8B5CF6",
-          rose: "#FF385C",
-          amber: "#FFB800",
-          cyan: "#00E5FF",
+          cyan: "#06B6D4",
+          emerald: "#10B981",
+          amber: "#F59E0B",
+          rose: "#E11D48",
+          obsidian: "#07090E",
+          titanium: "#0D111A",
         },
 
         income: {
-          DEFAULT: "#00D287",
-          light: "#E6FBF2",
-          dark: "#003D24",
+          DEFAULT: "#10B981",
+          light: "#ECFDF5",
+          dark: "#064E3B",
         },
         expense: {
-          DEFAULT: "#FF385C",
-          light: "#FFF0F3",
-          dark: "#4D0514",
+          DEFAULT: "#E11D48",
+          light: "#FFF1F2",
+          dark: "#881337",
         },
         transfer: {
           DEFAULT: "#6366F1",
@@ -82,9 +84,10 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        glow: "0 0 35px -5px rgba(0, 245, 160, 0.35)",
+        glow: "0 0 35px -5px rgba(59, 130, 246, 0.35)",
         "glow-indigo": "0 0 35px -5px rgba(99, 102, 241, 0.35)",
-        "glow-rose": "0 0 35px -5px rgba(255, 56, 92, 0.35)",
+        "glow-rose": "0 0 35px -5px rgba(225, 29, 72, 0.35)",
+        "glow-emerald": "0 0 35px -5px rgba(16, 185, 129, 0.35)",
         glass: "0 20px 40px -15px rgba(0, 0, 0, 0.08)",
         "glass-dark": "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
       },
