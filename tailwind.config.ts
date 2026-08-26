@@ -46,28 +46,39 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         // Semantic financial colors
         income: {
-          DEFAULT: "#10B981", // Emerald 500
-          light: "#D1FAE5",
-          dark: "#065F46",
+          DEFAULT: "#10B981", // Vibrant Emerald
+          light: "#ECFDF5",
+          dark: "#064E3B",
         },
         expense: {
-          DEFAULT: "#F43F5E", // Rose 500
-          light: "#FFE4E6",
+          DEFAULT: "#F43F5E", // Vibrant Rose
+          light: "#FFF1F2",
           dark: "#881337",
         },
         transfer: {
-          DEFAULT: "#6366F1", // Indigo 500
-          light: "#E0E7FF",
-          dark: "#3730A3",
+          DEFAULT: "#6366F1", // Vibrant Indigo
+          light: "#EEF2FF",
+          dark: "#312E81",
+        },
+        invest: {
+          DEFAULT: "#8B5CF6", // Purple/Violet
+          light: "#F5F3FF",
+          dark: "#4C1D95",
         },
       },
       borderRadius: {
         "3xl": "1.5rem",
-        "2xl": "1rem",
+        "2xl": "1.125rem",
         xl: "0.875rem",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        glow: "0 0 25px -5px rgba(16, 185, 129, 0.3)",
+        "glow-indigo": "0 0 25px -5px rgba(99, 102, 241, 0.3)",
+        "glow-rose": "0 0 25px -5px rgba(244, 63, 94, 0.3)",
+        card: "0 10px 30px -10px rgba(0, 0, 0, 0.05)",
       },
       keyframes: {
         shimmer: {
@@ -76,21 +87,21 @@ const config: Config = {
         },
         "pulse-subtle": {
           "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.6" },
+          "50%": { opacity: "0.65" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-4px)" },
+          "50%": { transform: "translateY(-3px)" },
         },
       },
       animation: {
-        shimmer: "shimmer 2s infinite",
+        shimmer: "shimmer 2.2s infinite",
         "pulse-subtle": "pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         float: "float 4s ease-in-out infinite",
       },
       fontFamily: {
-        sans: ["var(--font-plus-jakarta)", "Inter", "sans-serif"],
-        display: ["Outfit", "var(--font-plus-jakarta)", "sans-serif"],
+        sans: ["var(--font-plus-jakarta)", "-apple-system", "BlinkMacSystemFont", "Inter", "sans-serif"],
+        mono: ["SF Mono", "Fira Code", "Consolas", "monospace"],
       },
     },
   },

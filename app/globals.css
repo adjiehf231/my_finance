@@ -4,65 +4,65 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* Slate 50 #F8FAFC */
-    --foreground: 222.2 84% 4.9%; /* Slate 900 #0F172A */
+    --background: 210 40% 98%; /* Opal Frost #F8FAFC */
+    --foreground: 222 47% 11%; /* Deep Charcoal #0F172A */
 
-    --card: 0 0% 100%; /* White #FFFFFF */
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 160 84% 39%; /* Emerald 500 #10B981 */
-    --primary-foreground: 210 40% 98%;
+    --primary: 158 79% 42%; /* Vibrant Emerald #10B981 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 214 32% 95%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%; /* Slate 500 #64748B */
+    --muted: 214 32% 95%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 214 32% 93%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%; /* Rose 500 */
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%; /* Slate 200 #E2E8F0 */
-    --input: 214.3 31.8% 91.4%;
-    --ring: 160 84% 39%; /* Emerald */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 158 79% 42%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
   }
 
   .dark {
-    --background: 224 71% 4%; /* Pure Deep Obsidian #0B0F17 */
-    --foreground: 210 40% 98%; /* Slate 50 #F8FAFC */
+    --background: 228 35% 5%; /* OLED Black Velvet #07090E */
+    --foreground: 210 40% 98%;
 
-    --card: 223 47% 11%; /* Midnight Navy #111827 / #131B2E */
+    --card: 225 30% 9%; /* Deep Velvet Surface #0E131F */
     --card-foreground: 210 40% 98%;
 
-    --popover: 223 47% 11%;
+    --popover: 225 30% 9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 160 84% 39%; /* Emerald 500 #10B981 */
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 158 79% 42%; /* Vibrant Emerald #10B981 */
+    --primary-foreground: 228 35% 5%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 224 25% 15%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%; /* Slate 400 #94A3B8 */
+    --muted: 224 25% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 224 25% 15%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 349 89% 60%;
+    --destructive: 350 89% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%; /* Slate 800 #1E293B */
-    --input: 217.2 32.6% 17.5%;
-    --ring: 160 84% 39%;
+    --border: 224 25% 14%; /* Luminous Dark Border #171F30 */
+    --input: 224 25% 14%;
+    --ring: 158 79% 42%;
   }
 }
 
@@ -71,34 +71,63 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-700 dark:selection:text-emerald-300;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-700 dark:selection:text-emerald-300;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
 @layer utilities {
-  /* Gen-Z & Premium Glassmorphism & Card Utilities */
-  .glass-card {
-    @apply bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all duration-200;
+  /* Gen-Z & Premium FinTech Atmospheric Surfaces */
+  .bg-ambient-grid {
+    background-image: radial-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
-  .glass-card-hover {
-    @apply glass-card hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/5 transition-all duration-200;
+  .dark .bg-ambient-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
-  .glass-panel {
-    @apply bg-slate-900/90 dark:bg-[#0B0F17]/90 backdrop-blur-2xl border border-slate-800/80 text-white;
+  /* Ultra-Glass Card Surface */
+  .fintech-card {
+    @apply bg-white/80 dark:bg-[#0E131F]/80 backdrop-blur-2xl border border-slate-200/70 dark:border-white/[0.08] shadow-sm transition-all duration-300;
   }
 
-  .glow-emerald {
-    box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.25);
+  .fintech-card-hover {
+    @apply fintech-card hover:border-emerald-500/40 dark:hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-0.5;
   }
 
-  .glow-indigo {
-    box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.25);
+  .fintech-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-200;
   }
 
-  /* Shimmer effect for skeleton components */
+  /* Ambient Glows */
+  .glow-box-emerald {
+    box-shadow: 0 0 35px -8px rgba(16, 185, 129, 0.25);
+  }
+
+  .glow-box-indigo {
+    box-shadow: 0 0 35px -8px rgba(99, 102, 241, 0.25);
+  }
+
+  .glow-box-rose {
+    box-shadow: 0 0 35px -8px rgba(244, 63, 94, 0.25);
+  }
+
+  .glow-box-cyan {
+    box-shadow: 0 0 35px -8px rgba(6, 182, 212, 0.25);
+  }
+
+  /* Tactile Button Physics */
+  .btn-press {
+    @apply active:scale-95 transition-transform duration-100 ease-out;
+  }
+
+  .hover-lift {
+    @apply hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200;
+  }
+
+  /* Shimmer Mask for Skeletons */
   .shimmer-mask {
     position: relative;
     overflow: hidden;
@@ -114,8 +143,8 @@
     background-image: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.08) 20%,
-      rgba(255, 255, 255, 0.18) 60%,
+      rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0.3) 60%,
       rgba(255, 255, 255, 0)
     );
     animation: shimmer 2s infinite;
@@ -126,25 +155,25 @@
     background-image: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.03) 20%,
-      rgba(255, 255, 255, 0.08) 60%,
+      rgba(255, 255, 255, 0.04) 20%,
+      rgba(255, 255, 255, 0.09) 60%,
       rgba(255, 255, 255, 0)
     );
   }
 }
 
-/* Custom scrollbars for ledger & modals */
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.25);
+  background: rgba(148, 163, 184, 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.45);
+  background: rgba(148, 163, 184, 0.4);
 }
