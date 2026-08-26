@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS wallets (
   family_id TEXT NOT NULL,
   name TEXT NOT NULL,
   type TEXT NOT NULL,
+  account_number TEXT,
   initial_balance REAL DEFAULT 0,
   current_balance REAL DEFAULT 0,
   currency TEXT DEFAULT 'IDR',
