@@ -27,6 +27,12 @@ export const idDictionary = {
     synced: "Tersinkron",
     syncing: "Menyinkronkan...",
   },
+  navGroups: {
+    overview: "Utama",
+    finance: "Keuangan & Perencanaan",
+    analytics: "Analisis & Laporan",
+    system: "Kelola & Pengaturan",
+  },
   nav: {
     dashboard: "Dashboard",
     advisor: "AI Advisor",

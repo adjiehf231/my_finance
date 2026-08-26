@@ -19,10 +19,10 @@ import {
   Trash2,
   Receipt,
   Layers,
+  Edit3,
 } from "lucide-react";
 import { deleteTransactionAction, type TransactionWithDetails } from "../actions/transaction-actions";
 import { EditTransactionModal } from "./edit-transaction-modal";
-import { Edit3 } from "lucide-react";
 import { toast } from "sonner";
 
 interface TransactionTableProps {
@@ -56,26 +56,26 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
   if (transactions.length === 0) {
     return (
-      <div className="py-16 text-center bg-white dark:bg-[#131B2E] rounded-3xl border border-slate-200/80 dark:border-slate-800/80">
-        <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-400">
+      <div className="py-16 text-center bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-8 shadow-sm">
+        <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center mx-auto mb-3 text-slate-400">
           <Layers className="h-7 w-7" />
         </div>
         <h4 className="text-base font-bold text-slate-900 dark:text-white">
           Tidak Ada Transaksi Ditemukan
         </h4>
         <p className="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto mt-1">
-          Belum ada mutasi yang sesuai dengan filter pencarian ini.
+          Belum ada mutasi yang sesuai dengan kriteria filter ini.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#131B2E] rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
+    <div className="bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm overflow-hidden">
       {/* Desktop Ledger Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50/80 dark:bg-slate-800/40 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+          <thead className="bg-slate-50/70 dark:bg-slate-800/40 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800/80">
             <tr>
               <th className="py-4 px-6">Tanggal & Tipe</th>
               <th className="py-4 px-6">Keterangan</th>
@@ -85,7 +85,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
               <th className="py-4 px-4 text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
             {transactions.map((tx) => {
               const isIncome = tx.type === "income";
               const isTransfer = tx.type === "transfer";
@@ -93,17 +93,17 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
               return (
                 <tr
                   key={tx.id}
-                  className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors"
+                  className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
                 >
                   <td className="py-4 px-6 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        className={`h-9 w-9 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
                           isIncome
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
                             : isTransfer
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                            : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                            ? "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+                            : "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400"
                         }`}
                       >
                         {isIncome ? (
@@ -115,10 +115,10 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                         )}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-slate-100">
+                        <p className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
                           {formatDate(tx.transaction_date)}
                         </p>
-                        <p className="text-xs text-slate-400 capitalize">
+                        <p className="text-[11px] text-slate-400 capitalize font-medium">
                           {tx.type}
                         </p>
                       </div>
@@ -126,17 +126,19 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                   </td>
 
                   <td className="py-4 px-6">
-                    <p className="font-medium text-slate-900 dark:text-slate-100">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
                       {tx.description || (isTransfer ? "Transfer Antar-Dompet" : "-")}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-[11px] text-slate-400">
                       Oleh: {tx.users?.full_name || "Anggota"}
                     </p>
                   </td>
 
                   <td className="py-4 px-6 whitespace-nowrap">
                     {isTransfer ? (
-                      <span className="text-xs text-slate-400 italic">Transfer</span>
+                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full">
+                        Transfer Dana
+                      </span>
                     ) : (
                       <CategoryBadge category={tx.categories} />
                     )}
@@ -150,13 +152,15 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                         <span>{tx.to_wallet?.name}</span>
                       </div>
                     ) : (
-                      <span className="font-medium">{tx.wallets?.name || "-"}</span>
+                      <span className="font-medium bg-slate-100 dark:bg-slate-800/70 px-2.5 py-1 rounded-xl">
+                        {tx.wallets?.name || "-"}
+                      </span>
                     )}
                   </td>
 
                   <td className="py-4 px-6 whitespace-nowrap text-right">
                     <span
-                      className={`font-black text-base tracking-tight ${
+                      className={`font-black text-sm sm:text-base tracking-tight font-mono ${
                         isIncome
                           ? "text-emerald-600 dark:text-emerald-400"
                           : isTransfer
@@ -180,25 +184,25 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900"
+                            className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="rounded-2xl">
+                        <DropdownMenuContent align="end" className="rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
                           <DropdownMenuItem
                             onClick={() => setEditingTransaction(tx)}
-                            className="text-slate-700 dark:text-slate-200 cursor-pointer"
+                            className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs"
                           >
-                            <Edit3 className="h-4 w-4 mr-2 text-emerald-600" />
+                            <Edit3 className="h-3.5 w-3.5 mr-2 text-emerald-600" />
                             Edit Transaksi
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDelete(tx.id)}
                             disabled={isDeleting === tx.id}
-                            className="text-rose-600 focus:text-rose-700 cursor-pointer"
+                            className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs"
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
+                            <Trash2 className="h-3.5 w-3.5 mr-2" />
                             Hapus
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -223,12 +227,12 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
+                    className={`h-10 w-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
                       isIncome
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
                         : isTransfer
-                        ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                        : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                        ? "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+                        : "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400"
                     }`}
                   >
                     {isIncome ? (
@@ -240,10 +244,10 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     )}
                   </div>
                   <div>
-                    <p className="font-bold text-sm text-slate-900 dark:text-white">
+                    <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
                       {tx.description || (isTransfer ? "Transfer Dana" : "Tanpa Judul")}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {formatDate(tx.transaction_date)} • {isTransfer ? `${tx.from_wallet?.name} ➔ ${tx.to_wallet?.name}` : tx.wallets?.name}
                     </p>
                   </div>
@@ -251,7 +255,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
                 <div className="text-right">
                   <span
-                    className={`font-black text-base tracking-tight ${
+                    className={`font-black text-sm tracking-tight font-mono block ${
                       isIncome
                         ? "text-emerald-600 dark:text-emerald-400"
                         : isTransfer
@@ -267,15 +271,21 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
               <div className="flex items-center justify-between pt-1 text-xs">
                 <div>
-                  {!isTransfer && <CategoryBadge category={tx.categories} />}
+                  {!isTransfer ? (
+                    <CategoryBadge category={tx.categories} />
+                  ) : (
+                    <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full">
+                      Transfer
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {tx.attachment_url && (
                     <ReceiptPreviewDialog
                       url={tx.attachment_url}
                       triggerButton={
-                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-lg">
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800">
                           <Receipt className="h-3 w-3 mr-1 text-emerald-600" /> Nota
                         </Button>
                       }
@@ -285,7 +295,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     size="sm"
                     variant="outline"
                     onClick={() => setEditingTransaction(tx)}
-                    className="h-7 px-2 text-xs rounded-lg"
+                    className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800"
                   >
                     <Edit3 className="h-3 w-3 mr-1 text-emerald-600" /> Edit
                   </Button>
@@ -294,7 +304,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     variant="ghost"
                     onClick={() => handleDelete(tx.id)}
                     disabled={isDeleting === tx.id}
-                    className="h-7 px-2 text-xs text-rose-500 rounded-lg"
+                    className="h-7 px-2 text-xs text-rose-500 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30"
                   >
                     Hapus
                   </Button>

@@ -29,6 +29,12 @@ export const enDictionary: TranslationDictionary = {
     synced: "Synced",
     syncing: "Syncing...",
   },
+  navGroups: {
+    overview: "Overview",
+    finance: "Finance & Planning",
+    analytics: "Analytics & Insights",
+    system: "System & Settings",
+  },
   nav: {
     dashboard: "Dashboard",
     advisor: "AI Advisor",
