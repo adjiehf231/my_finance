@@ -157,6 +157,84 @@ export async function updateWalletAction(input: UpdateWalletInput) {
 }
 
 /**
+ * Auto-reconcile wallet balance by recalculating sum of all ledger mutations
+ */
+export async function reconcileWalletBalanceAction(walletId: string) {
+  try {
+    const supabase = await createClient();
+
+    // 1. Fetch wallet info
+    const { data: wallet, error: walletError } = await (supabase as any)
+      .from("wallets")
+      .select("id, name, initial_balance, current_balance, family_id")
+      .eq("id", walletId)
+      .single();
+
+    if (walletError || !wallet) {
+      return { success: false, error: "Dompet tidak ditemukan" };
+    }
+
+    // 2. Query transactions impacting this wallet
+    const { data: transactions, error: txError } = await (supabase as any)
+      .from("transactions")
+      .select("id, type, amount, wallet_id, from_wallet_id, to_wallet_id, is_deleted")
+      .eq("family_id", wallet.family_id)
+      .eq("is_deleted", false)
+      .or(`wallet_id.eq.${walletId},from_wallet_id.eq.${walletId},to_wallet_id.eq.${walletId}`);
+
+    if (txError) {
+      return { success: false, error: txError.message };
+    }
+
+    // 3. Compute accurate ledger balance
+    let computedBalance = Number(wallet.initial_balance || 0);
+
+    for (const tx of transactions || []) {
+      const amt = Number(tx.amount || 0);
+      if (tx.type === "income" && tx.wallet_id === walletId) {
+        computedBalance += amt;
+      } else if (tx.type === "expense" && tx.wallet_id === walletId) {
+        computedBalance -= amt;
+      } else if (tx.type === "transfer") {
+        if (tx.to_wallet_id === walletId) {
+          computedBalance += amt;
+        }
+        if (tx.from_wallet_id === walletId) {
+          computedBalance -= amt;
+        }
+      }
+    }
+
+    const oldBalance = Number(wallet.current_balance || 0);
+    const discrepancy = computedBalance - oldBalance;
+
+    // 4. Update wallet balance to exact computed amount
+    const { error: updateError } = await (supabase as any)
+      .from("wallets")
+      .update({ current_balance: computedBalance })
+      .eq("id", walletId);
+
+    if (updateError) {
+      return { success: false, error: updateError.message };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/wallets");
+    revalidatePath("/transactions");
+
+    return {
+      success: true,
+      walletName: wallet.name,
+      oldBalance,
+      newBalance: computedBalance,
+      discrepancy,
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Terjadi kesalahan saat rekonsiliasi" };
+  }
+}
+
+/**
  * Archive wallet (soft delete is_active = false)
  */
 export async function archiveWalletAction(walletId: string) {

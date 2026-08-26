@@ -22,8 +22,9 @@ import {
   Copy,
   Check,
   Edit3,
+  RefreshCw,
 } from "lucide-react";
-import { archiveWalletAction, type WalletItem } from "../actions/wallet-actions";
+import { archiveWalletAction, reconcileWalletBalanceAction, type WalletItem } from "../actions/wallet-actions";
 import { EditWalletModal } from "./edit-wallet-modal";
 import { toast } from "sonner";
 
@@ -44,6 +45,7 @@ interface WalletCardProps {
 
 export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isReconciling, setIsReconciling] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -88,6 +90,29 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
         return "Tunai";
       default:
         return "Lainnya";
+    }
+  };
+
+  const handleReconcile = async () => {
+    try {
+      setIsReconciling(true);
+      const res = await reconcileWalletBalanceAction(wallet.id);
+      if (res.success) {
+        if (res.discrepancy === 0) {
+          toast.success(`Saldo "${wallet.name}" sudah 100% akurat dan sesuai buku kas.`);
+        } else {
+          toast.success(
+            `Rekonsiliasi selesai! Selisih ${formatCurrency(res.discrepancy || 0)} berhasil disesuaikan.`
+          );
+        }
+        onUpdate?.();
+      } else {
+        toast.error(res.error || "Gagal melakukan rekonsiliasi");
+      }
+    } catch {
+      toast.error("Terjadi kesalahan sistem saat rekonsiliasi");
+    } finally {
+      setIsReconciling(false);
     }
   };
 
@@ -149,13 +174,21 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-2xl w-44 shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+            <DropdownMenuContent align="end" className="rounded-2xl w-48 shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
               <DropdownMenuItem
                 onClick={() => setIsEditOpen(true)}
                 className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
               >
                 <Edit3 className="h-3.5 w-3.5 mr-2 text-blue-600" />
                 Edit Rekening
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleReconcile}
+                disabled={isReconciling}
+                className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 mr-2 text-cyan-600 ${isReconciling ? "animate-spin" : ""}`} />
+                Rekonsiliasi Saldo
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleArchive}

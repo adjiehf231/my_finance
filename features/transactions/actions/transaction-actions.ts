@@ -58,7 +58,7 @@ export interface TransactionWithDetails {
 }
 
 /**
- * Get filtered transactions list for a family workspace
+ * Get filtered transactions list for a family workspace with deep multi-criteria filtering
  */
 export async function getTransactionsAction(input: TransactionFilterInput) {
   const validated = transactionFilterSchema.parse(input);
@@ -97,6 +97,14 @@ export async function getTransactionsAction(input: TransactionFilterInput) {
 
   if (validated.endDate) {
     query = query.lte("transaction_date", validated.endDate);
+  }
+
+  if (validated.minAmount !== undefined && validated.minAmount > 0) {
+    query = query.gte("amount", validated.minAmount);
+  }
+
+  if (validated.maxAmount !== undefined && validated.maxAmount > 0) {
+    query = query.lte("amount", validated.maxAmount);
   }
 
   if (validated.search && validated.search.trim()) {

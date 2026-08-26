@@ -4,13 +4,9 @@ import { getCurrentFamilyAction } from "@/features/family/actions/family-actions
 import { getWalletsAction } from "@/features/wallets/actions/wallet-actions";
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getTransactionsAction } from "@/features/transactions/actions/transaction-actions";
-import { AddTransactionModal } from "@/features/transactions/components/add-transaction-modal";
-import { TransactionTable } from "@/features/transactions/components/transaction-table";
+import { TransactionsView } from "@/features/transactions/components/transactions-view";
 import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/ui/page-header";
-import { Tags } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Riwayat Transaksi Finansial",
@@ -24,6 +20,10 @@ export default async function TransactionsPage({
     type?: string;
     walletId?: string;
     categoryId?: string;
+    startDate?: string;
+    endDate?: string;
+    minAmount?: string;
+    maxAmount?: string;
     search?: string;
   }>;
 }) {
@@ -43,6 +43,10 @@ export default async function TransactionsPage({
       type: params.type && params.type !== "all" ? (params.type as any) : undefined,
       walletId: params.walletId && params.walletId !== "all" ? params.walletId : undefined,
       categoryId: params.categoryId && params.categoryId !== "all" ? params.categoryId : undefined,
+      startDate: params.startDate || undefined,
+      endDate: params.endDate || undefined,
+      minAmount: params.minAmount ? parseFloat(params.minAmount) : undefined,
+      maxAmount: params.maxAmount ? parseFloat(params.maxAmount) : undefined,
       search: params.search,
       limit: 100,
       offset: 0,
@@ -61,22 +65,25 @@ export default async function TransactionsPage({
         subtitleKey="transactions.subtitle"
         iconName="transactions"
         familyName={family.name}
-      >
-        <Link href="/categories">
-          <Button variant="outline" className="rounded-2xl border-slate-200/80 dark:border-white/[0.1] text-xs font-bold gap-1.5 bg-white/50 dark:bg-white/[0.03]">
-            <Tags className="h-3.5 w-3.5 text-emerald-500" />
-            <span>Kategori</span>
-          </Button>
-        </Link>
-        <AddTransactionModal
-          familyId={family.id}
-          wallets={wallets}
-          categories={categories}
-        />
-      </PageHeader>
+      />
 
-      {/* Transactions Table & Ledger */}
-      <TransactionTable transactions={transactions} categories={categories} />
+      {/* Transactions View with Interactive Filter Drawer */}
+      <TransactionsView
+        familyId={family.id}
+        transactions={transactions}
+        wallets={wallets}
+        categories={categories}
+        initialFilters={{
+          type: params.type as any,
+          walletId: params.walletId,
+          categoryId: params.categoryId,
+          startDate: params.startDate,
+          endDate: params.endDate,
+          minAmount: params.minAmount ? parseFloat(params.minAmount) : undefined,
+          maxAmount: params.maxAmount ? parseFloat(params.maxAmount) : undefined,
+          search: params.search,
+        }}
+      />
     </AppLayout>
   );
 }
