@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, TrendingUp } from "lucide-react";
 import { NAVIGATION_GROUPS } from "./nav-config";
 import { useTranslation } from "@/lib/i18n/i18n-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -24,30 +24,37 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex flex-col justify-between w-64 h-screen sticky top-0 bg-white/80 dark:bg-[#0D111A]/80 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] p-4 shrink-0 transition-colors z-40">
       <div className="space-y-4">
-        {/* Brand Header */}
-        <div className="flex items-center justify-between px-2 py-1.5 border-b border-slate-100 dark:border-white/[0.06] pb-3">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
-              MF
+
+        {/* Brand Header — 2 rows: logo+name row, then controls row */}
+        <div className="border-b border-slate-100 dark:border-white/[0.06] pb-3 space-y-2.5">
+          {/* Row 1: Logo + App Name */}
+          <Link href="/dashboard" className="flex items-center gap-3 group px-1">
+            {/* Finance Icon */}
+            <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform shrink-0">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
-            <div>
-              <span className="font-black text-base tracking-tight text-slate-900 dark:text-white block leading-tight font-display">
-                My Finance
+
+            {/* App Name */}
+            <div className="min-w-0">
+              <span className="font-black text-[15px] tracking-tight text-slate-900 dark:text-white block leading-none font-display whitespace-nowrap">
+                My<span className="text-blue-600 dark:text-blue-400">Finance</span>
               </span>
-              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-extrabold tracking-wider block uppercase flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold tracking-wider uppercase flex items-center gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shrink-0" />
                 Prestige OS
               </span>
             </div>
           </Link>
-          <div className="flex items-center gap-1.5">
+
+          {/* Row 2: Controls (Language + Theme) */}
+          <div className="flex items-center gap-1.5 px-1">
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
 
         {/* Semantic Grouped Navigation */}
-        <nav className="space-y-4 max-h-[calc(100vh-170px)] overflow-y-auto pr-1">
+        <nav className="space-y-4 max-h-[calc(100vh-185px)] overflow-y-auto pr-1">
           {NAVIGATION_GROUPS.map((group) => (
             <div key={group.id} className="space-y-1">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 px-3 pb-0.5 font-display">
