@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 import { TrendingUp, Layers } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import type { CashflowTrendItem } from "../actions/analytics-actions";
 
 interface CashflowAreaChartProps {
@@ -18,6 +19,8 @@ interface CashflowAreaChartProps {
 }
 
 export function CashflowAreaChart({ data }: CashflowAreaChartProps) {
+  const { t } = useTranslation();
+
   if (data.length === 0) {
     return (
       <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl p-6 shadow-sm">
@@ -26,12 +29,12 @@ export function CashflowAreaChart({ data }: CashflowAreaChartProps) {
             <TrendingUp className="h-4 w-4" />
           </div>
           <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 font-display">
-            Tren Arus Kas (Pemasukan vs Pengeluaran)
+            {t("cashflowChart.emptyTitle")}
           </h3>
         </div>
         <div className="h-64 flex flex-col items-center justify-center text-slate-400">
           <Layers className="h-8 w-8 mb-2 opacity-40" />
-          <p className="text-xs font-medium">Belum ada data transaksi pada rentang waktu ini</p>
+          <p className="text-xs font-medium">{t("cashflowChart.emptyText")}</p>
         </div>
       </div>
     );
@@ -45,14 +48,14 @@ export function CashflowAreaChart({ data }: CashflowAreaChartProps) {
           <div className="flex items-center justify-between gap-3 text-emerald-600 dark:text-emerald-400 font-bold">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#00F5A0]" />
-              Pemasukan:
+              {t("cashflowChart.tooltipIncome")}
             </span>
             <span className="font-mono">{formatCurrency(payload[0]?.value || 0)}</span>
           </div>
           <div className="flex items-center justify-between gap-3 text-rose-600 dark:text-rose-400 font-bold">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#FF385C]" />
-              Pengeluaran:
+              {t("cashflowChart.tooltipExpense")}
             </span>
             <span className="font-mono">{formatCurrency(payload[1]?.value || 0)}</span>
           </div>
@@ -71,19 +74,19 @@ export function CashflowAreaChart({ data }: CashflowAreaChartProps) {
           </div>
           <div>
             <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 font-display">
-              Tren Arus Kas Finansial
+              {t("cashflowChart.title")}
             </h3>
-            <p className="text-[11px] text-slate-400 font-medium">Perbandingan arus kas masuk vs realisasi belanja</p>
+            <p className="text-[11px] text-slate-400 font-medium">{t("cashflowChart.subtitle")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2.5 text-xs">
           <div className="flex items-center gap-1.5 font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/20 px-3 py-1 rounded-full">
             <span className="h-2 w-2 rounded-full bg-[#00F5A0] shadow-glow" />
-            <span>Pemasukan</span>
+            <span>{t("cashflowChart.income")}</span>
           </div>
           <div className="flex items-center gap-1.5 font-black text-rose-600 dark:text-rose-400 bg-rose-500/10 dark:bg-rose-400/10 border border-rose-500/20 px-3 py-1 rounded-full">
             <span className="h-2 w-2 rounded-full bg-[#FF385C] shadow-glow-rose" />
-            <span>Pengeluaran</span>
+            <span>{t("cashflowChart.expense")}</span>
           </div>
         </div>
       </div>

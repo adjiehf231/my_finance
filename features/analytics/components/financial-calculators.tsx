@@ -190,8 +190,8 @@ export function FinancialCalculators({
 
                 <p className="text-xs text-blue-100 font-medium">
                   {currentLiquidBalance >= emergencyTarget
-                    ? "✓ Saldo likuiditas kas keluarga Anda telah mencukupi standar ketahanan darurat ideal."
-                    : `Saldo kas saat ini ${formatCurrency(currentLiquidBalance)}. Sisa kekurangan tabungan adalah ${formatCurrency(emergencyShortfall)}.`}
+                    ? t("calculatorsPage.emergencyMet")
+                    : t("calculatorsPage.emergencyShort", { current: formatCurrency(currentLiquidBalance), shortfall: formatCurrency(emergencyShortfall) })}
                 </p>
               </div>
 
@@ -261,7 +261,7 @@ export function FinancialCalculators({
                   </span>
                   <h3 className="text-3xl sm:text-4xl font-black text-rose-400 font-mono tracking-tight mt-1">
                     {formatCurrency(Math.round(monthlyInstallment))}
-                    <span className="text-xs font-normal text-slate-400 ml-1">/bulan</span>
+                    <span className="text-xs font-normal text-slate-400 ml-1">{t("calculatorsPage.perMonth")}</span>
                   </h3>
                 </div>
 

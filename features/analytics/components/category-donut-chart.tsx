@@ -3,6 +3,7 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 import { PieChart as PieIcon, Layers } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import type { CategoryBreakdownItem } from "../actions/analytics-actions";
 
 interface CategoryDonutChartProps {
@@ -10,6 +11,8 @@ interface CategoryDonutChartProps {
 }
 
 export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
+  const { t } = useTranslation();
+
   if (data.length === 0) {
     return (
       <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl p-6 shadow-sm">
@@ -18,12 +21,12 @@ export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
             <PieIcon className="h-4 w-4" />
           </div>
           <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 font-display">
-            Komposisi Pengeluaran
+            {t("donutChart.emptyTitle")}
           </h3>
         </div>
         <div className="h-64 flex flex-col items-center justify-center text-slate-400">
           <Layers className="h-8 w-8 mb-2 opacity-40" />
-          <p className="text-xs font-medium">Belum ada pengeluaran pada periode ini</p>
+          <p className="text-xs font-medium">{t("donutChart.emptyText")}</p>
         </div>
       </div>
     );
@@ -52,9 +55,9 @@ export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
         </div>
         <div>
           <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 font-display">
-            Distribusi Kategori
+            {t("donutChart.title")}
           </h3>
-          <p className="text-[11px] text-slate-400 font-medium">Alokasi pos belanja keluarga</p>
+          <p className="text-[11px] text-slate-400 font-medium">{t("donutChart.subtitle")}</p>
         </div>
       </div>
 
@@ -82,7 +85,7 @@ export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-display">Kategori</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-display">{t("donutChart.center")}</span>
             <span className="text-xl font-black text-slate-900 dark:text-white font-mono">{data.length}</span>
           </div>
         </div>

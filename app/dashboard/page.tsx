@@ -27,8 +27,7 @@ import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-mo
 import { TransactionTable } from "@/features/transactions/components/transaction-table";
 import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/ui/page-header";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { DashboardRecentHeader } from "@/components/layout/dashboard-recent-header";
 
 export const metadata: Metadata = {
   title: "Dashboard Finansial Keluarga",
@@ -139,23 +138,7 @@ export default async function DashboardPage() {
 
       {/* Recent Transactions Stream */}
       <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight font-display">
-              Mutasi Transaksi Terkini
-            </h3>
-            <p className="text-xs text-slate-400 font-medium">
-              10 catatan transaksi terakhir dalam ruang kerja keluarga
-            </p>
-          </div>
-          <Link
-            href="/transactions"
-            className="text-xs font-black text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1.5 bg-blue-500/10 dark:bg-blue-400/10 px-3.5 py-1.5 rounded-full border border-blue-500/20 transition-all hover:scale-105"
-          >
-            Lihat Semua <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
+        <DashboardRecentHeader />
         <TransactionTable transactions={recentTransactions} />
       </div>
     </AppLayout>

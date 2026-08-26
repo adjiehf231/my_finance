@@ -18,9 +18,9 @@ import {
   FileSpreadsheet,
   FileJson,
   Loader2,
-  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 
 interface ExportModalProps {
   familyId: string;
@@ -30,6 +30,7 @@ interface ExportModalProps {
 export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
   const [open, setOpen] = useState(false);
   const [isExporting, setIsExporting] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleDownloadCsv = async () => {
     try {
@@ -45,12 +46,12 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        toast.success("File CSV transaksi berhasil diunduh!");
+        toast.success(t("exportModal.csvSuccess"));
       } else {
-        toast.error("Gagal mengekspor data CSV");
+        toast.error(t("exportModal.csvError"));
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem saat mengekspor");
+      toast.error(t("exportModal.genericError"));
     } finally {
       setIsExporting(null);
     }
@@ -70,12 +71,12 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        toast.success("Cadangan data keluarga (JSON) berhasil diunduh!");
+        toast.success(t("exportModal.jsonSuccess"));
       } else {
-        toast.error("Gagal mengunduh data takeout");
+        toast.error(t("exportModal.jsonError"));
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem saat mengunduh");
+      toast.error(t("exportModal.genericError"));
     } finally {
       setIsExporting(null);
     }
@@ -89,22 +90,22 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
             variant="outline"
             className="rounded-2xl border-slate-200 dark:border-slate-800 flex items-center gap-2 font-semibold"
           >
-            <Download className="h-4 w-4 text-emerald-600" />
-            Ekspor Data Laporan
+            <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            {t("exportModal.triggerBtn")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md rounded-3xl p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <Download className="h-5 w-5 text-emerald-600" />
-            Pusat Ekspor & Cadangan Data
+            <Download className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            {t("exportModal.modalTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
           <p className="text-xs text-slate-500">
-            Unduh seluruh mutasi transaksi dan arsip keuangan keluarga Anda ke format file terbuka.
+            {t("exportModal.modalDesc")}
           </p>
 
           {/* Option 1: CSV */}
@@ -115,10 +116,10 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
               </div>
               <div>
                 <h4 className="font-bold text-xs text-slate-900 dark:text-white">
-                  Laporan Transaksi (CSV / Excel)
+                  {t("exportModal.csvTitle")}
                 </h4>
                 <p className="text-[11px] text-slate-500">
-                  Kompatibel dengan Microsoft Excel, Google Sheets, LibreOffice.
+                  {t("exportModal.csvDesc")}
                 </p>
               </div>
             </div>
@@ -126,12 +127,12 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
               size="sm"
               onClick={handleDownloadCsv}
               disabled={isExporting === "csv"}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shrink-0"
+              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shrink-0"
             >
               {isExporting === "csv" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Unduh CSV"
+                t("exportModal.downloadCsv")
               )}
             </Button>
           </div>
@@ -144,10 +145,10 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
               </div>
               <div>
                 <h4 className="font-bold text-xs text-slate-900 dark:text-white">
-                  Arsip Lengkap (JSON Data Takeout)
+                  {t("exportModal.jsonTitle")}
                 </h4>
                 <p className="text-[11px] text-slate-500">
-                  Portabilitas data pribadi sesuai UU PDP No. 27/2022.
+                  {t("exportModal.jsonDesc")}
                 </p>
               </div>
             </div>
@@ -161,7 +162,7 @@ export function ExportModal({ familyId, triggerButton }: ExportModalProps) {
               {isExporting === "json" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Unduh JSON"
+                t("exportModal.downloadJson")
               )}
             </Button>
           </div>
