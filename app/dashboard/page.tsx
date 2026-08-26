@@ -4,6 +4,7 @@ import { getCurrentFamilyAction } from "@/features/family/actions/family-actions
 import { getWalletsAction } from "@/features/wallets/actions/wallet-actions";
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getTransactionsAction } from "@/features/transactions/actions/transaction-actions";
+import { getBudgetsAction } from "@/features/budgets/actions/budget-actions";
 import {
   getAnalyticsSummaryAction,
   getCashflowTrendAction,
@@ -16,6 +17,7 @@ import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
+import { BudgetWarningBanner } from "@/features/budgets/components/budget-warning-banner";
 import { AddTransactionModal } from "@/features/transactions/components/add-transaction-modal";
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
 import { TransactionTable } from "@/features/transactions/components/transaction-table";
@@ -39,6 +41,10 @@ export default async function DashboardPage() {
   const family = familyRes.data.family;
   const userRole = familyRes.data.role;
 
+  const currentPeriodMonth = `${new Date().getFullYear()}-${String(
+    new Date().getMonth() + 1
+  ).padStart(2, "0")}-01`;
+
   const [
     walletsRes,
     categoriesRes,
@@ -48,6 +54,7 @@ export default async function DashboardPage() {
     breakdownRes,
     netWorthRes,
     adviceRes,
+    budgetsRes,
   ] = await Promise.all([
     getWalletsAction(family.id),
     getCategoriesAction(family.id),
@@ -57,6 +64,7 @@ export default async function DashboardPage() {
     getCategoryBreakdownAction(family.id, "this_month"),
     getNetWorthSummaryAction(family.id),
     getFinancialHealthAdviceAction(family.id),
+    getBudgetsAction(family.id, currentPeriodMonth),
   ]);
 
   const wallets = walletsRes.data || [];
@@ -67,6 +75,7 @@ export default async function DashboardPage() {
   const categoryBreakdown = breakdownRes.data || [];
   const netWorth = netWorthRes.data;
   const advice = adviceRes.data;
+  const budgets = budgetsRes.data || [];
 
   return (
     <AppLayout>
@@ -89,6 +98,9 @@ export default async function DashboardPage() {
           categories={categories}
         />
       </PageHeader>
+
+      {/* Smart Budget Warning Banners */}
+      <BudgetWarningBanner budgets={budgets} />
 
       {/* 4 KPI Metrics */}
       <MetricSummaryCards
@@ -128,7 +140,7 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/transactions"
-            className="text-xs font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-400/10 px-3.5 py-1.5 rounded-full border border-emerald-500/20 transition-all hover:scale-105"
+            className="text-xs font-black text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1.5 bg-blue-500/10 dark:bg-blue-400/10 px-3.5 py-1.5 rounded-full border border-blue-500/20 transition-all hover:scale-105"
           >
             Lihat Semua <ArrowRight className="h-3.5 w-3.5" />
           </Link>

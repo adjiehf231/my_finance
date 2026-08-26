@@ -6,6 +6,7 @@ import { getBudgetsAction } from "@/features/budgets/actions/budget-actions";
 import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { BudgetProgressCard } from "@/features/budgets/components/budget-progress-card";
+import { BudgetWarningBanner } from "@/features/budgets/components/budget-warning-banner";
 import { UpsertBudgetModal } from "@/features/budgets/components/upsert-budget-modal";
 import { MonthSelector } from "@/features/budgets/components/month-selector";
 import { formatCurrency } from "@/lib/utils";
@@ -61,11 +62,14 @@ export default async function BudgetingPage({
         />
       </PageHeader>
 
+      {/* Smart Budget Warning Banners */}
+      <BudgetWarningBanner budgets={budgets} />
+
       {/* Overall Budget Health Banner */}
-      <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B0F17] to-[#111827] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-xl shadow-slate-950/20">
+      <div className="rounded-3xl bg-gradient-to-br from-slate-950 via-[#0D111A] to-[#0A1224] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-xl shadow-slate-950/20">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-1">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
               Ringkasan Realisasi Total Anggaran Periode Ini
             </p>
             <div className="flex items-baseline gap-3 flex-wrap">
@@ -89,7 +93,9 @@ export default async function BudgetingPage({
               </div>
             )}
             <div>
-              <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Realisasi Pengeluaran</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-display">
+                Realisasi Pengeluaran
+              </p>
               <p className="text-xl font-black font-mono">
                 {summary.overallPercentage}%
               </p>
@@ -101,18 +107,18 @@ export default async function BudgetingPage({
       {/* Budgets Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight font-display">
             Batas Anggaran Kategori ({budgets.length})
           </h3>
         </div>
 
         {budgets.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] p-12 text-center bg-white/50 dark:bg-[#0E131F]/50 backdrop-blur-xl">
+          <div className="rounded-3xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] p-12 text-center bg-white/50 dark:bg-[#0D111A]/50 backdrop-blur-xl">
             <div className="flex flex-col items-center">
-              <div className="h-16 w-16 rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
+              <div className="h-16 w-16 rounded-3xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
                 <PieChart className="h-8 w-8" />
               </div>
-              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white mb-1">
+              <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1 font-display">
                 Belum Ada Batas Anggaran Ditetapkan
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 max-w-sm mb-6 font-medium">

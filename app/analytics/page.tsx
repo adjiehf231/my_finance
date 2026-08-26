@@ -14,6 +14,8 @@ import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { TimeframeSelector } from "@/features/analytics/components/timeframe-selector";
+import { FinancialCalculators } from "@/features/analytics/components/financial-calculators";
+import { MonthlyStatementModal } from "@/features/analytics/components/monthly-statement-modal";
 import { type TimeframeType } from "@/lib/validations/analytics";
 
 export const metadata: Metadata = {
@@ -53,6 +55,12 @@ export default async function AnalyticsPage({
   const categoryBreakdown = breakdownRes.data || [];
   const netWorth = netWorthRes.data;
 
+  const monthNames = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+  const currentMonthName = `${monthNames[new Date().getMonth()]} ${new Date().getFullYear()}`;
+
   return (
     <AppLayout>
       {/* FinTech Page Header */}
@@ -62,6 +70,17 @@ export default async function AnalyticsPage({
         iconName="analytics"
         familyName={family.name}
       >
+        <MonthlyStatementModal
+          familyName={family.name}
+          currency={family.currency}
+          periodMonthName={currentMonthName}
+          totalIncome={summary.totalIncome}
+          totalExpense={summary.totalExpense}
+          netSavings={summary.netSavings}
+          savingsRate={summary.savingsRate}
+          netWorth={netWorth.netWorth}
+          categories={categoryBreakdown}
+        />
         <TimeframeSelector currentTimeframe={timeframe} />
       </PageHeader>
 
@@ -86,6 +105,12 @@ export default async function AnalyticsPage({
           <CategoryDonutChart data={categoryBreakdown} />
         </div>
       </div>
+
+      {/* Interactive Financial Calculators Suite */}
+      <FinancialCalculators
+        currentMonthlyExpense={summary.totalExpense || 5000000}
+        currentLiquidBalance={netWorth.totalWalletBalance || 0}
+      />
     </AppLayout>
   );
 }
