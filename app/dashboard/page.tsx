@@ -20,7 +20,8 @@ import { AddTransactionModal } from "@/features/transactions/components/add-tran
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
 import { TransactionTable } from "@/features/transactions/components/transaction-table";
 import { AppLayout } from "@/components/layout/app-layout";
-import { ArrowRight, Sparkles, Users } from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -69,37 +70,25 @@ export default async function DashboardPage() {
 
   return (
     <AppLayout>
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Dashboard Keuangan
-            </h1>
-            <span className="bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold px-3 py-1 rounded-full border border-emerald-500/30 uppercase tracking-wider">
-              {userRole}
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5 font-medium">
-            <Users className="h-3.5 w-3.5 text-emerald-500" />
-            Ruang Kerja Keluarga: <span className="font-bold text-slate-900 dark:text-slate-200">{family.name}</span>
-          </p>
-        </div>
-
-        {/* Quick Action Buttons */}
-        <div className="flex items-center gap-2.5">
-          <ReceiptScannerModal
-            familyId={family.id}
-            wallets={wallets}
-            categories={categories}
-          />
-          <AddTransactionModal
-            familyId={family.id}
-            wallets={wallets}
-            categories={categories}
-          />
-        </div>
-      </div>
+      {/* FinTech Page Header */}
+      <PageHeader
+        titleKey="dashboard.title"
+        subtitleKey="dashboard.welcome"
+        iconName="dashboard"
+        badgeText={userRole}
+        familyName={family.name}
+      >
+        <ReceiptScannerModal
+          familyId={family.id}
+          wallets={wallets}
+          categories={categories}
+        />
+        <AddTransactionModal
+          familyId={family.id}
+          wallets={wallets}
+          categories={categories}
+        />
+      </PageHeader>
 
       {/* 4 KPI Metrics */}
       <MetricSummaryCards
@@ -130,7 +119,7 @@ export default async function DashboardPage() {
       <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight font-display">
               Mutasi Transaksi Terkini
             </h3>
             <p className="text-xs text-slate-400 font-medium">
@@ -139,7 +128,7 @@ export default async function DashboardPage() {
           </div>
           <Link
             href="/transactions"
-            className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-full border border-emerald-200/60 dark:border-emerald-800/60 transition-all hover:scale-105"
+            className="text-xs font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 bg-emerald-500/10 dark:bg-emerald-400/10 px-3.5 py-1.5 rounded-full border border-emerald-500/20 transition-all hover:scale-105"
           >
             Lihat Semua <ArrowRight className="h-3.5 w-3.5" />
           </Link>

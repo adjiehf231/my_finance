@@ -20,10 +20,8 @@ import {
   Sparkles,
   Loader2,
   CheckCircle2,
-  Receipt,
   Store,
   Calendar,
-  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { ReceiptOcrResponse } from "@/lib/validations/ai";
@@ -132,43 +130,43 @@ export function ReceiptScannerModal({
         {triggerButton || (
           <Button
             variant="outline"
-            className="rounded-2xl border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 flex items-center gap-2 font-semibold shadow-sm"
+            className="rounded-2xl border-slate-200/80 dark:border-white/[0.08] text-slate-900 dark:text-white bg-white/80 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.08] flex items-center gap-2 font-bold text-xs shadow-sm hover:scale-105 transition-all"
           >
-            <Sparkles className="h-4 w-4 text-amber-500" />
+            <Sparkles className="h-4 w-4 text-amber-400" />
             Scan Struk AI
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl rounded-3xl p-6">
+      <DialogContent className="sm:max-w-xl rounded-3xl p-6 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <Scan className="h-5 w-5 text-emerald-600" />
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 font-display">
+            <Scan className="h-5 w-5 text-emerald-500" />
             Smart OCR Receipt Scanner
           </DialogTitle>
         </DialogHeader>
 
         {!ocrResult ? (
           <div className="py-8 text-center space-y-4">
-            <label className="cursor-pointer flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-850 transition-all group">
+            <label className="cursor-pointer flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 dark:border-white/[0.1] rounded-3xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:border-emerald-500/40 transition-all group">
               {isScanning ? (
                 <div className="flex flex-col items-center space-y-3">
-                  <Loader2 className="h-10 w-10 text-emerald-600 animate-spin" />
-                  <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  <Loader2 className="h-10 w-10 text-emerald-500 animate-spin" />
+                  <p className="font-black text-sm text-slate-900 dark:text-white font-display">
                     Memindai nota belanja dengan Gemini 1.5 Flash...
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 font-medium">
                     Mengekstrak nama toko, tanggal, item produk, dan total bayar
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center space-y-2">
-                  <div className="h-14 w-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 dark:bg-emerald-400/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                     <Upload className="h-7 w-7" />
                   </div>
-                  <p className="font-bold text-sm text-slate-900 dark:text-white">
+                  <p className="font-black text-sm text-slate-900 dark:text-white font-display">
                     Klik untuk Ambil Foto atau Unggah Struk
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 font-medium">
                     Mendukung format JPG, PNG, WebP (Maksimal 5MB)
                   </p>
                 </div>
@@ -185,32 +183,32 @@ export function ReceiptScannerModal({
         ) : (
           /* Extracted Data Preview */
           <div className="space-y-4 pt-2">
-            <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/60 space-y-3">
+            <div className="p-5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-400/5 border border-emerald-500/20 space-y-3">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+                  <p className="text-xs font-black text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 font-display">
                     <Store className="h-3.5 w-3.5" /> Toko / Merchant
                   </p>
-                  <h4 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                  <h4 className="text-lg font-black text-slate-900 dark:text-white mt-0.5 font-display">
                     {ocrResult.merchantName}
                   </h4>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                  <p className="text-xs font-black text-emerald-700 dark:text-emerald-300 font-display">
                     Total Transaksi
                   </p>
-                  <h4 className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  <h4 className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
                     {formatCurrency(ocrResult.totalAmount)}
                   </h4>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-emerald-100 dark:border-emerald-900/40">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3.5 w-3.5" />
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-2.5 border-t border-emerald-500/20 font-medium">
+                <span className="flex items-center gap-1 font-mono">
+                  <Calendar className="h-3.5 w-3.5 text-emerald-500" />
                   Tanggal: {formatDate(ocrResult.transactionDate)}
                 </span>
-                <Badge variant="outline" className="text-[10px] font-semibold">
+                <Badge className="text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-slate-950">
                   {ocrResult.categorySuggestion}
                 </Badge>
               </div>
@@ -219,16 +217,16 @@ export function ReceiptScannerModal({
             {/* Items List */}
             {ocrResult.items.length > 0 && (
               <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">
                   Rincian Item Produk ({ocrResult.items.length})
                 </p>
-                <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                <div className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs font-medium">
                   {ocrResult.items.map((item, idx) => (
-                    <div key={idx} className="py-1.5 flex items-center justify-between">
+                    <div key={idx} className="py-2 flex items-center justify-between">
                       <span className="text-slate-700 dark:text-slate-300 truncate">
                         {item.quantity}x {item.name}
                       </span>
-                      <span className="font-semibold text-slate-900 dark:text-white">
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">
                         {formatCurrency(item.price)}
                       </span>
                     </div>
@@ -239,13 +237,13 @@ export function ReceiptScannerModal({
 
             {/* Wallet Selector */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
                 Potong Saldo Dari Rekening:
               </label>
               <select
                 value={selectedWalletId}
                 onChange={(e) => setSelectedWalletId(e.target.value)}
-                className="w-full h-11 px-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131B2E] text-xs font-semibold text-slate-900 dark:text-white"
+                className="w-full h-12 px-3 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#06080D]/80 text-xs font-bold text-slate-900 dark:text-white"
               >
                 {wallets.map((w) => (
                   <option key={w.id} value={w.id}>
@@ -260,14 +258,14 @@ export function ReceiptScannerModal({
                 type="button"
                 variant="outline"
                 onClick={() => setOcrResult(null)}
-                className="rounded-xl"
+                className="rounded-2xl font-bold text-xs"
               >
                 Scan Ulang
               </Button>
               <Button
                 onClick={handleSaveTransaction}
                 disabled={isSaving}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5"
+                className="rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-glow"
               >
                 {isSaving ? (
                   <>
@@ -276,7 +274,7 @@ export function ReceiptScannerModal({
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="h-4 w-4" />
+                    <CheckCircle2 className="h-4 w-4 stroke-[3]" />
                     Simpan Transaksi Ini
                   </>
                 )}
