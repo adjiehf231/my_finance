@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import {
   getGeminiModel,
   extractJsonFromResponse,
@@ -97,6 +98,101 @@ Pastikan hanya mengembalikan format JSON yang valid tanpa teks pembuka atau penu
       source: "fallback",
       error: err.message,
     };
+  }
+}
+
+/**
+ * Scan multiple receipt images simultaneously in batch
+ */
+export async function scanBatchReceiptsAction(
+  images: Array<{ base64Data: string; mimeType?: string }>
+) {
+  try {
+    const results = await Promise.all(
+      images.map((img, idx) =>
+        scanReceiptWithAIAction(img.base64Data, img.mimeType || "image/jpeg").then(
+          (res) => ({
+            index: idx,
+            ...res,
+          })
+        )
+      )
+    );
+
+    return { success: true, results };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Gagal memproses batch OCR" };
+  }
+}
+
+/**
+ * Commit multiple scanned transactions into the ledger in 1 batch
+ */
+export async function createBatchTransactionsAction(input: {
+  familyId: string;
+  walletId: string;
+  transactions: Array<{
+    amount: number;
+    transactionDate: string;
+    categoryId?: string | null;
+    description: string;
+    attachmentUrl?: string | null;
+  }>;
+}) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Anda harus login terlebih dahulu" };
+    }
+
+    const records = input.transactions
+      .filter((t) => t.amount > 0)
+      .map((t) => ({
+        family_id: input.familyId,
+        user_id: user.id,
+        type: "expense",
+        amount: t.amount,
+        transaction_date: t.transactionDate,
+        wallet_id: input.walletId,
+        category_id: t.categoryId || null,
+        description: t.description || null,
+        attachment_url: t.attachmentUrl || null,
+        is_deleted: false,
+      }));
+
+    if (records.length === 0) {
+      return { success: false, error: "Tidak ada transaksi valid untuk disimpan" };
+    }
+
+    const { data, error } = await (supabase as any)
+      .from("transactions")
+      .insert(records)
+      .select();
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    // Log activity
+    await (supabase as any).from("activity_logs").insert({
+      family_id: input.familyId,
+      user_id: user.id,
+      action: "create",
+      entity: "transaction",
+      description: `Batch OCR: ${records.length} transaksi struk belanja berhasil dicatat sekaligus.`,
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/transactions");
+    revalidatePath("/wallets");
+
+    return { success: true, count: records.length, data };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Gagal menyimpan batch transaksi" };
   }
 }
 

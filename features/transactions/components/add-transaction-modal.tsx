@@ -21,8 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Loader2, ArrowRightLeft, TrendingDown, TrendingUp, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Loader2, ArrowRightLeft, TrendingDown, TrendingUp, Upload, Image as ImageIcon, Sparkles } from "lucide-react";
 import { createTransactionAction } from "../actions/transaction-actions";
+import { suggestCategoryFromDescription } from "@/lib/ai/category-suggester";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
@@ -61,6 +62,12 @@ export function AddTransactionModal({
   const filteredCategories = categories.filter((c) =>
     type === "transfer" ? false : c.type === type
   );
+
+  // Real-time Contextual Category Suggestion
+  const suggestedCategory =
+    type !== "transfer"
+      ? suggestCategoryFromDescription(description, filteredCategories)
+      : null;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -228,6 +235,34 @@ export function AddTransactionModal({
             />
           </div>
 
+          {/* Description & Real-time AI Suggestion */}
+          <div className="space-y-1.5">
+            <Label htmlFor="tx-desc" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Catatan / Deskripsi
+            </Label>
+            <Input
+              id="tx-desc"
+              placeholder="Contoh: Kopi Kenangan, Bensin Pertamax, Bayar Wifi PLN"
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+
+            {/* Contextual Category Suggestion Pill */}
+            {suggestedCategory && categoryId !== suggestedCategory.id && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setCategoryId(suggestedCategory.id)}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-400/10 border border-blue-500/30 px-3 py-1 rounded-full hover:bg-blue-500/20 transition-colors animate-pulse"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Saran Kategori AI: <strong>{suggestedCategory.name}</strong> (Klik untuk pilih)</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Wallet Picker for Income/Expense */}
           {type !== "transfer" ? (
             <div className="grid grid-cols-2 gap-3">
@@ -299,18 +334,6 @@ export function AddTransactionModal({
               </div>
             </div>
           )}
-
-          {/* Description */}
-          <div className="space-y-1.5">
-            <Label htmlFor="tx-desc" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Catatan / Deskripsi</Label>
-            <Input
-              id="tx-desc"
-              placeholder="Contoh: Makan siang nasi padang, bayar wifi"
-              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
 
           {/* Attachment Upload */}
           <div className="space-y-1.5">
