@@ -2,11 +2,10 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentFamilyAction } from "@/features/family/actions/family-actions";
 import { getFamilyGamificationAction } from "@/features/gamification/actions/gamification-actions";
+import { AppLayout } from "@/components/layout/app-layout";
 import { LevelProgressCard } from "@/features/gamification/components/level-progress-card";
 import { AchievementBadgesGrid } from "@/features/gamification/components/achievement-badges-grid";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Trophy, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Level Keuangan & Lencana Pencapaian",
@@ -30,45 +29,38 @@ export default async function GamificationPage() {
   const { level, badges, unlockedCount, totalBadges } = gamificationRes.data;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground p-4 sm:p-8 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="rounded-xl">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              Level & Lencana Keuangan
-              <Trophy className="h-6 w-6 text-amber-500" />
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Tingkatkan kedisiplinan dan kolaborasi finansial keluarga {family.name}
-            </p>
-          </div>
-        </div>
-
-        {/* Level Progress Hero Card */}
-        <LevelProgressCard
-          level={level}
-          unlockedCount={unlockedCount}
-          totalBadges={totalBadges}
-        />
-
-        {/* Badges Grid Showcase */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-600" />
-              Lencana Pencapaian Finansial ({unlockedCount}/{totalBadges})
-            </h3>
-          </div>
-
-          <AchievementBadgesGrid badges={badges} />
+    <AppLayout>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+            Level & Lencana Keuangan
+            <Trophy className="h-6 w-6 text-amber-500" />
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Tingkatkan kedisiplinan dan kolaborasi finansial keluarga {family.name}
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Level Progress Hero Card */}
+      <LevelProgressCard
+        level={level}
+        unlockedCount={unlockedCount}
+        totalBadges={totalBadges}
+      />
+
+      {/* Badges Grid Showcase */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-emerald-600" />
+            Lencana Pencapaian Finansial ({unlockedCount}/{totalBadges})
+          </h3>
+        </div>
+
+        <AchievementBadgesGrid badges={badges} />
+      </div>
+    </AppLayout>
   );
 }

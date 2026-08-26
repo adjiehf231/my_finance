@@ -21,6 +21,28 @@ export interface CategoryItem {
   created_at: string;
 }
 
+export const DEFAULT_CATEGORIES_DATA = [
+  // Expense
+  { name: "Makanan & Minuman", type: "expense" as const, icon: "utensils", color: "#EF4444" },
+  { name: "Transportasi", type: "expense" as const, icon: "car", color: "#F97316" },
+  { name: "Kebutuhan Rumah Tangga", type: "expense" as const, icon: "home", color: "#F59E0B" },
+  { name: "Listrik, Air & Internet", type: "expense" as const, icon: "zap", color: "#EAB308" },
+  { name: "Pendidikan Anak", type: "expense" as const, icon: "graduation-cap", color: "#3B82F6" },
+  { name: "Kesehatan & Obat", type: "expense" as const, icon: "heart-pulse", color: "#EC4899" },
+  { name: "Hiburan & Liburan", type: "expense" as const, icon: "film", color: "#8B5CF6" },
+  { name: "Belanja & Pakaian", type: "expense" as const, icon: "shopping-bag", color: "#06B6D4" },
+  { name: "Sosial & Sedekah", type: "expense" as const, icon: "hand-heart", color: "#10B981" },
+  { name: "Lain-lain", type: "expense" as const, icon: "more-horizontal", color: "#6B7280" },
+  // Income
+  { name: "Gaji Pokok", type: "income" as const, icon: "briefcase", color: "#10B981" },
+  { name: "Bonus & THR", type: "income" as const, icon: "gift", color: "#059669" },
+  { name: "Hasil Usaha / Bisnis", type: "income" as const, icon: "store", color: "#047857" },
+  { name: "Investasi & Dividen", type: "income" as const, icon: "trending-up", color: "#0D9488" },
+  { name: "Freelance & Side Hustle", type: "income" as const, icon: "laptop", color: "#0284C7" },
+  { name: "Hadiah & Hibah", type: "income" as const, icon: "sparkles", color: "#6366F1" },
+  { name: "Pemasukan Lainnya", type: "income" as const, icon: "plus-circle", color: "#64748B" },
+];
+
 /**
  * Get all available categories (System Defaults + Family Custom Categories)
  */
@@ -46,6 +68,29 @@ export async function getCategoriesAction(
   }
 
   const { data, error } = await query.order("name", { ascending: true });
+
+  // If categories are empty in DB, auto-seed default categories for this family
+  if (!error && (!data || data.length === 0) && familyId) {
+    const seedRows = DEFAULT_CATEGORIES_DATA.map((cat) => ({
+      family_id: familyId,
+      name: cat.name,
+      type: cat.type,
+      icon: cat.icon,
+      color: cat.color,
+      is_default: true,
+      is_active: true,
+    }));
+
+    const { data: inserted } = await (supabase as any)
+      .from("categories")
+      .insert(seedRows)
+      .select();
+
+    if (inserted && inserted.length > 0) {
+      const filtered = type ? inserted.filter((c: any) => c.type === type) : inserted;
+      return { success: true, data: filtered as CategoryItem[] };
+    }
+  }
 
   if (error) {
     return { success: false, error: error.message, data: [] as CategoryItem[] };

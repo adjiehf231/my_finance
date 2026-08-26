@@ -60,22 +60,34 @@ ALTER TABLE public.families ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view families they belong to" ON public.families;
 CREATE POLICY "Users can view families they belong to"
 ON public.families FOR SELECT
-USING (id IN (SELECT public.get_auth_user_family_ids()));
+USING (
+    id IN (SELECT public.get_auth_user_family_ids())
+    OR created_by = auth.uid()
+);
 
 DROP POLICY IF EXISTS "Any authenticated user can create a family" ON public.families;
 CREATE POLICY "Any authenticated user can create a family"
 ON public.families FOR INSERT
-WITH CHECK (auth.uid() IS NOT NULL);
+WITH CHECK (
+    auth.uid() IS NOT NULL
+    AND created_by = auth.uid()
+);
 
 DROP POLICY IF EXISTS "Owners and Admins can update family details" ON public.families;
 CREATE POLICY "Owners and Admins can update family details"
 ON public.families FOR UPDATE
-USING (public.get_auth_user_role(id) IN ('owner', 'admin'));
+USING (
+    public.get_auth_user_role(id) IN ('owner', 'admin')
+    OR created_by = auth.uid()
+);
 
 DROP POLICY IF EXISTS "Only Owners can delete a family workspace" ON public.families;
 CREATE POLICY "Only Owners can delete a family workspace"
 ON public.families FOR DELETE
-USING (public.get_auth_user_role(id) = 'owner');
+USING (
+    public.get_auth_user_role(id) = 'owner'
+    OR created_by = auth.uid()
+);
 
 -- 4. FAMILY_MEMBERS TABLE RLS
 ALTER TABLE public.family_members ENABLE ROW LEVEL SECURITY;
@@ -83,7 +95,10 @@ ALTER TABLE public.family_members ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view members of their families" ON public.family_members;
 CREATE POLICY "Users can view members of their families"
 ON public.family_members FOR SELECT
-USING (family_id IN (SELECT public.get_auth_user_family_ids()));
+USING (
+    family_id IN (SELECT public.get_auth_user_family_ids())
+    OR EXISTS (SELECT 1 FROM public.families f WHERE f.id = family_id AND f.created_by = auth.uid())
+);
 
 DROP POLICY IF EXISTS "Owners/Admins can add members or User joins with invite code" ON public.family_members;
 CREATE POLICY "Owners/Admins can add members or User joins with invite code"
@@ -91,6 +106,7 @@ ON public.family_members FOR INSERT
 WITH CHECK (
     user_id = auth.uid() 
     OR public.get_auth_user_role(family_id) IN ('owner', 'admin')
+    OR EXISTS (SELECT 1 FROM public.families f WHERE f.id = family_id AND f.created_by = auth.uid())
 );
 
 DROP POLICY IF EXISTS "Owners and Admins can update member roles" ON public.family_members;
@@ -280,7 +296,10 @@ USING (family_id IN (SELECT public.get_auth_user_family_ids()));
 DROP POLICY IF EXISTS "System and members can insert logs" ON public.activity_logs;
 CREATE POLICY "System and members can insert logs"
 ON public.activity_logs FOR INSERT
-WITH CHECK (family_id IN (SELECT public.get_auth_user_family_ids()));
+WITH CHECK (
+    family_id IN (SELECT public.get_auth_user_family_ids())
+    OR EXISTS (SELECT 1 FROM public.families f WHERE f.id = family_id AND f.created_by = auth.uid())
+);
 
 DROP POLICY IF EXISTS "Users can view and manage their own notifications" ON public.notifications;
 CREATE POLICY "Users can view and manage their own notifications"

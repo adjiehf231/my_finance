@@ -7,15 +7,13 @@ import {
   getCategoryBreakdownAction,
   getNetWorthSummaryAction,
 } from "@/features/analytics/actions/analytics-actions";
+import { AppLayout } from "@/components/layout/app-layout";
 import { MetricSummaryCards } from "@/features/analytics/components/metric-summary-cards";
 import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area-chart";
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { TimeframeSelector } from "@/features/analytics/components/timeframe-selector";
 import { type TimeframeType } from "@/lib/validations/analytics";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Laporan & Analisis Finansial Mendalam",
@@ -55,51 +53,44 @@ export default async function AnalyticsPage({
   const netWorth = netWorthRes.data;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground p-4 sm:p-8 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Laporan & Grafik Finansial
-              </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Keluarga: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
-              </p>
-            </div>
+    <AppLayout>
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Laporan & Grafik Finansial
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Keluarga: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
+            </p>
           </div>
-
-          <TimeframeSelector currentTimeframe={timeframe} />
         </div>
 
-        {/* 4 Key Metrics */}
-        <MetricSummaryCards
-          totalWalletBalance={netWorth.totalWalletBalance}
-          totalIncome={summary.totalIncome}
-          totalExpense={summary.totalExpense}
-          netWorth={netWorth.netWorth}
-          savingsRate={summary.savingsRate}
-        />
+        <TimeframeSelector currentTimeframe={timeframe} />
+      </div>
 
-        {/* Net Worth Card */}
-        <NetWorthCard netWorth={netWorth} />
+      {/* 4 Key Metrics */}
+      <MetricSummaryCards
+        totalWalletBalance={netWorth.totalWalletBalance}
+        totalIncome={summary.totalIncome}
+        totalExpense={summary.totalExpense}
+        netWorth={netWorth.netWorth}
+        savingsRate={summary.savingsRate}
+      />
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <CashflowAreaChart data={cashflow} />
-          </div>
-          <div>
-            <CategoryDonutChart data={categoryBreakdown} />
-          </div>
+      {/* Net Worth Card */}
+      <NetWorthCard netWorth={netWorth} />
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <CashflowAreaChart data={cashflow} />
+        </div>
+        <div>
+          <CategoryDonutChart data={categoryBreakdown} />
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }

@@ -4,11 +4,11 @@ import { getCurrentFamilyAction } from "@/features/family/actions/family-actions
 import { getWalletsAction } from "@/features/wallets/actions/wallet-actions";
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getFinancialHealthAdviceAction } from "@/features/ai/actions/ai-actions";
+import { AppLayout } from "@/components/layout/app-layout";
 import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sparkles, Scan, Bot } from "lucide-react";
-import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AI Financial Health Advisor",
@@ -34,37 +34,30 @@ export default async function AdvisorPage() {
   const advice = adviceRes.data;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground p-4 sm:p-8 transition-colors duration-300">
-      <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-                AI Financial Advisor
-                <Sparkles className="h-5 w-5 text-amber-500" />
-              </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Evaluasi Kesehatan Finansial & Rekomendasi Pintar Keluarga {family.name}
-              </p>
-            </div>
+    <AppLayout>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+              AI Financial Advisor
+              <Sparkles className="h-5 w-5 text-amber-500" />
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Evaluasi Kesehatan Finansial & Rekomendasi Pintar Keluarga {family.name}
+            </p>
           </div>
-
-          <ReceiptScannerModal
-            familyId={family.id}
-            wallets={wallets}
-            categories={categories}
-          />
         </div>
 
-        {/* AI Advisor Evaluation Card */}
-        {advice && <AIAdvisorCard advice={advice} />}
+        <ReceiptScannerModal
+          familyId={family.id}
+          wallets={wallets}
+          categories={categories}
+        />
       </div>
-    </div>
+
+      {/* AI Advisor Evaluation Card */}
+      {advice && <AIAdvisorCard advice={advice} />}
+    </AppLayout>
   );
 }

@@ -3,13 +3,13 @@ import { redirect } from "next/navigation";
 import { getCurrentFamilyAction } from "@/features/family/actions/family-actions";
 import { getWalletsAction } from "@/features/wallets/actions/wallet-actions";
 import { getGoalsAction } from "@/features/goals/actions/goal-actions";
+import { AppLayout } from "@/components/layout/app-layout";
 import { GoalCard } from "@/features/goals/components/goal-card";
 import { AddGoalModal } from "@/features/goals/components/add-goal-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Target, Sparkles, PiggyBank } from "lucide-react";
-import Link from "next/link";
+import { Target, Sparkles, PiggyBank } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Target Tabungan & Impian Finansial",
@@ -42,18 +42,12 @@ export default async function GoalsPage() {
   const overallPercentage = totalTarget > 0 ? Math.round((totalCollected / totalTarget) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground p-4 sm:p-8 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+    <AppLayout>
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Target Tabungan Impian
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -129,7 +123,6 @@ export default async function GoalsPage() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </AppLayout>
   );
 }

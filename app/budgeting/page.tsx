@@ -3,14 +3,14 @@ import { redirect } from "next/navigation";
 import { getCurrentFamilyAction } from "@/features/family/actions/family-actions";
 import { getCategoriesAction } from "@/features/categories/actions/category-actions";
 import { getBudgetsAction } from "@/features/budgets/actions/budget-actions";
+import { AppLayout } from "@/components/layout/app-layout";
 import { BudgetProgressCard } from "@/features/budgets/components/budget-progress-card";
 import { UpsertBudgetModal } from "@/features/budgets/components/upsert-budget-modal";
 import { MonthSelector } from "@/features/budgets/components/month-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, PieChart, ShieldAlert, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { PieChart, ShieldAlert, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Perencanaan Anggaran Bulanan",
@@ -46,18 +46,12 @@ export default async function BudgetingPage({
   const summary = budgetsRes.summary || { totalBudget: 0, totalSpent: 0, overallPercentage: 0 };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground p-4 sm:p-8 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="rounded-xl">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+    <AppLayout>
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Anggaran Bulanan
               </h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -144,7 +138,6 @@ export default async function BudgetingPage({
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </AppLayout>
   );
 }
