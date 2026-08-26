@@ -21,15 +21,19 @@ import {
   Layers,
 } from "lucide-react";
 import { deleteTransactionAction, type TransactionWithDetails } from "../actions/transaction-actions";
+import { EditTransactionModal } from "./edit-transaction-modal";
+import { Edit3 } from "lucide-react";
 import { toast } from "sonner";
 
 interface TransactionTableProps {
   transactions: TransactionWithDetails[];
+  categories?: Array<{ id: string; name: string; type: "income" | "expense"; color: string }>;
   onUpdate?: () => void;
 }
 
-export function TransactionTable({ transactions, onUpdate }: TransactionTableProps) {
+export function TransactionTable({ transactions, categories = [], onUpdate }: TransactionTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionWithDetails | null>(null);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus transaksi ini? Saldo dompet akan disesuaikan otomatis.")) return;
@@ -183,9 +187,16 @@ export function TransactionTable({ transactions, onUpdate }: TransactionTablePro
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="rounded-2xl">
                           <DropdownMenuItem
+                            onClick={() => setEditingTransaction(tx)}
+                            className="text-slate-700 dark:text-slate-200 cursor-pointer"
+                          >
+                            <Edit3 className="h-4 w-4 mr-2 text-emerald-600" />
+                            Edit Transaksi
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             onClick={() => handleDelete(tx.id)}
                             disabled={isDeleting === tx.id}
-                            className="text-rose-600 focus:text-rose-700"
+                            className="text-rose-600 focus:text-rose-700 cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Hapus
@@ -272,6 +283,14 @@ export function TransactionTable({ transactions, onUpdate }: TransactionTablePro
                   )}
                   <Button
                     size="sm"
+                    variant="outline"
+                    onClick={() => setEditingTransaction(tx)}
+                    className="h-7 px-2 text-xs rounded-lg"
+                  >
+                    <Edit3 className="h-3 w-3 mr-1 text-emerald-600" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="ghost"
                     onClick={() => handleDelete(tx.id)}
                     disabled={isDeleting === tx.id}
@@ -285,6 +304,22 @@ export function TransactionTable({ transactions, onUpdate }: TransactionTablePro
           );
         })}
       </div>
+
+      {/* Edit Transaction Modal */}
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          categories={categories}
+          open={!!editingTransaction}
+          onOpenChange={(open) => {
+            if (!open) setEditingTransaction(null);
+          }}
+          onSuccess={() => {
+            setEditingTransaction(null);
+            onUpdate?.();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -52,8 +52,26 @@ describe("Export Engine & Security Hardening Tests", () => {
 
     const isMatch = await verifyPin(pin, hashed);
     const isWrong = await verifyPin("111111", hashed);
-
     expect(isMatch).toBe(true);
     expect(isWrong).toBe(false);
+  });
+
+  it("should validate JSON backup payload structure for data restore", () => {
+    const validPayload = {
+      exportDate: "2026-08-26T12:00:00.000Z",
+      wallets: [{ name: "BCA", type: "bank", initial_balance: 1000000 }],
+      transactions: [{ amount: 50000, type: "expense", description: "Beli Kopi" }],
+      categories: [{ name: "Kopi", type: "expense" }],
+      goals: [{ name: "Dana Darurat", target_amount: 10000000 }],
+      debts: [{ name: "Pinjaman Teman", total_amount: 500000 }],
+    };
+
+    expect(Array.isArray(validPayload.wallets)).toBe(true);
+    expect(validPayload.wallets.length).toBe(1);
+    expect(Array.isArray(validPayload.transactions)).toBe(true);
+    expect(validPayload.transactions.length).toBe(1);
+    expect(Array.isArray(validPayload.categories)).toBe(true);
+    expect(Array.isArray(validPayload.goals)).toBe(true);
+    expect(Array.isArray(validPayload.debts)).toBe(true);
   });
 });

@@ -122,6 +122,45 @@ export async function createDebtAction(input: CreateDebtInput) {
 }
 
 /**
+ * Update debt details
+ */
+export async function updateDebtAction(input: UpdateDebtInput) {
+  try {
+    const validated = updateDebtSchema.parse(input);
+    const supabase = await createClient();
+
+    const { data: debt, error } = await (supabase as any)
+      .from("debts")
+      .update({
+        ...(validated.name && { name: validated.name }),
+        ...(validated.totalAmount !== undefined && { total_amount: validated.totalAmount }),
+        ...(validated.interestRate !== undefined && { interest_rate: validated.interestRate }),
+        ...(validated.monthlyPayment !== undefined && { monthly_payment: validated.monthlyPayment }),
+        ...(validated.dueDate !== undefined && { due_date: validated.dueDate }),
+        ...(validated.status && { status: validated.status }),
+        ...(validated.notes !== undefined && { notes: validated.notes }),
+      })
+      .eq("id", validated.debtId)
+      .select()
+      .single();
+
+    if (error || !debt) {
+      return { success: false, error: error?.message || "Gagal memperbarui hutang/piutang" };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/debts");
+
+    return { success: true, data: debt };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err.errors ? err.errors[0].message : err.message || "Terjadi kesalahan",
+    };
+  }
+}
+
+/**
  * Record an installment payment for a debt or loan
  */
 export async function recordDebtPaymentAction(input: RecordDebtPaymentInput) {

@@ -244,3 +244,24 @@ export async function getGoalContributionsAction(goalId: string) {
 
   return { success: true, data };
 }
+
+/**
+ * Delete a financial goal
+ */
+export async function deleteGoalAction(goalId: string) {
+  const supabase = await createClient();
+
+  const { error } = await (supabase as any)
+    .from("financial_goals")
+    .delete()
+    .eq("id", goalId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/goals");
+
+  return { success: true };
+}

@@ -23,6 +23,9 @@ import {
 import { deleteDebtAction, type DebtWithProgress } from "../actions/debt-actions";
 import { toast } from "sonner";
 
+import { EditDebtModal } from "./edit-debt-modal";
+import { Edit3 } from "lucide-react";
+
 interface DebtCardProps {
   debt: DebtWithProgress;
   familyId: string;
@@ -32,6 +35,7 @@ interface DebtCardProps {
 
 export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const isLoan = debt.type === "loan_payable";
   const isSettled = debt.status === "settled" || debt.remaining_amount === 0;
@@ -56,80 +60,88 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
   };
 
   return (
-    <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between">
-      <CardContent className="p-0 space-y-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-3">
-            <div
-              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
-                isLoan
-                  ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                  : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-              }`}
-            >
-              {isLoan ? <CreditCard className="h-6 w-6" /> : <HandCoins className="h-6 w-6" />}
-            </div>
-            <div>
-              <h4 className="font-bold text-base text-slate-900 dark:text-white">
-                {debt.name}
-              </h4>
-              <div className="flex items-center gap-2 mt-0.5">
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] uppercase font-bold rounded-lg ${
-                    isLoan
-                      ? "border-rose-200 text-rose-600 bg-rose-50 dark:bg-rose-950/40"
-                      : "border-emerald-200 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"
-                  }`}
-                >
-                  {isLoan ? "Hutang Pinjaman" : "Piutang Diberikan"}
-                </Badge>
+    <>
+      <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between">
+        <CardContent className="p-0 space-y-4">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-3">
+              <div
+                className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                  isLoan
+                    ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                }`}
+              >
+                {isLoan ? <CreditCard className="h-6 w-6" /> : <HandCoins className="h-6 w-6" />}
+              </div>
+              <div>
+                <h4 className="font-bold text-base text-slate-900 dark:text-white">
+                  {debt.name}
+                </h4>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] uppercase font-bold rounded-lg ${
+                      isLoan
+                        ? "border-rose-200 text-rose-600 bg-rose-50 dark:bg-rose-950/40"
+                        : "border-emerald-200 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"
+                    }`}
+                  >
+                    {isLoan ? "Hutang Pinjaman" : "Piutang Diberikan"}
+                  </Badge>
 
-                {debt.due_date && !isSettled && (
-                  <span className="text-xs text-slate-400 flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    Tempo: {formatDate(debt.due_date)}
-                  </span>
-                )}
+                  {debt.due_date && !isSettled && (
+                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      Tempo: {formatDate(debt.due_date)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-1">
-            {isSettled ? (
-              <Badge className="bg-emerald-500 text-white font-bold text-xs rounded-xl px-2.5 py-1 flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Lunas
-              </Badge>
-            ) : (
-              <Badge variant="secondary" className="text-xs font-semibold rounded-xl">
-                {debt.percentage_paid}% Terbayar
-              </Badge>
-            )}
+            <div className="flex items-center gap-1">
+              {isSettled ? (
+                <Badge className="bg-emerald-500 text-white font-bold text-xs rounded-xl px-2.5 py-1 flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Lunas
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="text-xs font-semibold rounded-xl">
+                  {debt.percentage_paid}% Terbayar
+                </Badge>
+              )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl">
-                <DropdownMenuItem
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="text-rose-600 focus:text-rose-700"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Hapus Data
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="rounded-2xl">
+                  <DropdownMenuItem
+                    onClick={() => setIsEditOpen(true)}
+                    className="text-slate-700 dark:text-slate-200 cursor-pointer"
+                  >
+                    <Edit3 className="h-4 w-4 mr-2 text-indigo-600" />
+                    Edit Data
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="text-rose-600 focus:text-rose-700 cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Hapus Data
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-        </div>
 
         {/* Progress Bar */}
         <div className="space-y-1.5">
@@ -196,5 +208,13 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
         </div>
       )}
     </Card>
+
+    <EditDebtModal
+      debt={debt}
+      open={isEditOpen}
+      onOpenChange={setIsEditOpen}
+      onSuccess={onUpdate}
+    />
+  </>
   );
 }

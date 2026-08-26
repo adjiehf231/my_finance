@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCurrentFamilyAction } from "@/features/family/actions/family-actions";
 import { AppLayout } from "@/components/layout/app-layout";
 import { ExportModal } from "@/features/export/components/export-modal";
+import { RestoreModal } from "@/features/export/components/restore-modal";
+import { RefreshDataCard } from "@/features/export/components/refresh-data-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,23 +47,29 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      {/* Section 1: Ekspor & Data Backup */}
+      {/* Section 0: Sinkronisasi & Refresh Cache */}
+      <RefreshDataCard />
+
+      {/* Section 1: Ekspor & Data Backup / Restore */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-          Pusat Data & Laporan
+          Pusat Data & Cadangan
         </h3>
         <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-6 shadow-sm">
           <CardContent className="p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <h4 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Download className="h-5 w-5 text-emerald-600" />
-                Ekspor & Cadangan Data
+                Ekspor & Pemulihan Cadangan Data
               </h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Unduh mutasi transaksi dalam format CSV (Excel) atau cadangan data keluarga utuh (JSON).
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
+                Unduh mutasi transaksi dalam format CSV (Excel), ekspor cadangan data keluarga utuh (JSON), atau pulihkan data dari file backup.
               </p>
             </div>
-            <ExportModal familyId={family.id} />
+            <div className="flex flex-wrap items-center gap-2">
+              <RestoreModal familyId={family.id} />
+              <ExportModal familyId={family.id} />
+            </div>
           </CardContent>
         </Card>
       </div>

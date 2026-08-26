@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tag, ShieldCheck } from "lucide-react";
 
+import { CategoryCard } from "@/features/categories/components/category-card";
+
 export const metadata: Metadata = {
   title: "Kelola Kategori Keuangan",
   description: "Daftar kategori pengeluaran dan pemasukan keluarga.",
@@ -56,33 +58,7 @@ export default async function CategoriesPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {expenseCategories.map((cat) => (
-            <Card
-              key={cat.id}
-              className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-4 shadow-sm"
-            >
-              <CardContent className="p-0 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-10 w-10 rounded-xl flex items-center justify-center text-white"
-                    style={{ backgroundColor: cat.color || "#EF4444" }}
-                  >
-                    <Tag className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                      {cat.name}
-                    </p>
-                    <p className="text-xs text-slate-400">Pengeluaran</p>
-                  </div>
-                </div>
-
-                {cat.is_default && (
-                  <Badge variant="secondary" className="text-[10px] flex items-center gap-1 font-normal">
-                    <ShieldCheck className="h-3 w-3 text-slate-400" /> Default
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
+            <CategoryCard key={cat.id} category={cat} />
           ))}
         </div>
       </div>
@@ -98,33 +74,7 @@ export default async function CategoriesPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {incomeCategories.map((cat) => (
-            <Card
-              key={cat.id}
-              className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-4 shadow-sm"
-            >
-              <CardContent className="p-0 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="h-10 w-10 rounded-xl flex items-center justify-center text-white"
-                    style={{ backgroundColor: cat.color || "#10B981" }}
-                  >
-                    <Tag className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                      {cat.name}
-                    </p>
-                    <p className="text-xs text-slate-400">Pemasukan</p>
-                  </div>
-                </div>
-
-                {cat.is_default && (
-                  <Badge variant="secondary" className="text-[10px] flex items-center gap-1 font-normal">
-                    <ShieldCheck className="h-3 w-3 text-slate-400" /> Default
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
+            <CategoryCard key={cat.id} category={cat} />
           ))}
         </div>
       </div>

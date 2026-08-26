@@ -27,6 +27,7 @@ export const createDebtSchema = z.object({
 export const updateDebtSchema = z.object({
   debtId: z.string().uuid("Debt ID tidak valid"),
   name: z.string().min(2).max(100).optional(),
+  totalAmount: z.number().positive("Total nominal harus lebih dari 0").optional(),
   interestRate: z.number().min(0).max(100).optional(),
   monthlyPayment: z.number().min(0).optional(),
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),

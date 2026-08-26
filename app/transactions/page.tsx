@@ -82,7 +82,7 @@ export default async function TransactionsPage({
       </div>
 
       {/* Transactions Table & Ledger */}
-      <TransactionTable transactions={transactions} />
+      <TransactionTable transactions={transactions} categories={categories} />
     </AppLayout>
   );
 }
