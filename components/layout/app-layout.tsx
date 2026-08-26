@@ -8,7 +8,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-foreground transition-colors duration-300">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#F7F9FC] dark:bg-[#06080D] bg-cyber-radial text-foreground transition-colors duration-300">
       {/* Mobile Sticky Hamburger Header */}
       <MobileHeader />
 
@@ -16,7 +16,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Sidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto space-y-8 overflow-y-auto w-full">
+      <main className="flex-1 p-4 sm:p-8 lg:p-10 max-w-[1400px] mx-auto space-y-8 overflow-y-auto w-full">
         {children}
       </main>
     </div>

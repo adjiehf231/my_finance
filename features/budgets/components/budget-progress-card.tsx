@@ -49,44 +49,44 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
 
   return (
     <>
-      <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#0E131F]/90 backdrop-blur-2xl p-6 shadow-sm hover:shadow-xl hover:border-emerald-500/30 transition-all duration-300 space-y-4 group">
+      <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl p-6 shadow-sm hover:shadow-2xl hover:border-emerald-500/40 dark:hover:border-emerald-400/40 hover:-translate-y-1 transition-all duration-300 space-y-4 group">
         {/* Header with Category & Status Badge */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-3">
             <div
-              className="h-11 w-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-105 transition-transform"
-              style={{ backgroundColor: budget.categories.color || "#EF4444" }}
+              className="h-11 w-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
+              style={{ backgroundColor: budget.categories.color || "#00F5A0" }}
             >
               <Tag className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+              <h4 className="font-black text-sm sm:text-base text-slate-900 dark:text-white font-display">
                 {budget.categories.name}
               </h4>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
-                Limit: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{formatCurrency(budget.amount_limit)}</span>
+                Limit: <span className="font-mono font-black text-slate-700 dark:text-slate-300">{formatCurrency(budget.amount_limit)}</span>
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
             {isOverbudget ? (
-              <Badge className="bg-rose-500 text-white font-extrabold text-[10px] rounded-full px-2.5 py-0.5 shadow-sm shadow-rose-500/30 flex items-center gap-1 animate-pulse">
+              <Badge className="bg-rose-500 text-white font-black text-[10px] rounded-full px-2.5 py-0.5 shadow-md shadow-rose-500/30 flex items-center gap-1 animate-pulse uppercase tracking-wider">
                 <Flame className="h-3 w-3" />
                 OVERBUDGET
               </Badge>
             ) : isDanger ? (
-              <Badge className="bg-rose-500/10 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
+              <Badge className="bg-rose-500/10 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-black text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" />
                 {budget.percentage}%
               </Badge>
             ) : isWarning ? (
-              <Badge className="bg-amber-500/10 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
+              <Badge className="bg-amber-500/10 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-black text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" />
                 {budget.percentage}%
               </Badge>
             ) : (
-              <Badge className="bg-emerald-500/10 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
+              <Badge className="bg-emerald-500/10 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-black text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3" />
                 {budget.percentage}%
               </Badge>
@@ -102,10 +102,10 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
+              <DropdownMenuContent align="end" className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 <DropdownMenuItem
                   onClick={() => setIsEditOpen(true)}
-                  className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs"
+                  className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
                 >
                   <Edit3 className="h-3.5 w-3.5 mr-2 text-rose-600" />
                   Edit Limit Anggaran
@@ -113,7 +113,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
                 <DropdownMenuItem
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs"
+                  className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-semibold"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-2" />
                   Hapus Anggaran
@@ -125,14 +125,14 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
 
         {/* Progress Bar */}
         <div className="space-y-1.5 pt-1">
-          <div className="h-3 w-full bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden p-0.5">
+          <div className="h-3 w-full bg-slate-100 dark:bg-[#06080D] rounded-full overflow-hidden p-0.5 border border-slate-200/40 dark:border-white/[0.04]">
             <div
-              className={`h-full rounded-full transition-all duration-500 shadow-sm ${
+              className={`h-full rounded-full transition-all duration-700 ${
                 isDanger
-                  ? "bg-gradient-to-r from-rose-500 to-rose-600"
+                  ? "bg-gradient-to-r from-rose-500 to-[#FF385C] shadow-glow-rose"
                   : isWarning
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600"
-                  : "bg-gradient-to-r from-emerald-500 to-teal-500"
+                  ? "bg-gradient-to-r from-amber-400 to-amber-500 shadow-glow"
+                  : "bg-gradient-to-r from-[#00F5A0] to-teal-400 shadow-glow"
               }`}
               style={{ width: `${Math.min(100, budget.percentage)}%` }}
             />
@@ -140,20 +140,20 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
         </div>
 
         {/* Financial Numbers breakdown */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/60 text-xs">
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/[0.06] text-xs">
           <div>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Terpakai</p>
-            <p className="font-black text-slate-900 dark:text-white mt-0.5 font-mono text-sm">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">Terpakai</p>
+            <p className="font-black text-slate-900 dark:text-white mt-0.5 font-mono text-sm sm:text-base">
               {formatCurrency(budget.spent_amount)}
             </p>
           </div>
 
           <div className="text-right">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">
               {budget.remaining_amount >= 0 ? "Sisa Kuota" : "Kelebihan"}
             </p>
             <p
-              className={`font-black mt-0.5 font-mono text-sm ${
+              className={`font-black mt-0.5 font-mono text-sm sm:text-base ${
                 budget.remaining_amount >= 0
                   ? "text-emerald-600 dark:text-emerald-400"
                   : "text-rose-600 dark:text-rose-400"

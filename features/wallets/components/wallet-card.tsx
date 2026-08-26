@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -113,94 +112,92 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
 
   return (
     <>
-      <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl shadow-sm hover:shadow-lg hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-300 overflow-hidden relative group">
-        {/* Top decorative color bar */}
+      <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl shadow-sm hover:shadow-2xl hover:border-emerald-500/40 dark:hover:border-emerald-400/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden relative group p-6">
+        {/* Top holographic accent line */}
         <div
-          className="h-1.5 w-full transition-all"
-          style={{ backgroundColor: wallet.color || "#10B981" }}
+          className="absolute top-0 left-0 right-0 h-1.5 transition-all"
+          style={{ backgroundColor: wallet.color || "#00F5A0" }}
         />
 
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div
-                className="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform"
-                style={{ backgroundColor: wallet.color || "#10B981" }}
-              >
-                {getWalletIcon(wallet.type)}
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-                  {wallet.name}
-                </h4>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="secondary" className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    {getWalletTypeLabel(wallet.type)}
-                  </Badge>
-                </div>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div
+              className="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
+              style={{ backgroundColor: wallet.color || "#00F5A0" }}
+            >
+              {getWalletIcon(wallet.type)}
+            </div>
+            <div>
+              <h4 className="text-base font-black text-slate-900 dark:text-white tracking-tight font-display">
+                {wallet.name}
+              </h4>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border-none">
+                  {getWalletTypeLabel(wallet.type)}
+                </Badge>
               </div>
             </div>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl w-44 shadow-xl border border-slate-200 dark:border-slate-800">
-                <DropdownMenuItem
-                  onClick={() => setIsEditOpen(true)}
-                  className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs"
-                >
-                  <Edit3 className="h-3.5 w-3.5 mr-2 text-emerald-600" />
-                  Edit Rekening
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleArchive}
-                  disabled={isArchiving}
-                  className="text-rose-600 focus:text-rose-700 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs"
-                >
-                  <Archive className="h-3.5 w-3.5 mr-2" />
-                  Arsipkan
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
-          {/* Account Number Display with instant 1-click copy */}
-          {wallet.account_number && (
-            <div className="mt-3 flex items-center justify-between bg-slate-50 dark:bg-slate-900/70 border border-slate-100 dark:border-slate-800/80 px-3 py-1.5 rounded-2xl text-xs font-mono text-slate-600 dark:text-slate-300">
-              <span className="truncate tracking-wider font-semibold">{wallet.account_number}</span>
-              <button
-                type="button"
-                onClick={handleCopyAccount}
-                className="text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors shrink-0 ml-2 p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800"
-                title="Salin nomor rekening"
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
-                {copied ? (
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-              </button>
-            </div>
-          )}
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="rounded-2xl w-44 shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+              <DropdownMenuItem
+                onClick={() => setIsEditOpen(true)}
+                className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
+              >
+                <Edit3 className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+                Edit Rekening
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleArchive}
+                disabled={isArchiving}
+                className="text-rose-600 focus:text-rose-700 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs font-semibold"
+              >
+                <Archive className="h-3.5 w-3.5 mr-2" />
+                Arsipkan
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          {/* Balance Display */}
-          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-            <p className="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-1">
-              Saldo Saat Ini
-            </p>
-            <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
-              {formatCurrency(wallet.current_balance, wallet.currency)}
-            </p>
+        {/* Account Number Display with instant 1-click copy */}
+        {wallet.account_number && (
+          <div className="mt-3 flex items-center justify-between bg-slate-50/80 dark:bg-[#06080D]/80 border border-slate-200/60 dark:border-white/[0.06] px-3.5 py-2 rounded-2xl text-xs font-mono text-slate-600 dark:text-slate-300">
+            <span className="truncate tracking-wider font-bold">{wallet.account_number}</span>
+            <button
+              type="button"
+              onClick={handleCopyAccount}
+              className="text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors shrink-0 ml-2 p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/[0.08]"
+              title="Salin nomor rekening"
+            >
+              {copied ? (
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        )}
+
+        {/* Balance Display */}
+        <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-white/[0.06]">
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1 font-display">
+            Saldo Saat Ini
+          </p>
+          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
+            {formatCurrency(wallet.current_balance, wallet.currency)}
+          </p>
+        </div>
+      </div>
 
       <EditWalletModal
         wallet={wallet as WalletItem}
