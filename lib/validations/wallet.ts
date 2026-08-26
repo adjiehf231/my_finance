@@ -16,6 +16,11 @@ export const createWalletSchema = z.object({
     .min(2, "Nama dompet minimal 2 karakter")
     .max(50, "Nama dompet maksimal 50 karakter"),
   type: walletTypeEnum,
+  accountNumber: z
+    .string()
+    .max(50, "Nomor rekening maksimal 50 karakter")
+    .optional()
+    .nullable(),
   initialBalance: z
     .number()
     .min(0, "Saldo awal tidak boleh bernilai negatif")
@@ -36,6 +41,11 @@ export const updateWalletSchema = z.object({
     .max(50, "Nama dompet maksimal 50 karakter")
     .optional(),
   type: walletTypeEnum.optional(),
+  accountNumber: z
+    .string()
+    .max(50, "Nomor rekening maksimal 50 karakter")
+    .optional()
+    .nullable(),
   color: z
     .string()
     .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Warna hex tidak valid")

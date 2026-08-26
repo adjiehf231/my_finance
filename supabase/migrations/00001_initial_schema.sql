@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS public.wallets (
     user_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('cash', 'bank', 'ewallet', 'credit_card', 'investment', 'other')),
+    account_number TEXT,
     initial_balance NUMERIC(15,2) DEFAULT 0.00 NOT NULL,
     current_balance NUMERIC(15,2) DEFAULT 0.00 NOT NULL,
     currency VARCHAR(3) DEFAULT 'IDR' NOT NULL,

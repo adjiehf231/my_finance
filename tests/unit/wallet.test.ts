@@ -25,13 +25,17 @@ describe("Wallet Validations", () => {
     expect(invalid.success).toBe(false);
   });
 
-  it("should reject invalid wallet types", () => {
-    const invalid = createWalletSchema.safeParse({
+  it("should validate wallet with account number", () => {
+    const valid = createWalletSchema.safeParse({
       familyId: "11111111-1111-1111-1111-111111111111",
-      name: "BitCoin",
-      type: "crypto_invalid",
-      initialBalance: 1000,
+      name: "Mandiri Prioritas",
+      type: "bank",
+      accountNumber: "1400012345678",
+      initialBalance: 10000000,
     });
-    expect(invalid.success).toBe(false);
+    expect(valid.success).toBe(true);
+    if (valid.success) {
+      expect(valid.data.accountNumber).toBe("1400012345678");
+    }
   });
 });

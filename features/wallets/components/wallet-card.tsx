@@ -20,10 +20,12 @@ import {
   MoreVertical,
   Archive,
   Layers,
+  Copy,
+  Check,
+  Edit3,
 } from "lucide-react";
 import { archiveWalletAction, type WalletItem } from "../actions/wallet-actions";
 import { EditWalletModal } from "./edit-wallet-modal";
-import { Edit3 } from "lucide-react";
 import { toast } from "sonner";
 
 interface WalletCardProps {
@@ -31,6 +33,7 @@ interface WalletCardProps {
     id: string;
     name: string;
     type: string;
+    account_number?: string | null;
     current_balance: number;
     initial_balance: number;
     color: string;
@@ -43,6 +46,17 @@ interface WalletCardProps {
 export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
   const [isArchiving, setIsArchiving] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAccount = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (wallet.account_number) {
+      navigator.clipboard.writeText(wallet.account_number);
+      setCopied(true);
+      toast.success("Nomor rekening/akun berhasil disalin!");
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const getWalletIcon = (type: string) => {
     switch (type) {
@@ -119,9 +133,11 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
                 <h4 className="text-base font-bold text-slate-900 dark:text-slate-50 tracking-tight">
                   {wallet.name}
                 </h4>
-                <Badge variant="secondary" className="mt-1 text-[11px] font-medium">
-                  {getWalletTypeLabel(wallet.type)}
-                </Badge>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="secondary" className="text-[11px] font-medium">
+                    {getWalletTypeLabel(wallet.type)}
+                  </Badge>
+                </div>
               </div>
             </div>
 
@@ -155,8 +171,27 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
             </DropdownMenu>
           </div>
 
+          {/* Account Number Display */}
+          {wallet.account_number && (
+            <div className="mt-3 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/80 px-3 py-1.5 rounded-xl text-xs font-mono text-slate-600 dark:text-slate-300">
+              <span className="truncate tracking-wider">{wallet.account_number}</span>
+              <button
+                type="button"
+                onClick={handleCopyAccount}
+                className="text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors shrink-0 ml-2"
+                title="Salin nomor rekening"
+              >
+                {copied ? (
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+              </button>
+            </div>
+          )}
+
           {/* Balance Display */}
-          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60">
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60">
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
               Saldo Saat Ini
             </p>

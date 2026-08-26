@@ -52,6 +52,7 @@ export function EditWalletModal({
   const [type, setType] = useState<"cash" | "bank" | "ewallet" | "credit_card" | "investment" | "other">(
     (wallet.type as any) || "bank"
   );
+  const [accountNumber, setAccountNumber] = useState(wallet.account_number || "");
   const [color, setColor] = useState(wallet.color || "#10B981");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,6 +68,7 @@ export function EditWalletModal({
         walletId: wallet.id,
         name: name.trim(),
         type,
+        accountNumber: accountNumber.trim() || null,
         color,
       });
 
@@ -131,6 +133,20 @@ export function EditWalletModal({
                 <SelectItem value="other">Lainnya</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Nomor Rekening / No. HP */}
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-wallet-account-number" className="text-xs font-bold text-slate-500 uppercase">
+              Nomor Rekening / No. HP / No. Akun (Opsional)
+            </Label>
+            <Input
+              id="edit-wallet-account-number"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              placeholder="Contoh: 1234567890 atau 081234567890"
+              className="rounded-2xl"
+            />
           </div>
 
           {/* Pilihan Warna */}

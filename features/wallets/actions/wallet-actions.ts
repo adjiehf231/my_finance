@@ -15,6 +15,7 @@ export interface WalletItem {
   user_id: string | null;
   name: string;
   type: string;
+  account_number?: string | null;
   initial_balance: number;
   current_balance: number;
   currency: string;
@@ -77,6 +78,7 @@ export async function createWalletAction(input: CreateWalletInput) {
         user_id: user.id,
         name: validated.name,
         type: validated.type,
+        account_number: validated.accountNumber || null,
         initial_balance: validated.initialBalance,
         current_balance: validated.initialBalance,
         currency: validated.currency,
@@ -118,7 +120,7 @@ export async function createWalletAction(input: CreateWalletInput) {
 }
 
 /**
- * Update wallet details (name, type, color, icon)
+ * Update wallet details (name, type, account_number, color, icon)
  */
 export async function updateWalletAction(input: UpdateWalletInput) {
   try {
@@ -130,6 +132,7 @@ export async function updateWalletAction(input: UpdateWalletInput) {
       .update({
         ...(validated.name && { name: validated.name }),
         ...(validated.type && { type: validated.type }),
+        ...(validated.accountNumber !== undefined && { account_number: validated.accountNumber }),
         ...(validated.color && { color: validated.color }),
         ...(validated.icon && { icon: validated.icon }),
       })

@@ -146,6 +146,7 @@ export async function importFamilyDataRestoreAction(familyId: string, jsonString
           user_id: user.id,
           name: w.name,
           type: w.type || "bank",
+          account_number: w.account_number || null,
           initial_balance: Number(w.initial_balance || 0),
           current_balance: Number(w.current_balance || w.initial_balance || 0),
           currency: w.currency || "IDR",

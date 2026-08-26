@@ -50,6 +50,7 @@ export function AddWalletModal({
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"cash" | "bank" | "ewallet" | "credit_card" | "investment" | "other">("bank");
+  const [accountNumber, setAccountNumber] = useState("");
   const [initialBalance, setInitialBalance] = useState("0");
   const [color, setColor] = useState("#10B981");
 
@@ -68,6 +69,7 @@ export function AddWalletModal({
         familyId,
         name: name.trim(),
         type,
+        accountNumber: accountNumber.trim() || undefined,
         initialBalance: parsedBalance,
         currency: "IDR",
         color,
@@ -77,6 +79,7 @@ export function AddWalletModal({
       if (res.success) {
         toast.success(`Dompet "${name}" berhasil ditambahkan!`);
         setName("");
+        setAccountNumber("");
         setInitialBalance("0");
         setOpen(false);
         onSuccess?.();
@@ -134,6 +137,18 @@ export function AddWalletModal({
                 <SelectItem value="other">Lain-lain</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="wallet-account-number">
+              Nomor Rekening / No. HP / No. Akun (Opsional)
+            </Label>
+            <Input
+              id="wallet-account-number"
+              placeholder="Contoh: 1234567890 atau 081234567890"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+            />
           </div>
 
           <div className="space-y-1.5">
