@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
 import { upsertBudgetAction } from "../actions/budget-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface UpsertBudgetModalProps {
@@ -40,6 +41,7 @@ export function UpsertBudgetModal({
 }: UpsertBudgetModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [categoryId, setCategoryId] = useState(expenseCategories[0]?.id || "");
   const [amountLimit, setAmountLimit] = useState<number | string>("");
@@ -50,12 +52,12 @@ export function UpsertBudgetModal({
     const limitNum = typeof amountLimit === "number" ? amountLimit : parseFloat(String(amountLimit).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (limitNum <= 0) {
-      toast.error("Batas anggaran harus lebih dari 0");
+      toast.error(locale === "en" ? "Budget limit must be > 0" : "Batas anggaran harus lebih dari 0");
       return;
     }
 
     if (!categoryId) {
-      toast.error("Pilih kategori pengeluaran");
+      toast.error(locale === "en" ? "Select an expense category" : "Pilih kategori pengeluaran");
       return;
     }
 
@@ -70,15 +72,15 @@ export function UpsertBudgetModal({
       });
 
       if (res.success) {
-        toast.success("Batas anggaran berhasil ditetapkan!");
+        toast.success(locale === "en" ? "Budget limit established successfully!" : "Batas anggaran berhasil ditetapkan!");
         setAmountLimit("");
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal menyimpan anggaran");
+        toast.error(res.error || "Failed to save budget");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error");
     } finally {
       setIsLoading(false);
     }
@@ -90,25 +92,25 @@ export function UpsertBudgetModal({
         {triggerButton || (
           <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
             <Plus className="h-4 w-4 stroke-[3]" />
-            Atur Anggaran
+            {t("budgeting.addBudget")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
-            Atur Batas Anggaran Bulanan
+            {t("budgeting.upsertTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
             <Label htmlFor="budget-cat" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Kategori Pengeluaran
+              {t("budgeting.selectCategory")}
             </Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger id="budget-cat" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
-                <SelectValue placeholder="Pilih kategori" />
+                <SelectValue placeholder={t("budgeting.selectCategory")} />
               </SelectTrigger>
               <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 {expenseCategories.map((c) => (
@@ -122,7 +124,7 @@ export function UpsertBudgetModal({
 
           <div className="space-y-1.5">
             <Label htmlFor="budget-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Batas Maksimal Pengeluaran
+              {t("budgeting.limitLabel")}
             </Label>
             <CurrencyInput
               id="budget-amount"
@@ -134,16 +136,16 @@ export function UpsertBudgetModal({
 
           <div className="space-y-1.5">
             <Label htmlFor="budget-threshold" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Peringatan Bahaya Pada Pemakaian (%)
+              {locale === "en" ? "Warning Threshold (%)" : "Peringatan Bahaya Pada Pemakaian (%)"}
             </Label>
             <Select value={notifyThreshold} onValueChange={setNotifyThreshold}>
               <SelectTrigger id="budget-threshold" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih batas" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                <SelectItem value="70">70% Dari Limit</SelectItem>
-                <SelectItem value="80">80% Dari Limit (Direkomendasikan)</SelectItem>
-                <SelectItem value="90">90% Dari Limit</SelectItem>
+                <SelectItem value="70">{locale === "en" ? "70% of Limit" : "70% Dari Limit"}</SelectItem>
+                <SelectItem value="80">{locale === "en" ? "80% of Limit (Recommended)" : "80% Dari Limit (Direkomendasikan)"}</SelectItem>
+                <SelectItem value="90">{locale === "en" ? "90% of Limit" : "90% Dari Limit"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -155,7 +157,7 @@ export function UpsertBudgetModal({
               onClick={() => setOpen(false)}
               className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -165,10 +167,10 @@ export function UpsertBudgetModal({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Menyimpan...
+                  {t("common.loading")}
                 </>
               ) : (
-                "Simpan Anggaran"
+                t("budgeting.saveBudgetBtn")
               )}
             </Button>
           </DialogFooter>

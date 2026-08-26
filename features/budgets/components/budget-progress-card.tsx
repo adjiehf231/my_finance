@@ -13,6 +13,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Tag, AlertTriangle, CheckCircle2, MoreVertical, Trash2, Edit3, Flame } from "lucide-react";
 import { deleteBudgetAction, type BudgetWithSpending } from "../actions/budget-actions";
 import { EditBudgetModal } from "./edit-budget-modal";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface BudgetProgressCardProps {
@@ -23,21 +24,25 @@ interface BudgetProgressCardProps {
 export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const { t, locale } = useTranslation();
 
   const handleDelete = async () => {
-    if (!confirm(`Hapus batas anggaran untuk kategori "${budget.categories.name}"?`)) return;
+    const confirmMsg = locale === "en"
+      ? `Delete budget limit for category "${budget.categories.name}"?`
+      : `Hapus batas anggaran untuk kategori "${budget.categories.name}"?`;
+    if (!confirm(confirmMsg)) return;
 
     try {
       setIsDeleting(true);
       const res = await deleteBudgetAction({ budgetId: budget.id });
       if (res.success) {
-        toast.success("Batas anggaran berhasil dihapus");
+        toast.success(locale === "en" ? "Budget limit deleted" : "Batas anggaran berhasil dihapus");
         onUpdate?.();
       } else {
-        toast.error(res.error || "Gagal menghapus anggaran");
+        toast.error(res.error || "Failed to delete budget");
       }
     } catch {
-      toast.error("Terjadi kesalahan");
+      toast.error("An error occurred");
     } finally {
       setIsDeleting(false);
     }
@@ -64,7 +69,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
                 {budget.categories.name}
               </h4>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
-                Limit: <span className="font-mono font-black text-slate-700 dark:text-slate-300">{formatCurrency(budget.amount_limit)}</span>
+                {t("budgeting.limit")}: <span className="font-mono font-black text-slate-700 dark:text-slate-300">{formatCurrency(budget.amount_limit)}</span>
               </p>
             </div>
           </div>
@@ -73,7 +78,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
             {isOverbudget ? (
               <Badge className="bg-rose-500 text-white font-black text-[10px] rounded-full px-2.5 py-0.5 shadow-md shadow-rose-500/30 flex items-center gap-1 animate-pulse uppercase tracking-wider">
                 <Flame className="h-3 w-3" />
-                OVERBUDGET
+                {t("budgeting.overbudget")}
               </Badge>
             ) : isDanger ? (
               <Badge className="bg-rose-500/10 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-black text-[10px] rounded-full px-2.5 py-0.5 flex items-center gap-1">
@@ -108,7 +113,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
                   className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
                 >
                   <Edit3 className="h-3.5 w-3.5 mr-2 text-rose-600" />
-                  Edit Limit Anggaran
+                  {t("common.edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleDelete}
@@ -116,7 +121,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
                   className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-semibold"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-2" />
-                  Hapus Anggaran
+                  {t("common.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -142,7 +147,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
         {/* Financial Numbers breakdown */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/[0.06] text-xs">
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">Terpakai</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">{t("budgeting.spent")}</p>
             <p className="font-black text-slate-900 dark:text-white mt-0.5 font-mono text-sm sm:text-base">
               {formatCurrency(budget.spent_amount)}
             </p>
@@ -150,7 +155,7 @@ export function BudgetProgressCard({ budget, onUpdate }: BudgetProgressCardProps
 
           <div className="text-right">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">
-              {budget.remaining_amount >= 0 ? "Sisa Kuota" : "Kelebihan"}
+              {budget.remaining_amount >= 0 ? t("budgeting.remaining") : (locale === "en" ? "Overspent" : "Kelebihan")}
             </p>
             <p
               className={`font-black mt-0.5 font-mono text-sm sm:text-base ${

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
 import { createDebtAction } from "../actions/debt-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface AddDebtModalProps {
@@ -37,6 +38,7 @@ export function AddDebtModal({
 }: AddDebtModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"loan_payable" | "debt_receivable">("loan_payable");
@@ -52,12 +54,12 @@ export function AddDebtModal({
     const monthlyNum = typeof monthlyPayment === "number" ? monthlyPayment : parseFloat(String(monthlyPayment).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (totalNum <= 0) {
-      toast.error("Total nominal harus lebih dari 0");
+      toast.error(locale === "en" ? "Principal amount must be > 0" : "Total nominal harus lebih dari 0");
       return;
     }
 
     if (!name.trim()) {
-      toast.error("Nama pihak/pinjaman tidak boleh kosong");
+      toast.error(locale === "en" ? "Party/debt name cannot be empty" : "Nama pihak/pinjaman tidak boleh kosong");
       return;
     }
 
@@ -77,9 +79,9 @@ export function AddDebtModal({
 
       if (res.success) {
         toast.success(
-          type === "loan_payable"
-            ? `Hutang "${name}" berhasil dicatat!`
-            : `Piutang "${name}" berhasil dicatat!`
+          locale === "en"
+            ? (type === "loan_payable" ? `Debt "${name}" recorded successfully!` : `Receivable "${name}" recorded successfully!`)
+            : (type === "loan_payable" ? `Hutang "${name}" berhasil dicatat!` : `Piutang "${name}" berhasil dicatat!`)
         );
         setName("");
         setTotalAmount("");
@@ -88,10 +90,10 @@ export function AddDebtModal({
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal mencatat hutang/piutang");
+        toast.error(res.error || "Failed to record debt");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -103,40 +105,40 @@ export function AddDebtModal({
         {triggerButton || (
           <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
             <Plus className="h-4 w-4 stroke-[3]" />
-            Catat Hutang / Piutang
+            {t("debts.addDebt")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
-            Catat Kewajiban Hutang & Piutang
+            {t("debts.addModalTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
             <Label htmlFor="debt-type" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Jenis Kewajiban
+              {t("debts.typeLabel")}
             </Label>
             <Select value={type} onValueChange={(val: any) => setType(val)}>
               <SelectTrigger id="debt-type" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih jenis" />
               </SelectTrigger>
               <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                <SelectItem value="loan_payable">Hutang (Kita Berhutang ke Pihak Lain)</SelectItem>
-                <SelectItem value="debt_receivable">Piutang (Orang Lain Berhutang ke Kita)</SelectItem>
+                <SelectItem value="loan_payable">{t("debts.loanType")}</SelectItem>
+                <SelectItem value="debt_receivable">{t("debts.receivableType")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="debt-name" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Nama Pihak / Deskripsi Pinjaman
+              {t("debts.nameLabel")}
             </Label>
             <Input
               id="debt-name"
-              placeholder="Contoh: KPR Bank Mandiri, Pinjam Teman Budi"
+              placeholder={t("debts.namePlaceholder")}
               className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -146,7 +148,7 @@ export function AddDebtModal({
 
           <div className="space-y-1.5">
             <Label htmlFor="debt-total" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Total Pokok Pinjaman
+              {t("debts.principalLabel")}
             </Label>
             <CurrencyInput
               id="debt-total"
@@ -158,7 +160,7 @@ export function AddDebtModal({
 
           <div className="space-y-1.5">
             <Label htmlFor="debt-monthly" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Estimasi Cicilan Bulanan (Opsional)
+              {locale === "en" ? "Estimated Monthly Installment (Optional)" : "Estimasi Cicilan Bulanan (Opsional)"}
             </Label>
             <CurrencyInput
               id="debt-monthly"
@@ -171,7 +173,7 @@ export function AddDebtModal({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="debt-start" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Tanggal Pinjam
+                {locale === "en" ? "Start Date" : "Tanggal Pinjam"}
               </Label>
               <Input
                 id="debt-start"
@@ -185,7 +187,7 @@ export function AddDebtModal({
 
             <div className="space-y-1.5">
               <Label htmlFor="debt-due" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Jatuh Tempo (Opsional)
+                {t("debts.dueDateLabel")}
               </Label>
               <Input
                 id="debt-due"
@@ -199,11 +201,11 @@ export function AddDebtModal({
 
           <div className="space-y-1.5">
             <Label htmlFor="debt-notes" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Catatan Tambahan
+              {t("debts.notesLabel")}
             </Label>
             <Input
               id="debt-notes"
-              placeholder="Contoh: Bunga 0%, jaminan BPKB"
+              placeholder={locale === "en" ? "E.g. 0% interest, collateral info" : "Contoh: Bunga 0%, jaminan BPKB"}
               className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -217,7 +219,7 @@ export function AddDebtModal({
               onClick={() => setOpen(false)}
               className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -227,10 +229,10 @@ export function AddDebtModal({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Menyimpan...
+                  {t("common.loading")}
                 </>
               ) : (
-                "Simpan Data"
+                t("common.save")
               )}
             </Button>
           </DialogFooter>

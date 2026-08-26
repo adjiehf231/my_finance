@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { archiveWalletAction, reconcileWalletBalanceAction, type WalletItem } from "../actions/wallet-actions";
 import { EditWalletModal } from "./edit-wallet-modal";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface WalletCardProps {
@@ -48,13 +49,14 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
   const [isReconciling, setIsReconciling] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { t, locale } = useTranslation();
 
   const handleCopyAccount = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (wallet.account_number) {
       navigator.clipboard.writeText(wallet.account_number);
       setCopied(true);
-      toast.success("Nomor rekening/akun berhasil disalin!");
+      toast.success(t("wallets.copiedAccNum"));
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -79,17 +81,17 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
   const getWalletTypeLabel = (type: string) => {
     switch (type) {
       case "bank":
-        return "Bank";
+        return t("wallets.types.bank");
       case "ewallet":
-        return "E-Wallet";
+        return t("wallets.types.ewallet");
       case "credit_card":
-        return "Kartu Kredit";
+        return t("wallets.types.credit_card");
       case "investment":
-        return "Investasi";
+        return t("wallets.types.investment");
       case "cash":
-        return "Tunai";
+        return t("wallets.types.cash");
       default:
-        return "Lainnya";
+        return t("wallets.types.other");
     }
   };
 
@@ -99,37 +101,39 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
       const res = await reconcileWalletBalanceAction(wallet.id);
       if (res.success) {
         if (res.discrepancy === 0) {
-          toast.success(`Saldo "${wallet.name}" sudah 100% akurat dan sesuai buku kas.`);
+          toast.success(locale === "en" ? `"${wallet.name}" balance is 100% accurate and reconciled.` : `Saldo "${wallet.name}" sudah 100% akurat dan sesuai buku kas.`);
         } else {
           toast.success(
-            `Rekonsiliasi selesai! Selisih ${formatCurrency(res.discrepancy || 0)} berhasil disesuaikan.`
+            locale === "en"
+              ? `Reconciliation complete! Discrepancy of ${formatCurrency(res.discrepancy || 0)} adjusted.`
+              : `Rekonsiliasi selesai! Selisih ${formatCurrency(res.discrepancy || 0)} berhasil disesuaikan.`
           );
         }
         onUpdate?.();
       } else {
-        toast.error(res.error || "Gagal melakukan rekonsiliasi");
+        toast.error(res.error || "Failed to reconcile");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem saat rekonsiliasi");
+      toast.error("System error occurred");
     } finally {
       setIsReconciling(false);
     }
   };
 
   const handleArchive = async () => {
-    if (!confirm(`Yakin ingin mengarsipkan dompet "${wallet.name}"?`)) return;
+    if (!confirm(t("wallets.archiveConfirm", { name: wallet.name }))) return;
 
     try {
       setIsArchiving(true);
       const res = await archiveWalletAction(wallet.id);
       if (res.success) {
-        toast.success(`Dompet "${wallet.name}" berhasil diarsipkan`);
+        toast.success(locale === "en" ? `Wallet "${wallet.name}" archived` : `Dompet "${wallet.name}" berhasil diarsipkan`);
         onUpdate?.();
       } else {
-        toast.error(res.error || "Gagal mengarsipkan dompet");
+        toast.error(res.error || "Failed to archive wallet");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsArchiving(false);
     }
@@ -180,7 +184,7 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
                 className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
               >
                 <Edit3 className="h-3.5 w-3.5 mr-2 text-blue-600" />
-                Edit Rekening
+                {t("common.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleReconcile}
@@ -188,7 +192,7 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
                 className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
               >
                 <RefreshCw className={`h-3.5 w-3.5 mr-2 text-cyan-600 ${isReconciling ? "animate-spin" : ""}`} />
-                Rekonsiliasi Saldo
+                {t("wallets.reconcile")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleArchive}
@@ -196,7 +200,7 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
                 className="text-rose-600 focus:text-rose-700 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs font-semibold"
               >
                 <Archive className="h-3.5 w-3.5 mr-2" />
-                Arsipkan
+                {t("wallets.archiveWallet")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -210,7 +214,7 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
               type="button"
               onClick={handleCopyAccount}
               className="text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors shrink-0 ml-2 p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/[0.08]"
-              title="Salin nomor rekening"
+              title={t("wallets.copyAccNum")}
             >
               {copied ? (
                 <Check className="h-3.5 w-3.5 text-blue-500" />
@@ -224,7 +228,7 @@ export function WalletCard({ wallet, onUpdate }: WalletCardProps) {
         {/* Balance Display */}
         <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-white/[0.06]">
           <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1 font-display">
-            Saldo Saat Ini
+            {t("wallets.currentBalance")}
           </p>
           <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-mono">
             {formatCurrency(wallet.current_balance, wallet.currency)}

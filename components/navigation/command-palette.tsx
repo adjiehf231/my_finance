@@ -25,7 +25,6 @@ import {
   Trophy,
   Search,
   Command,
-  Plus,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/i18n-context";
 
@@ -59,7 +58,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -103,7 +102,7 @@ export function CommandPalette() {
         <div className="flex items-center px-4 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#07090E]/50">
           <Search className="h-4 w-4 text-slate-400 shrink-0" />
           <Input
-            placeholder="Cari menu, fitur, atau halaman... (Ctrl + K)"
+            placeholder={locale === "en" ? "Search features, pages, or tools... (Ctrl + K)" : "Cari menu, fitur, atau halaman... (Ctrl + K)"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="border-none focus-visible:ring-0 shadow-none bg-transparent h-13 text-sm font-semibold text-slate-900 dark:text-white"
@@ -118,7 +117,7 @@ export function CommandPalette() {
         <div className="max-h-72 overflow-y-auto p-2 space-y-1">
           {filteredItems.length === 0 ? (
             <div className="py-8 text-center text-xs text-slate-400 font-medium">
-              Tidak ada hasil yang cocok dengan &quot;{search}&quot;
+              {locale === "en" ? `No matching results for "${search}"` : `Tidak ada hasil yang cocok dengan "${search}"`}
             </div>
           ) : (
             filteredItems.map((item) => {
@@ -152,7 +151,13 @@ export function CommandPalette() {
         <div className="p-3 bg-slate-50/80 dark:bg-[#07090E]/80 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-400">
           <div className="flex items-center gap-2">
             <Command className="h-3 w-3 text-blue-500" />
-            <span>Tekan <kbd className="font-mono font-bold text-slate-600 dark:text-slate-300">Ctrl+K</kbd> kapan saja untuk mencari</span>
+            <span>
+              {locale === "en" ? (
+                <>Press <kbd className="font-mono font-bold text-slate-600 dark:text-slate-300">Ctrl+K</kbd> anytime to navigate</>
+              ) : (
+                <>Tekan <kbd className="font-mono font-bold text-slate-600 dark:text-slate-300">Ctrl+K</kbd> kapan saja untuk mencari</>
+              )}
+            </span>
           </div>
           <span className="hidden sm:inline font-mono text-[10px]">v1.0.0</span>
         </div>

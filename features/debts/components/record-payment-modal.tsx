@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { CreditCard, Loader2 } from "lucide-react";
 import { recordDebtPaymentAction } from "../actions/debt-actions";
+import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface RecordPaymentModalProps {
@@ -46,29 +49,30 @@ export function RecordPaymentModal({
 }: RecordPaymentModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [walletId, setWalletId] = useState(wallets[0]?.id || "");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number | string>("");
   const [notes, setNotes] = useState("");
 
   const isLoan = type === "loan_payable";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const amountNum = parseFloat(amount.replace(/[^0-9.-]+/g, "")) || 0;
+    const amountNum = typeof amount === "number" ? amount : parseFloat(String(amount).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (amountNum <= 0) {
-      toast.error("Nominal pembayaran harus lebih dari 0");
+      toast.error(locale === "en" ? "Payment amount must be > 0" : "Nominal pembayaran harus lebih dari 0");
       return;
     }
 
     if (amountNum > remainingAmount) {
-      toast.error("Nominal melebihi sisa pokok");
+      toast.error(locale === "en" ? "Amount exceeds remaining balance" : "Nominal melebihi sisa pokok");
       return;
     }
 
     if (!walletId) {
-      toast.error("Pilih rekening");
+      toast.error(locale === "en" ? "Select wallet" : "Pilih rekening");
       return;
     }
 
@@ -86,18 +90,18 @@ export function RecordPaymentModal({
       if (res.success) {
         toast.success(
           isLoan
-            ? `Pembayaran cicilan Rp ${amountNum.toLocaleString("id-ID")} berhasil dicatat!`
-            : `Penerimaan piutang Rp ${amountNum.toLocaleString("id-ID")} berhasil dicatat!`
+            ? (locale === "en" ? `Installment payment of ${formatCurrency(amountNum)} recorded!` : `Pembayaran cicilan ${formatCurrency(amountNum)} berhasil dicatat!`)
+            : (locale === "en" ? `Receivable collection of ${formatCurrency(amountNum)} recorded!` : `Penerimaan piutang ${formatCurrency(amountNum)} berhasil dicatat!`)
         );
         setAmount("");
         setNotes("");
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal mencatat pembayaran");
+        toast.error(res.error || "Failed to record payment");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -107,30 +111,32 @@ export function RecordPaymentModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button size="sm" className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 shadow-sm">
+          <Button size="sm" className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm">
             <CreditCard className="h-4 w-4" />
-            {isLoan ? "Bayar Cicilan" : "Terima Pembayaran"}
+            {isLoan ? t("debts.payDebt") : t("debts.receivePayment")}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            {isLoan ? `Bayar Cicilan Hutang: ${debtName}` : `Terima Piutang: ${debtName}`}
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
+            {isLoan ? `${t("debts.payDebt")}: ${debtName}` : `${t("debts.receivePayment")}: ${debtName}`}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="pay-wallet">{isLoan ? "Bayar Dari Rekening" : "Masuk Ke Rekening"}</Label>
+            <Label htmlFor="pay-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {isLoan ? t("transactions.fromWallet") : t("transactions.toWallet")}
+            </Label>
             <Select value={walletId} onValueChange={setWalletId}>
-              <SelectTrigger id="pay-wallet">
+              <SelectTrigger id="pay-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih rekening" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 {wallets.map((w) => (
                   <SelectItem key={w.id} value={w.id}>
-                    {w.name} (Saldo: Rp {Number(w.current_balance || 0).toLocaleString("id-ID")})
+                    {w.name} (Saldo: {formatCurrency(Number(w.current_balance || 0))})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -139,40 +145,35 @@ export function RecordPaymentModal({
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="pay-amount">Nominal Pembayaran (Rp)</Label>
+              <Label htmlFor="pay-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("debts.paymentAmount")}
+              </Label>
               <button
                 type="button"
-                onClick={() => setAmount(String(remainingAmount))}
-                className="text-xs text-emerald-600 font-semibold hover:underline"
+                onClick={() => setAmount(remainingAmount)}
+                className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline"
               >
-                Bayar Lunas (Rp {remainingAmount.toLocaleString("id-ID")})
+                {locale === "en" ? `Pay in Full (${formatCurrency(remainingAmount)})` : `Bayar Lunas (${formatCurrency(remainingAmount)})`}
               </button>
             </div>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">
-                Rp
-              </span>
-              <Input
-                id="pay-amount"
-                type="number"
-                min="1"
-                max={remainingAmount}
-                placeholder="Contoh: 1000000"
-                className="pl-12 text-xl font-bold h-12 rounded-2xl"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-            </div>
+            <CurrencyInput
+              id="pay-amount"
+              value={amount}
+              onValueChange={setAmount}
+              required
+            />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="pay-notes">Catatan (Opsional)</Label>
+            <Label htmlFor="pay-notes" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("debts.notesLabel")}
+            </Label>
             <Input
               id="pay-notes"
-              placeholder="Contoh: Cicilan ke-3, pelunasan transfer BCA"
+              placeholder={locale === "en" ? "E.g. Installment #3 via bank transfer" : "Contoh: Cicilan ke-3, pelunasan transfer BCA"}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
             />
           </div>
 
@@ -181,22 +182,22 @@ export function RecordPaymentModal({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-5 shadow-glow"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Memproses...
+                  {t("common.loading")}
                 </>
               ) : (
-                "Konfirmasi Pembayaran"
+                t("common.confirm")
               )}
             </Button>
           </DialogFooter>

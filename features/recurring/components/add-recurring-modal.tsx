@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
 import { createRecurringTransactionAction } from "../actions/recurring-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface AddRecurringModalProps {
@@ -40,10 +42,11 @@ export function AddRecurringModal({
 }: AddRecurringModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number | string>("");
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "monthly" | "yearly">("monthly");
   const [walletId, setWalletId] = useState(wallets[0]?.id || "");
   const [categoryId, setCategoryId] = useState("");
@@ -54,20 +57,20 @@ export function AddRecurringModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const amountNum = parseFloat(amount.replace(/[^0-9.-]+/g, "")) || 0;
+    const amountNum = typeof amount === "number" ? amount : parseFloat(String(amount).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (amountNum <= 0) {
-      toast.error("Nominal transaksi harus lebih dari 0");
+      toast.error(locale === "en" ? "Amount must be > 0" : "Nominal transaksi harus lebih dari 0");
       return;
     }
 
     if (!name.trim()) {
-      toast.error("Nama tagihan/transaksi tidak boleh kosong");
+      toast.error(locale === "en" ? "Bill name cannot be empty" : "Nama tagihan/transaksi tidak boleh kosong");
       return;
     }
 
     if (!walletId) {
-      toast.error("Pilih rekening terkait");
+      toast.error(locale === "en" ? "Select linked wallet" : "Pilih rekening terkait");
       return;
     }
 
@@ -86,16 +89,16 @@ export function AddRecurringModal({
       });
 
       if (res.success) {
-        toast.success(`Jadwal "${name}" berhasil dibuat!`);
+        toast.success(locale === "en" ? `Recurring bill "${name}" scheduled successfully!` : `Jadwal "${name}" berhasil dibuat!`);
         setName("");
         setAmount("");
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal membuat jadwal");
+        toast.error(res.error || "Failed to schedule bill");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -105,88 +108,90 @@ export function AddRecurringModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-md shadow-emerald-500/20">
-            <Plus className="h-4 w-4" />
-            Jadwalkan Tagihan
+          <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
+            <Plus className="h-4 w-4 stroke-[3]" />
+            {t("recurring.addRecurring")}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Jadwal Tagihan & Transaksi Berulang
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
+            {t("recurring.addModalTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="rec-name">Nama Tagihan / Mutasi</Label>
+            <Label htmlFor="rec-name" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("recurring.nameLabel")}
+            </Label>
             <Input
               id="rec-name"
-              placeholder="Contoh: Tagihan Wifi Indihome, Netflix, Gaji"
+              placeholder={t("recurring.namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rec-type">Jenis</Label>
+              <Label htmlFor="rec-type" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("common.category")}
+              </Label>
               <Select value={type} onValueChange={(val: any) => setType(val)}>
-                <SelectTrigger id="rec-type">
+                <SelectTrigger id="rec-type" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                   <SelectValue placeholder="Pilih jenis" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="expense">Pengeluaran (Tagihan)</SelectItem>
-                  <SelectItem value="income">Pemasukan (Gaji)</SelectItem>
+                <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+                  <SelectItem value="expense">{t("transactions.expense")}</SelectItem>
+                  <SelectItem value="income">{t("transactions.income")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rec-freq">Frekuensi</Label>
+              <Label htmlFor="rec-freq" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("recurring.frequencyLabel")}
+              </Label>
               <Select value={frequency} onValueChange={(val: any) => setFrequency(val)}>
-                <SelectTrigger id="rec-freq">
+                <SelectTrigger id="rec-freq" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                   <SelectValue placeholder="Pilih frekuensi" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="daily">Harian</SelectItem>
-                  <SelectItem value="weekly">Mingguan</SelectItem>
-                  <SelectItem value="monthly">Bulanan</SelectItem>
-                  <SelectItem value="yearly">Tahunan</SelectItem>
+                <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+                  <SelectItem value="daily">{t("recurring.daily")}</SelectItem>
+                  <SelectItem value="weekly">{t("recurring.weekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("recurring.monthly")}</SelectItem>
+                  <SelectItem value="yearly">{t("recurring.yearly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="rec-amount">Nominal Rutin (Rp)</Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">
-                Rp
-              </span>
-              <Input
-                id="rec-amount"
-                type="number"
-                min="1"
-                placeholder="Contoh: 350000"
-                className="pl-12 text-xl font-bold h-12 rounded-2xl"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-            </div>
+            <Label htmlFor="rec-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("common.amount")}
+            </Label>
+            <CurrencyInput
+              id="rec-amount"
+              value={amount}
+              onValueChange={setAmount}
+              required
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rec-wallet">Rekening Dompet</Label>
+              <Label htmlFor="rec-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("common.wallet")}
+              </Label>
               <Select value={walletId} onValueChange={setWalletId}>
-                <SelectTrigger id="rec-wallet">
+                <SelectTrigger id="rec-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                   <SelectValue placeholder="Pilih rekening" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                   {wallets.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
                       {w.name}
@@ -197,12 +202,14 @@ export function AddRecurringModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rec-cat">Kategori</Label>
+              <Label htmlFor="rec-cat" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("common.category")}
+              </Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger id="rec-cat">
+                <SelectTrigger id="rec-cat" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                   <SelectValue placeholder="Pilih kategori" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                   {filteredCategories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -215,23 +222,29 @@ export function AddRecurringModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rec-start">Mulai Tanggal</Label>
+              <Label htmlFor="rec-start" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {t("recurring.startDateLabel")}
+              </Label>
               <Input
                 id="rec-start"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rec-end">Selesai (Opsional)</Label>
+              <Label htmlFor="rec-end" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                {locale === "en" ? "End Date (Optional)" : "Selesai (Opsional)"}
+              </Label>
               <Input
                 id="rec-end"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               />
             </div>
           </div>
@@ -241,22 +254,22 @@ export function AddRecurringModal({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-5 shadow-glow"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Menyimpan...
+                  {t("common.loading")}
                 </>
               ) : (
-                "Jadwalkan"
+                t("recurring.addRecurring")
               )}
             </Button>
           </DialogFooter>

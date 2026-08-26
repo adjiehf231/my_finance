@@ -37,7 +37,7 @@ type OptimisticAction = { type: "delete"; id: string };
 export function TransactionTable({ transactions, categories = [], onUpdate }: TransactionTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<TransactionWithDetails | null>(null);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   // Zero-Latency Optimistic State
   const [optimisticTransactions, setOptimisticTransactions] = useOptimistic(
@@ -51,7 +51,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
   );
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Hapus transaksi ini? Saldo dompet akan disesuaikan otomatis.")) return;
+    if (!confirm(t("transactions.deleteConfirm"))) return;
 
     startTransition(async () => {
       // 0ms instant UI update
@@ -61,14 +61,14 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
         setIsDeleting(id);
         const res = await deleteTransactionAction(id);
         if (res.success) {
-          toast.success("Transaksi berhasil dihapus");
+          toast.success(t("transactions.deleteSuccess"));
           onUpdate?.();
         } else {
-          toast.error(res.error || "Gagal menghapus transaksi");
+          toast.error(res.error || t("transactions.deleteError"));
           onUpdate?.();
         }
       } catch {
-        toast.error("Terjadi kesalahan sistem saat menghapus");
+        toast.error("System error");
         onUpdate?.();
       } finally {
         setIsDeleting(null);
@@ -152,7 +152,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                       {tx.description || (isTransfer ? t("transactions.transfer") : "-")}
                     </p>
                     <p className="text-[11px] text-slate-400 font-medium">
-                      {t("transactions.byMember")}: {tx.users?.full_name || "Anggota"}
+                      {t("transactions.byMember")}: {tx.users?.full_name || (locale === "en" ? "Member" : "Anggota")}
                     </p>
                   </td>
 
@@ -267,7 +267,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                   </div>
                   <div>
                     <p className="font-black text-sm text-slate-900 dark:text-white leading-tight font-display">
-                      {tx.description || (isTransfer ? t("transactions.transfer") : "Tanpa Judul")}
+                      {tx.description || (isTransfer ? t("transactions.transfer") : (locale === "en" ? "Untitled" : "Tanpa Judul"))}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5 font-medium">
                       {formatDate(tx.transaction_date)} • {isTransfer ? `${tx.from_wallet?.name} ➔ ${tx.to_wallet?.name}` : tx.wallets?.name}

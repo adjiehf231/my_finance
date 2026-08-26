@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
 import { createCategoryAction } from "../actions/category-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface AddCategoryModalProps {
@@ -30,15 +31,15 @@ interface AddCategoryModalProps {
 }
 
 const PRESET_COLORS = [
-  "#EF4444", // Red
-  "#F97316", // Orange
-  "#F59E0B", // Amber
-  "#10B981", // Emerald
-  "#06B6D4", // Cyan
+  "#2563EB", // Royal Sapphire
   "#3B82F6", // Blue
-  "#8B5CF6", // Purple
+  "#06B6D4", // Cyan
+  "#6366F1", // Indigo
+  "#10B981", // Emerald
+  "#F59E0B", // Amber
+  "#EF4444", // Red
   "#EC4899", // Pink
-  "#6B7280", // Gray
+  "#64748B", // Slate
 ];
 
 export function AddCategoryModal({
@@ -48,15 +49,16 @@ export function AddCategoryModal({
 }: AddCategoryModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { t, locale } = useTranslation();
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [color, setColor] = useState("#10B981");
+  const [color, setColor] = useState("#2563EB");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("Nama kategori tidak boleh kosong");
+      toast.error(locale === "en" ? "Category name cannot be empty" : "Nama kategori tidak boleh kosong");
       return;
     }
 
@@ -71,15 +73,15 @@ export function AddCategoryModal({
       });
 
       if (res.success) {
-        toast.success(`Kategori "${name}" berhasil ditambahkan!`);
+        toast.success(locale === "en" ? `Category "${name}" added successfully!` : `Kategori "${name}" berhasil ditambahkan!`);
         setName("");
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal membuat kategori");
+        toast.error(res.error || "Failed to create category");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -89,46 +91,53 @@ export function AddCategoryModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-sm">
-            <Plus className="h-4 w-4" />
-            Tambah Kategori
+          <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
+            <Plus className="h-4 w-4 stroke-[3]" />
+            {t("categories.addCategory")}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Buat Kategori Kustom
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
+            {t("categories.addModalTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="cat-name">Nama Kategori</Label>
+            <Label htmlFor="cat-name" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("categories.nameLabel")}
+            </Label>
             <Input
               id="cat-name"
-              placeholder="Contoh: Belanja Online, Skincare, Asuransi"
+              placeholder={t("categories.namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cat-type">Jenis Kategori</Label>
+            <Label htmlFor="cat-type" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("categories.typeLabel")}
+            </Label>
             <Select value={type} onValueChange={(val: any) => setType(val)}>
-              <SelectTrigger id="cat-type">
+              <SelectTrigger id="cat-type" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih jenis" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="expense">Pengeluaran</SelectItem>
-                <SelectItem value="income">Pemasukan</SelectItem>
+              <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+                <SelectItem value="expense">{t("transactions.expense")}</SelectItem>
+                <SelectItem value="income">{t("transactions.income")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Pilih Warna Penanda</Label>
+            <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("categories.colorLabel")}
+            </Label>
             <div className="flex items-center gap-2.5 flex-wrap">
               {PRESET_COLORS.map((c) => (
                 <button
@@ -137,7 +146,7 @@ export function AddCategoryModal({
                   onClick={() => setColor(c)}
                   className={`h-8 w-8 rounded-full transition-all ${
                     color === c
-                      ? "ring-2 ring-offset-2 ring-emerald-500 scale-110"
+                      ? "ring-2 ring-offset-2 ring-blue-500 scale-110"
                       : "opacity-80 hover:opacity-100"
                   }`}
                   style={{ backgroundColor: c }}
@@ -151,22 +160,22 @@ export function AddCategoryModal({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-5 shadow-glow"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Menyimpan...
+                  {t("common.loading")}
                 </>
               ) : (
-                "Simpan Kategori"
+                t("common.save")
               )}
             </Button>
           </DialogFooter>

@@ -22,6 +22,7 @@ import {
 import { Loader2, Edit3, Upload, Image as ImageIcon } from "lucide-react";
 import { updateTransactionAction, type TransactionWithDetails } from "../actions/transaction-actions";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface EditTransactionModalProps {
@@ -41,6 +42,7 @@ export function EditTransactionModal({
 }: EditTransactionModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const { t, locale } = useTranslation();
 
   // Form State
   const [amount, setAmount] = useState<number | string>(transaction.amount || "");
@@ -60,7 +62,7 @@ export function EditTransactionModal({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 5MB");
+      toast.error(locale === "en" ? "Max file size is 5MB" : "Ukuran file maksimal 5MB");
       return;
     }
 
@@ -75,7 +77,7 @@ export function EditTransactionModal({
         .upload(fileName, file, { upsert: true });
 
       if (error) {
-        toast.error("Gagal mengupload struk: " + error.message);
+        toast.error(error.message);
         return;
       }
 
@@ -84,9 +86,9 @@ export function EditTransactionModal({
         .getPublicUrl(data.path);
 
       setAttachmentUrl(publicUrlData.publicUrl);
-      toast.success("Foto struk berhasil diunggah!");
+      toast.success(locale === "en" ? "Receipt uploaded successfully!" : "Foto struk berhasil diunggah!");
     } catch {
-      toast.error("Terjadi kesalahan saat upload");
+      toast.error("Upload error");
     } finally {
       setIsUploading(false);
     }
@@ -97,7 +99,7 @@ export function EditTransactionModal({
 
     const numericAmount = typeof amount === "number" ? amount : parseFloat(String(amount).replace(/[^0-9.]/g, ""));
     if (!numericAmount || numericAmount <= 0) {
-      toast.error("Nominal transaksi harus lebih dari 0");
+      toast.error(locale === "en" ? "Amount must be > 0" : "Nominal transaksi harus lebih dari 0");
       return;
     }
 
@@ -113,14 +115,14 @@ export function EditTransactionModal({
       });
 
       if (res.success) {
-        toast.success("Transaksi berhasil diperbarui!");
+        toast.success(t("transactions.saveSuccess"));
         onOpenChange(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal memperbarui transaksi");
+        toast.error(res.error || "Failed to update transaction");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +134,7 @@ export function EditTransactionModal({
         <DialogHeader>
           <DialogTitle className="text-xl font-black flex items-center gap-2 font-display text-slate-900 dark:text-white">
             <Edit3 className="h-5 w-5 text-blue-500" />
-            Edit Transaksi
+            {t("transactions.editTransaction")}
           </DialogTitle>
         </DialogHeader>
 
@@ -140,7 +142,7 @@ export function EditTransactionModal({
           {/* Nominal */}
           <div className="space-y-1.5">
             <Label htmlFor="edit-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Nominal Transaksi
+              {t("addTransactionModal.amountLabel")}
             </Label>
             <CurrencyInput
               id="edit-amount"
@@ -153,7 +155,7 @@ export function EditTransactionModal({
           {/* Tanggal */}
           <div className="space-y-1.5">
             <Label htmlFor="edit-date" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Tanggal Transaksi
+              {t("addTransactionModal.dateLabel")}
             </Label>
             <Input
               id="edit-date"
@@ -169,11 +171,11 @@ export function EditTransactionModal({
           {transaction.type !== "transfer" && (
             <div className="space-y-1.5">
               <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Kategori
+                {t("common.category")}
               </Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
-                  <SelectValue placeholder="Pilih Kategori" />
+                  <SelectValue placeholder={t("addTransactionModal.categoryLabel")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl max-h-56 shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                   {filteredCategories.map((c) => (
@@ -195,13 +197,13 @@ export function EditTransactionModal({
           {/* Keterangan */}
           <div className="space-y-1.5">
             <Label htmlFor="edit-desc" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Keterangan / Catatan
+              {t("addTransactionModal.descLabel")}
             </Label>
             <Input
               id="edit-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Contoh: Belanja mingguan supermarket"
+              placeholder={t("addTransactionModal.descPlaceholder")}
               className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
             />
           </div>
@@ -209,12 +211,12 @@ export function EditTransactionModal({
           {/* Struk Lampiran Upload */}
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Foto Struk / Nota Pembayaran
+              {t("addTransactionModal.receiptPhoto")}
             </Label>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 cursor-pointer bg-slate-100 dark:bg-[#07090E] hover:bg-slate-200 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-2xl text-xs font-bold transition-colors border border-slate-200 dark:border-white/[0.08]">
                 <Upload className="h-4 w-4 text-blue-500" />
-                <span>{isUploading ? "Mengunggah..." : "Unggah Struk"}</span>
+                <span>{isUploading ? t("addTransactionModal.uploading") : t("addTransactionModal.uploadButton")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -227,7 +229,7 @@ export function EditTransactionModal({
               {attachmentUrl && (
                 <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-bold">
                   <ImageIcon className="h-4 w-4" />
-                  <span>Struk Terlampir</span>
+                  <span>{t("addTransactionModal.attached")}</span>
                 </div>
               )}
             </div>
@@ -240,7 +242,7 @@ export function EditTransactionModal({
               onClick={() => onOpenChange(false)}
               className="rounded-2xl text-xs font-bold"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -248,7 +250,7 @@ export function EditTransactionModal({
               className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-5 shadow-glow"
             >
               {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Simpan Perubahan
+              {t("wallets.saveChangesBtn")}
             </Button>
           </DialogFooter>
         </form>

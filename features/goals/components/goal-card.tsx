@@ -23,6 +23,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { deleteGoalAction, type GoalWithProgress } from "../actions/goal-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface GoalCardProps {
@@ -35,21 +36,25 @@ interface GoalCardProps {
 export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const { t, locale } = useTranslation();
 
   const handleDelete = async () => {
-    if (!confirm(`Hapus target tabungan "${goal.name}"?`)) return;
+    const confirmMsg = locale === "en"
+      ? `Delete savings goal "${goal.name}"?`
+      : `Hapus target tabungan "${goal.name}"?`;
+    if (!confirm(confirmMsg)) return;
 
     try {
       setIsDeleting(true);
       const res = await deleteGoalAction(goal.id);
       if (res.success) {
-        toast.success(`Target "${goal.name}" berhasil dihapus`);
+        toast.success(locale === "en" ? `Goal "${goal.name}" deleted` : `Target "${goal.name}" berhasil dihapus`);
         onUpdate?.();
       } else {
-        toast.error(res.error || "Gagal menghapus target");
+        toast.error(res.error || "Failed to delete goal");
       }
     } catch {
-      toast.error("Terjadi kesalahan");
+      toast.error("An error occurred");
     } finally {
       setIsDeleting(false);
     }
@@ -59,10 +64,10 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
 
   return (
     <>
-      <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] shadow-sm hover:shadow-md transition-all p-5 relative overflow-hidden flex flex-col justify-between">
+      <Card className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#0D111A]/85 backdrop-blur-2xl shadow-sm hover:shadow-2xl hover:border-blue-500/40 dark:hover:border-blue-400/40 hover:-translate-y-1 transition-all duration-300 p-5 relative overflow-hidden flex flex-col justify-between group">
         <div
           className="absolute top-0 left-0 right-0 h-1.5"
-          style={{ backgroundColor: goal.color || "#3B82F6" }}
+          style={{ backgroundColor: goal.color || "#2563EB" }}
         />
 
         <CardContent className="p-0 space-y-4">
@@ -70,19 +75,19 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3">
               <div
-                className="h-11 w-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-sm"
-                style={{ backgroundColor: goal.color || "#3B82F6" }}
+                className="h-11 w-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
+                style={{ backgroundColor: goal.color || "#2563EB" }}
               >
                 {isCompleted ? <Award className="h-6 w-6" /> : <Target className="h-6 w-6" />}
               </div>
               <div>
-                <h4 className="font-bold text-base text-slate-900 dark:text-white">
+                <h4 className="font-black text-base text-slate-900 dark:text-white font-display">
                   {goal.name}
                 </h4>
                 <div className="flex items-center gap-2 mt-0.5">
                   <Badge
                     variant="outline"
-                    className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-lg border ${
+                    className={`text-[10px] uppercase font-black px-2.5 py-0.5 rounded-full border ${
                       goal.priority === "high"
                         ? "border-rose-300 text-rose-600 bg-rose-50 dark:bg-rose-950/40"
                         : goal.priority === "medium"
@@ -90,13 +95,13 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
                         : "border-slate-300 text-slate-500"
                     }`}
                   >
-                    Prioritas {goal.priority}
+                    {locale === "en" ? `${goal.priority} priority` : `Prioritas ${goal.priority}`}
                   </Badge>
 
                   {goal.days_left !== null && goal.days_left > 0 && !isCompleted && (
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                    <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
                       <Clock className="h-3 w-3" />
-                      {goal.days_left} hari lagi
+                      {goal.days_left} {locale === "en" ? "days left" : "hari lagi"}
                     </span>
                   )}
                 </div>
@@ -106,7 +111,7 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
             <div className="flex items-center gap-1">
               {isCompleted && (
                 <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl px-2.5 py-1 flex items-center gap-1">
-                  <Sparkles className="h-3.5 w-3.5" /> Tercapai!
+                  <Sparkles className="h-3.5 w-3.5" /> {t("goals.achieved")}
                 </Badge>
               )}
 
@@ -120,21 +125,21 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-2xl w-40">
+                <DropdownMenuContent align="end" className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                   <DropdownMenuItem
                     onClick={() => setIsEditOpen(true)}
-                    className="text-slate-700 dark:text-slate-200 cursor-pointer"
+                    className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
                   >
                     <Edit3 className="h-4 w-4 mr-2 text-blue-600" />
-                    Edit Target
+                    {t("common.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="text-rose-600 focus:text-rose-700 cursor-pointer"
+                    className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-semibold"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Hapus Target
+                    {t("common.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -143,39 +148,39 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
 
         {/* Progress Bar & Percent */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-slate-400">Pencapaian</span>
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-slate-400 font-display">{t("goals.progress")}</span>
             <span
-              className="font-bold"
-              style={{ color: goal.color || "#3B82F6" }}
+              className="font-mono font-black"
+              style={{ color: goal.color || "#2563EB" }}
             >
               {goal.percentage}%
             </span>
           </div>
 
-          <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-3 w-full bg-slate-100 dark:bg-[#07090E] rounded-full overflow-hidden p-0.5 border border-slate-200/40 dark:border-white/[0.04]">
             <div
-              className="h-full rounded-full transition-all duration-700"
+              className="h-full rounded-full transition-all duration-700 shadow-glow"
               style={{
                 width: `${Math.min(100, goal.percentage)}%`,
-                backgroundColor: goal.color || "#3B82F6",
+                backgroundColor: goal.color || "#2563EB",
               }}
             />
           </div>
         </div>
 
         {/* Financial Numbers */}
-        <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-100 dark:border-slate-800/80">
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/[0.06] text-xs">
           <div>
-            <p className="text-slate-400">Terkumpul</p>
-            <p className="font-bold text-slate-900 dark:text-white mt-0.5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 font-display">{t("goals.currentAmount")}</p>
+            <p className="font-black text-slate-900 dark:text-white mt-0.5 font-mono text-sm sm:text-base">
               {formatCurrency(goal.current_amount)}
             </p>
           </div>
 
           <div className="text-right">
-            <p className="text-slate-400">Target</p>
-            <p className="font-black text-slate-900 dark:text-slate-100 mt-0.5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 font-display">{t("goals.targetAmount")}</p>
+            <p className="font-black text-slate-900 dark:text-slate-100 mt-0.5 font-mono text-sm sm:text-base">
               {formatCurrency(goal.target_amount)}
             </p>
           </div>
@@ -194,9 +199,9 @@ export function GoalCard({ goal, familyId, wallets, onUpdate }: GoalCardProps) {
             triggerButton={
               <button
                 type="button"
-                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
               >
-                + Setor Tabungan
+                + {t("goals.addContribution")}
               </button>
             }
           />
