@@ -6,71 +6,73 @@ export interface ActivityLogItem {
   id: string;
   family_id: string;
   user_id: string | null;
-  action: string;
-  entity: string;
+  action: string; // create, update, delete, reconcile, join
+  entity: string; // transaction, wallet, budget, debt, goal, family
   entity_id: string | null;
   description: string;
   metadata: any;
   created_at: string;
   users?: {
     id: string;
-    full_name: string;
+    full_name: string | null;
+    email: string | null;
     avatar_url: string | null;
   } | null;
 }
 
+export interface GetActivityLogsFilters {
+  familyId: string;
+  limit?: number;
+  offset?: number;
+  action?: string;
+  entity?: string;
+  search?: string;
+}
+
 /**
- * Get all activity audit logs for a family workspace
+ * Fetch paginated audit activity logs for a family workspace
  */
-export async function getActivityLogsAction(
-  familyId: string,
-  limit: number = 50,
-  offset: number = 0
-) {
+export async function getActivityLogsAction({
+  familyId,
+  limit = 20,
+  offset = 0,
+  action,
+  entity,
+  search,
+}: GetActivityLogsFilters) {
   const supabase = await createClient();
 
-  const { data, error } = await (supabase as any)
+  let query = (supabase as any)
     .from("activity_logs")
     .select(`
       *,
-      users:user_id (id, full_name, avatar_url)
-    `)
-    .eq("family_id", familyId)
+      users:user_id (id, full_name, email, avatar_url)
+    `, { count: "exact" })
+    .eq("family_id", familyId);
+
+  if (action && action !== "all") {
+    query = query.eq("action", action);
+  }
+
+  if (entity && entity !== "all") {
+    query = query.eq("entity", entity);
+  }
+
+  if (search && search.trim()) {
+    query = query.ilike("description", `%${search.trim()}%`);
+  }
+
+  const { data, count, error } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) {
-    return { success: false, error: error.message, data: [] as ActivityLogItem[] };
+    return { success: false, error: error.message, data: [] as ActivityLogItem[], totalCount: 0 };
   }
 
-  return { success: true, data: (data || []) as ActivityLogItem[] };
-}
-
-/**
- * Helper to record activity log
- */
-export async function logFamilyActivityAction(input: {
-  familyId: string;
-  action: string;
-  entity: string;
-  entityId?: string | null;
-  description: string;
-  metadata?: any;
-}) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { error } = await (supabase as any).from("activity_logs").insert({
-    family_id: input.familyId,
-    user_id: user?.id || null,
-    action: input.action,
-    entity: input.entity,
-    entity_id: input.entityId || null,
-    description: input.description,
-    metadata: input.metadata || {},
-  });
-
-  return { success: !error };
+  return {
+    success: true,
+    data: (data || []) as ActivityLogItem[],
+    totalCount: count || 0,
+  };
 }

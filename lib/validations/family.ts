@@ -19,9 +19,15 @@ export const joinFamilySchema = z.object({
 export const updateMemberRoleSchema = z.object({
   familyId: z.string().uuid(),
   userId: z.string().uuid(),
-  role: z.enum(["owner", "admin", "member"]),
+  role: z.enum(["owner", "admin", "member", "viewer"]),
+});
+
+export const removeMemberSchema = z.object({
+  familyId: z.string().uuid(),
+  userId: z.string().uuid(),
 });
 
 export type CreateFamilyInput = z.infer<typeof createFamilySchema>;
 export type JoinFamilyInput = z.infer<typeof joinFamilySchema>;
 export type UpdateMemberRoleInput = z.infer<typeof updateMemberRoleSchema>;
+export type RemoveMemberInput = z.infer<typeof removeMemberSchema>;

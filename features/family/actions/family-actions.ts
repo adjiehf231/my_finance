@@ -6,10 +6,13 @@ import {
   createFamilySchema,
   joinFamilySchema,
   updateMemberRoleSchema,
+  removeMemberSchema,
   type CreateFamilyInput,
   type JoinFamilyInput,
   type UpdateMemberRoleInput,
+  type RemoveMemberInput,
 } from "@/lib/validations/family";
+import type { FamilyRole } from "@/lib/auth/rbac";
 
 /**
  * Generate a cryptographically strong 6-8 character uppercase alphanumeric invite code
@@ -57,7 +60,7 @@ export async function getCurrentFamilyAction() {
         invite_code: string;
         currency: string;
       },
-      role: memberData.role as "owner" | "admin" | "member",
+      role: memberData.role as FamilyRole,
     },
   };
 }
@@ -266,6 +269,13 @@ export async function updateMemberRoleAction(input: UpdateMemberRoleInput) {
   try {
     const validated = updateMemberRoleSchema.parse(input);
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthenticated" };
+    }
 
     const { error } = await (supabase as any)
       .from("family_members")
@@ -276,6 +286,56 @@ export async function updateMemberRoleAction(input: UpdateMemberRoleInput) {
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // Log activity
+    await (supabase as any).from("activity_logs").insert({
+      family_id: validated.familyId,
+      user_id: user.id,
+      action: "update",
+      entity: "family_member",
+      description: `Peran hak akses anggota diubah menjadi "${validated.role}".`,
+    });
+
+    revalidatePath("/family");
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Remove a member from the family workspace (Owner / Admin required)
+ */
+export async function removeMemberAction(input: RemoveMemberInput) {
+  try {
+    const validated = removeMemberSchema.parse(input);
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthenticated" };
+    }
+
+    const { error } = await (supabase as any)
+      .from("family_members")
+      .update({ is_active: false })
+      .eq("family_id", validated.familyId)
+      .eq("user_id", validated.userId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    // Log activity
+    await (supabase as any).from("activity_logs").insert({
+      family_id: validated.familyId,
+      user_id: user.id,
+      action: "delete",
+      entity: "family_member",
+      description: `Anggota dinonaktifkan / dikeluarkan dari ruang kerja keluarga.`,
+    });
 
     revalidatePath("/family");
     return { success: true };

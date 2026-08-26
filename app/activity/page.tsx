@@ -3,15 +3,20 @@ import { redirect } from "next/navigation";
 import { getCurrentFamilyAction } from "@/features/family/actions/family-actions";
 import { getActivityLogsAction } from "@/features/activity/actions/activity-actions";
 import { AppLayout } from "@/components/layout/app-layout";
-import { ActivityFeed } from "@/features/activity/components/activity-feed";
-import { Activity, ShieldCheck } from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
+import { ActivityLogView } from "@/features/activity/components/activity-log-view";
 
 export const metadata: Metadata = {
-  title: "Riwayat Aktivitas & Audit Trail",
-  description: "Catatan transparan seluruh mutasi dan aktivitas keluarga di My Finance.",
+  title: "Log Audit Aktivitas Keluarga",
+  description: "Rekam jejak seluruh transaksi, perubahan saldo, dan aktivitas anggota keluarga.",
 };
 
-export default async function ActivityPage() {
+export default async function ActivityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ action?: string; entity?: string; search?: string }>;
+}) {
+  const params = await searchParams;
   const familyRes = await getCurrentFamilyAction();
 
   if (!familyRes.success || !familyRes.data?.family) {
@@ -19,33 +24,31 @@ export default async function ActivityPage() {
   }
 
   const family = familyRes.data.family;
-  const logsRes = await getActivityLogsAction(family.id, 100, 0);
+
+  const logsRes = await getActivityLogsAction({
+    familyId: family.id,
+    limit: 50,
+    offset: 0,
+    action: params.action,
+    entity: params.entity,
+    search: params.search,
+  });
+
   const logs = logsRes.data || [];
+  const totalCount = logsRes.totalCount || 0;
 
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <Activity className="h-7 w-7 text-emerald-600" />
-              Riwayat Aktivitas Keluarga
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Ruang Kerja: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
-            </p>
-          </div>
-        </div>
+      {/* FinTech Page Header */}
+      <PageHeader
+        titleKey="activity.title"
+        subtitleKey="activity.subtitle"
+        iconName="activity"
+        familyName={family.name}
+      />
 
-        <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 bg-white dark:bg-[#131B2E] px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-800">
-          <ShieldCheck className="h-4 w-4 text-emerald-600" />
-          <span>Audit Trail Terenkripsi</span>
-        </div>
-      </div>
-
-      {/* Activity Feed */}
-      <ActivityFeed logs={logs} />
+      {/* Activity Log Table & Filters */}
+      <ActivityLogView initialLogs={logs} totalCount={totalCount} />
     </AppLayout>
   );
 }
