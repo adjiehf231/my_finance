@@ -8,7 +8,7 @@ import {
  * Initialize Google Generative AI client safely
  */
 export function getGeminiModel() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey) {
     return null;
   }
