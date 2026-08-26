@@ -13,6 +13,7 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { RecordPaymentModal } from "./record-payment-modal";
 import { DebtReminderButton } from "./debt-reminder-button";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import {
   CreditCard,
   CheckCircle2,
@@ -21,11 +22,11 @@ import {
   Trash2,
   HandCoins,
   MessageSquare,
+  Edit3,
 } from "lucide-react";
 import { deleteDebtAction, type DebtWithProgress } from "../actions/debt-actions";
 import { toast } from "sonner";
 import { EditDebtModal } from "./edit-debt-modal";
-import { Edit3 } from "lucide-react";
 
 interface DebtCardProps {
   debt: DebtWithProgress;
@@ -37,24 +38,28 @@ interface DebtCardProps {
 export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const { t, locale } = useTranslation();
 
   const isLoan = debt.type === "loan_payable";
   const isSettled = debt.status === "settled" || debt.remaining_amount === 0;
 
   const handleDelete = async () => {
-    if (!confirm(`Hapus data ${isLoan ? "hutang" : "piutang"} "${debt.name}"?`)) return;
+    const confirmMsg = locale === "en"
+      ? `Delete ${isLoan ? "loan" : "receivable"} record "${debt.name}"?`
+      : `Hapus data ${isLoan ? "hutang" : "piutang"} "${debt.name}"?`;
+    if (!confirm(confirmMsg)) return;
 
     try {
       setIsDeleting(true);
       const res = await deleteDebtAction(debt.id);
       if (res.success) {
-        toast.success("Data berhasil dihapus");
+        toast.success(locale === "en" ? "Record deleted successfully" : "Data berhasil dihapus");
         onUpdate?.();
       } else {
-        toast.error(res.error || "Gagal menghapus");
+        toast.error(res.error || "Failed to delete");
       }
     } catch {
-      toast.error("Terjadi kesalahan");
+      toast.error("An error occurred");
     } finally {
       setIsDeleting(false);
     }
@@ -89,13 +94,13 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
                         : "border-emerald-200 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"
                     }`}
                   >
-                    {isLoan ? "Hutang Pinjaman" : "Piutang Diberikan"}
+                    {isLoan ? t("debts.loanBadge") : t("debts.receivableBadge")}
                   </Badge>
 
                   {debt.due_date && !isSettled && (
                     <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
                       <Clock className="h-3 w-3" />
-                      Tempo: {formatDate(debt.due_date)}
+                      {t("debts.tempoDate", { date: formatDate(debt.due_date) })}
                     </span>
                   )}
                 </div>
@@ -105,11 +110,11 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
             <div className="flex items-center gap-1">
               {isSettled ? (
                 <Badge className="bg-emerald-500 text-white font-bold text-xs rounded-xl px-2.5 py-1 flex items-center gap-1">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Lunas
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {t("debts.settled")}
                 </Badge>
               ) : (
                 <Badge variant="secondary" className="text-xs font-black rounded-xl">
-                  {debt.percentage_paid}% Terbayar
+                  {debt.percentage_paid}% {locale === "en" ? "Paid" : "Terbayar"}
                 </Badge>
               )}
 
@@ -129,7 +134,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
                     className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-bold"
                   >
                     <Edit3 className="h-4 w-4 mr-2 text-blue-600" />
-                    Edit Data
+                    {t("common.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDelete}
@@ -137,7 +142,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
                     className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-bold"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Hapus Data
+                    {t("common.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -163,7 +168,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
           {/* Numbers breakdown */}
           <div className="flex items-center justify-between pt-1 text-xs border-t border-slate-100 dark:border-white/[0.06]">
             <div>
-              <p className="text-slate-400 font-display">{isLoan ? "Sisa Hutang" : "Sisa Piutang"}</p>
+              <p className="text-slate-400 font-display">{isLoan ? t("debts.remainingDebt") : t("debts.remainingReceivable")}</p>
               <p
                 className={`font-black text-sm mt-0.5 font-mono ${
                   isSettled
@@ -178,7 +183,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
             </div>
 
             <div className="text-right">
-              <p className="text-slate-400 font-display">Total Pokok</p>
+              <p className="text-slate-400 font-display">{t("debts.totalPrincipal")}</p>
               <p className="font-bold text-slate-900 dark:text-white mt-0.5 font-mono">
                 {formatCurrency(debt.total_amount)}
               </p>
@@ -197,7 +202,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
                   className="py-2.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 border border-emerald-500/20"
                 >
                   <MessageSquare className="h-3.5 w-3.5" />
-                  Pengingat WA
+                  {t("debtReminder.waButton")}
                 </button>
               }
             />
@@ -216,7 +221,7 @@ export function DebtCard({ debt, familyId, wallets, onUpdate }: DebtCardProps) {
                     type="button"
                     className="py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm"
                   >
-                    + {isLoan ? "Bayar Cicilan" : "Terima Setoran"}
+                    + {isLoan ? t("debts.payDebt") : t("debts.receivePayment")}
                   </button>
                 }
               />

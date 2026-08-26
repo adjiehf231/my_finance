@@ -24,6 +24,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Loader2, ArrowRightLeft, TrendingDown, TrendingUp, Upload, Image as ImageIcon, Sparkles } from "lucide-react";
 import { createTransactionAction } from "../actions/transaction-actions";
 import { suggestCategoryFromDescription } from "@/lib/ai/category-suggester";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
@@ -45,6 +46,7 @@ export function AddTransactionModal({
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const { t, locale } = useTranslation();
 
   // Form State
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
@@ -74,7 +76,7 @@ export function AddTransactionModal({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 5MB");
+      toast.error("File max 5MB");
       return;
     }
 
@@ -92,16 +94,16 @@ export function AddTransactionModal({
         });
 
       if (error) {
-        toast.error(`Gagal upload struk: ${error.message}`);
+        toast.error(`Upload error: ${error.message}`);
       } else if (data) {
         const {
           data: { publicUrl },
         } = supabase.storage.from("receipts").getPublicUrl(data.path);
         setAttachmentUrl(publicUrl);
-        toast.success("Foto struk berhasil diunggah!");
+        toast.success(locale === "en" ? "Receipt uploaded!" : "Foto struk berhasil diunggah!");
       }
     } catch {
-      toast.error("Gagal mengunggah struk.");
+      toast.error("Upload failed.");
     } finally {
       setIsUploading(false);
     }
@@ -112,12 +114,12 @@ export function AddTransactionModal({
     const parsedAmount = typeof amount === "number" ? amount : parseFloat(String(amount).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (parsedAmount <= 0) {
-      toast.error("Nominal transaksi harus lebih dari 0");
+      toast.error(locale === "en" ? "Amount must be > 0" : "Nominal transaksi harus lebih dari 0");
       return;
     }
 
     if (type === "transfer" && fromWalletId === toWalletId) {
-      toast.error("Rekening sumber dan tujuan tidak boleh sama");
+      toast.error(locale === "en" ? "Source & target cannot be the same" : "Rekening sumber dan tujuan tidak boleh sama");
       return;
     }
 
@@ -139,10 +141,10 @@ export function AddTransactionModal({
       if (res.success) {
         toast.success(
           type === "income"
-            ? "Pemasukan berhasil dicatat!"
+            ? (locale === "en" ? "Income recorded successfully!" : "Pemasukan berhasil dicatat!")
             : type === "expense"
-            ? "Pengeluaran berhasil dicatat!"
-            : "Transfer antar-dompet berhasil dicatat!"
+            ? (locale === "en" ? "Expense recorded successfully!" : "Pengeluaran berhasil dicatat!")
+            : (locale === "en" ? "Transfer recorded successfully!" : "Transfer antar-dompet berhasil dicatat!")
         );
         setAmount("");
         setDescription("");
@@ -150,10 +152,10 @@ export function AddTransactionModal({
         setOpen(false);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal menyimpan transaksi");
+        toast.error(res.error || "Failed to record transaction");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error");
     } finally {
       setIsLoading(false);
     }
@@ -165,13 +167,15 @@ export function AddTransactionModal({
         {triggerButton || (
           <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
             <Plus className="h-4 w-4 stroke-[3]" />
-            Catat Transaksi
+            {t("transactions.addTransaction")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">Catat Transaksi Baru</DialogTitle>
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
+            {t("addTransactionModal.title")}
+          </DialogTitle>
         </DialogHeader>
 
         {/* Tab Segmented Switcher */}
@@ -189,21 +193,21 @@ export function AddTransactionModal({
               className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-glow-rose transition-all"
             >
               <TrendingDown className="h-4 w-4" />
-              Pengeluaran
+              {t("addTransactionModal.expenseTab")}
             </TabsTrigger>
             <TabsTrigger
               value="income"
               className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-glow-emerald transition-all"
             >
               <TrendingUp className="h-4 w-4" />
-              Pemasukan
+              {t("addTransactionModal.incomeTab")}
             </TabsTrigger>
             <TabsTrigger
               value="transfer"
               className="rounded-xl font-bold text-xs flex items-center gap-1.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
             >
               <ArrowRightLeft className="h-4 w-4" />
-              Transfer
+              {t("addTransactionModal.transferTab")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -212,7 +216,7 @@ export function AddTransactionModal({
           {/* Nominal Input with Live Rupiah Formatter */}
           <div className="space-y-1.5">
             <Label htmlFor="tx-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Nominal Transaksi
+              {t("addTransactionModal.amountLabel")}
             </Label>
             <CurrencyInput
               id="tx-amount"
@@ -224,7 +228,9 @@ export function AddTransactionModal({
 
           {/* Date Picker */}
           <div className="space-y-1.5">
-            <Label htmlFor="tx-date" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Tanggal Transaksi</Label>
+            <Label htmlFor="tx-date" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("addTransactionModal.dateLabel")}
+            </Label>
             <Input
               id="tx-date"
               type="date"
@@ -238,11 +244,11 @@ export function AddTransactionModal({
           {/* Description & Real-time AI Suggestion */}
           <div className="space-y-1.5">
             <Label htmlFor="tx-desc" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Catatan / Deskripsi
+              {t("addTransactionModal.descLabel")}
             </Label>
             <Input
               id="tx-desc"
-              placeholder="Contoh: Kopi Kenangan, Bensin Pertamax, Bayar Wifi PLN"
+              placeholder={t("addTransactionModal.descPlaceholder")}
               className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -257,7 +263,7 @@ export function AddTransactionModal({
                   className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-400/10 border border-blue-500/30 px-3 py-1 rounded-full hover:bg-blue-500/20 transition-colors animate-pulse"
                 >
                   <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Saran Kategori AI: <strong>{suggestedCategory.name}</strong> (Klik untuk pilih)</span>
+                  <span>{t("addTransactionModal.aiSuggestion", { name: suggestedCategory.name })}</span>
                 </button>
               </div>
             )}
@@ -267,7 +273,9 @@ export function AddTransactionModal({
           {type !== "transfer" ? (
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="tx-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Rekening / Dompet</Label>
+                <Label htmlFor="tx-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                  {t("addTransactionModal.walletLabel")}
+                </Label>
                 <Select value={walletId} onValueChange={setWalletId}>
                   <SelectTrigger id="tx-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Pilih rekening" />
@@ -283,7 +291,9 @@ export function AddTransactionModal({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="tx-category" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Kategori</Label>
+                <Label htmlFor="tx-category" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                  {t("addTransactionModal.categoryLabel")}
+                </Label>
                 <Select value={categoryId} onValueChange={setCategoryId}>
                   <SelectTrigger id="tx-category" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Pilih kategori" />
@@ -302,7 +312,9 @@ export function AddTransactionModal({
             /* Transfer Source & Destination */
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="tx-from-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Dari Rekening</Label>
+                <Label htmlFor="tx-from-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                  {t("addTransactionModal.fromWalletLabel")}
+                </Label>
                 <Select value={fromWalletId} onValueChange={setFromWalletId}>
                   <SelectTrigger id="tx-from-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Rekening Asal" />
@@ -318,7 +330,9 @@ export function AddTransactionModal({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="tx-to-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Ke Rekening</Label>
+                <Label htmlFor="tx-to-wallet" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                  {t("addTransactionModal.toWalletLabel")}
+                </Label>
                 <Select value={toWalletId} onValueChange={setToWalletId}>
                   <SelectTrigger id="tx-to-wallet" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                     <SelectValue placeholder="Rekening Tujuan" />
@@ -337,11 +351,13 @@ export function AddTransactionModal({
 
           {/* Attachment Upload */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Foto Struk / Nota (Opsional)</Label>
+            <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              {t("addTransactionModal.receiptPhoto")}
+            </Label>
             <div className="flex items-center gap-3">
               <label className="cursor-pointer border border-slate-200 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#07090E]/80 rounded-2xl px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-white/[0.04] flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors">
                 <Upload className="h-4 w-4 text-blue-500" />
-                <span>{isUploading ? "Mengunggah..." : "Unggah Gambar"}</span>
+                <span>{isUploading ? t("addTransactionModal.uploading") : t("addTransactionModal.uploadButton")}</span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -354,7 +370,7 @@ export function AddTransactionModal({
               {attachmentUrl && (
                 <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-bold">
                   <ImageIcon className="h-4 w-4" />
-                  <span>Struk Terlampir</span>
+                  <span>{t("addTransactionModal.attached")}</span>
                 </div>
               )}
             </div>
@@ -367,7 +383,7 @@ export function AddTransactionModal({
               onClick={() => setOpen(false)}
               className="rounded-2xl border-slate-200/80 dark:border-white/[0.08] font-bold text-xs"
             >
-              Batal
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -383,10 +399,10 @@ export function AddTransactionModal({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Menyimpan...
+                  {t("addTransactionModal.savingBtn")}
                 </>
               ) : (
-                "Simpan Transaksi"
+                t("addTransactionModal.saveBtn")
               )}
             </Button>
           </DialogFooter>

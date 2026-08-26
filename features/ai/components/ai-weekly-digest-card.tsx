@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import {
   Sparkles,
   TrendingDown,
@@ -9,7 +10,6 @@ import {
   Lightbulb,
   CheckCircle2,
   Calendar,
-  Layers,
 } from "lucide-react";
 import type { WeeklyDigestData } from "../actions/ai-actions";
 
@@ -18,6 +18,7 @@ interface AIWeeklyDigestCardProps {
 }
 
 export function AIWeeklyDigestCard({ digest }: AIWeeklyDigestCardProps) {
+  const { t } = useTranslation();
   const isVelocityUp = digest.velocityPercentage > 0;
 
   return (
@@ -35,10 +36,10 @@ export function AIWeeklyDigestCard({ digest }: AIWeeklyDigestCardProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-black text-white tracking-tight font-display">
-                  Weekly AI Financial Digest & Tips
+                  {t("weeklyDigest.title")}
                 </h3>
                 <span className="text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 px-2.5 py-0.5 rounded-full border border-blue-400/30">
-                  Pekan Ini
+                  {t("weeklyDigest.badge")}
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-mono mt-0.5 flex items-center gap-1.5">
@@ -61,7 +62,7 @@ export function AIWeeklyDigestCard({ digest }: AIWeeklyDigestCardProps) {
               <TrendingDown className="h-4 w-4 text-emerald-400" />
             )}
             <span>
-              {isVelocityUp ? `+${digest.velocityPercentage}%` : `${digest.velocityPercentage}%`} vs Pekan Lalu
+              {isVelocityUp ? `+${digest.velocityPercentage}%` : `${digest.velocityPercentage}%`} {t("weeklyDigest.vsLastWeek")}
             </span>
           </div>
         </div>
@@ -70,22 +71,22 @@ export function AIWeeklyDigestCard({ digest }: AIWeeklyDigestCardProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] space-y-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 font-display">
-              Total Belanja 7 Hari
+              {t("weeklyDigest.total7Days")}
             </span>
             <p className="text-2xl font-black font-mono text-white">
               {formatCurrency(digest.totalExpenseThisWeek)}
             </p>
             <p className="text-[11px] text-slate-400">
-              Pekan sebelumnya: {formatCurrency(digest.totalExpenseLastWeek)}
+              {t("weeklyDigest.prevWeek", { amount: formatCurrency(digest.totalExpenseLastWeek) })}
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] space-y-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 font-display">
-              Pos Pengeluaran Terbesar
+              {t("weeklyDigest.topCategory")}
             </span>
             <p className="text-lg font-black font-display text-cyan-300 truncate">
-              {digest.topExpenseCategory?.name || "Belum ada belanja"}
+              {digest.topExpenseCategory?.name || t("weeklyDigest.noSpending")}
             </p>
             <p className="text-[11px] text-slate-400 font-mono">
               {digest.topExpenseCategory
@@ -99,7 +100,7 @@ export function AIWeeklyDigestCard({ digest }: AIWeeklyDigestCardProps) {
         <div className="space-y-2.5 pt-1">
           <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-amber-400 font-display">
             <Lightbulb className="h-4 w-4" />
-            <span>Rekomendasi Cerdas Penghematan:</span>
+            <span>{t("weeklyDigest.recommendationsTitle")}</span>
           </div>
 
           <div className="space-y-2">

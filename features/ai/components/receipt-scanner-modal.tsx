@@ -10,22 +10,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { scanBatchReceiptsAction, createBatchTransactionsAction } from "../actions/ai-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import {
   Scan,
   Upload,
   Sparkles,
   Loader2,
   CheckCircle2,
-  Store,
-  Calendar,
-  Layers,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { ReceiptOcrResponse } from "@/lib/validations/ai";
 
 interface ScannedItemEntry {
   id: string;
@@ -57,13 +53,14 @@ export function ReceiptScannerModal({
   const [isSaving, setIsSaving] = useState(false);
   const [batchResults, setBatchResults] = useState<ScannedItemEntry[]>([]);
   const [selectedWalletId, setSelectedWalletId] = useState(wallets[0]?.id || "");
+  const { t, locale } = useTranslation();
 
   const handleMultipleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     if (files.length > 5) {
-      toast.error("Maksimal 5 foto struk sekaligus dalam 1 batch");
+      toast.error(locale === "en" ? "Maximum 5 receipts per batch" : "Maksimal 5 foto struk sekaligus dalam 1 batch");
       return;
     }
 
@@ -73,7 +70,7 @@ export function ReceiptScannerModal({
         (file) =>
           new Promise<{ base64Data: string; mimeType: string }>((resolve, reject) => {
             if (file.size > 5 * 1024 * 1024) {
-              reject(new Error(`File ${file.name} melebihi batas 5MB`));
+              reject(new Error(`File ${file.name} > 5MB`));
               return;
             }
             const reader = new FileReader();
@@ -93,7 +90,7 @@ export function ReceiptScannerModal({
       if (res.success && res.results) {
         const parsedEntries: ScannedItemEntry[] = res.results.map((r, idx) => ({
           id: `scan-${Date.now()}-${idx}`,
-          merchantName: r.data?.merchantName || `Struk ${idx + 1}`,
+          merchantName: r.data?.merchantName || `Receipt ${idx + 1}`,
           transactionDate: r.data?.transactionDate || new Date().toISOString().split("T")[0],
           totalAmount: r.data?.totalAmount || 0,
           categorySuggestion: r.data?.categorySuggestion || "Makanan & Minuman",
@@ -102,12 +99,16 @@ export function ReceiptScannerModal({
         }));
 
         setBatchResults(parsedEntries);
-        toast.success(`Berhasil memindai ${parsedEntries.length} nota struk dengan Gemini AI!`);
+        toast.success(
+          locale === "en"
+            ? `Successfully scanned ${parsedEntries.length} receipts with Gemini AI!`
+            : `Berhasil memindai ${parsedEntries.length} nota struk dengan Gemini AI!`
+        );
       } else {
-        toast.error("Gagal memproses batch OCR struk");
+        toast.error("Failed to process receipt OCR");
       }
     } catch (err: any) {
-      toast.error(err.message || "Terjadi kesalahan sistem saat pemindaian");
+      toast.error(err.message || "Error processing receipts");
     } finally {
       setIsScanning(false);
     }
@@ -121,7 +122,7 @@ export function ReceiptScannerModal({
     if (batchResults.length === 0) return;
 
     if (!selectedWalletId) {
-      toast.error("Pilih dompet / rekening untuk pembayaran");
+      toast.error(locale === "en" ? "Select payment account" : "Pilih dompet / rekening untuk pembayaran");
       return;
     }
 
@@ -150,15 +151,19 @@ export function ReceiptScannerModal({
       });
 
       if (res.success) {
-        toast.success(`Berhasil mencatat ${res.count} transaksi dari batch struk!`);
+        toast.success(
+          locale === "en"
+            ? `Recorded ${res.count} transactions to ledger!`
+            : `Berhasil mencatat ${res.count} transaksi dari batch struk!`
+        );
         setOpen(false);
         setBatchResults([]);
         onSuccess?.();
       } else {
-        toast.error(res.error || "Gagal menyimpan batch transaksi");
+        toast.error(res.error || "Failed to save transactions");
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("System error");
     } finally {
       setIsSaving(false);
     }
@@ -175,7 +180,7 @@ export function ReceiptScannerModal({
             className="rounded-2xl border-slate-200/80 dark:border-white/[0.08] text-slate-900 dark:text-white bg-white/80 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.08] flex items-center gap-2 font-bold text-xs shadow-sm hover:scale-105 transition-all"
           >
             <Sparkles className="h-4 w-4 text-amber-400" />
-            Scan Batch Struk AI
+            <span>{t("ai.scanTitle")}</span>
           </Button>
         )}
       </DialogTrigger>
@@ -184,11 +189,11 @@ export function ReceiptScannerModal({
           <DialogTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center justify-between font-display">
             <span className="flex items-center gap-2">
               <Scan className="h-5 w-5 text-blue-500" />
-              Gemini Multi-Receipt Batch OCR
+              {t("batchOcr.title")}
             </span>
             {batchResults.length > 0 && (
               <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">
-                {batchResults.length} Struk Terpindai
+                {t("batchOcr.scannedCount", { count: batchResults.length })}
               </span>
             )}
           </DialogTitle>
@@ -201,10 +206,10 @@ export function ReceiptScannerModal({
                 <div className="flex flex-col items-center space-y-3">
                   <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
                   <p className="font-black text-sm text-slate-900 dark:text-white font-display">
-                    Memindai batch nota belanja dengan Gemini 1.5 Flash...
+                    {t("batchOcr.scanningText")}
                   </p>
                   <p className="text-xs text-slate-400 font-medium">
-                    Mengekstrak nama toko, tanggal, item produk, dan total bayar
+                    {t("batchOcr.scanningSubtitle")}
                   </p>
                 </div>
               ) : (
@@ -213,10 +218,10 @@ export function ReceiptScannerModal({
                     <Upload className="h-7 w-7" />
                   </div>
                   <p className="font-black text-sm text-slate-900 dark:text-white font-display">
-                    Pilih 1 s/d 5 Foto Struk Belanja Sekaligus
+                    {t("batchOcr.uploadPrompt")}
                   </p>
                   <p className="text-xs text-slate-400 font-medium">
-                    Mendukung multi-file JPG, PNG, WebP (Maks 5MB per file)
+                    {t("batchOcr.uploadSubtitle")}
                   </p>
                 </div>
               )}
@@ -237,14 +242,14 @@ export function ReceiptScannerModal({
             <div className="flex items-center justify-between p-4 rounded-2xl bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/20">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 font-display">
-                  Total Akumulasi Batch
+                  {t("batchOcr.totalBatch")}
                 </p>
                 <p className="text-2xl font-black font-mono text-slate-900 dark:text-white mt-0.5">
                   {formatCurrency(grandTotal)}
                 </p>
               </div>
               <span className="text-xs font-bold text-slate-500">
-                {batchResults.length} Transaksi Siap Dicatat
+                {t("batchOcr.readyToSave", { count: batchResults.length })}
               </span>
             </div>
 
@@ -277,7 +282,6 @@ export function ReceiptScannerModal({
                       type="button"
                       onClick={() => handleRemoveEntry(item.id)}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                      title="Hapus dari batch"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -289,7 +293,7 @@ export function ReceiptScannerModal({
             {/* Wallet Selector */}
             <div className="space-y-1.5">
               <label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Potong Saldo Dari Rekening / Dompet:
+                {t("batchOcr.walletLabel")}
               </label>
               <select
                 value={selectedWalletId}
@@ -311,7 +315,7 @@ export function ReceiptScannerModal({
                 onClick={() => setBatchResults([])}
                 className="rounded-2xl font-bold text-xs"
               >
-                Scan Batch Baru
+                {t("batchOcr.scanNew")}
               </Button>
               <Button
                 onClick={handleBatchSave}
@@ -321,12 +325,12 @@ export function ReceiptScannerModal({
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    Menyimpan {batchResults.length} Transaksi...
+                    {t("batchOcr.savingAll", { count: batchResults.length })}
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="h-4 w-4 stroke-[3]" />
-                    Simpan Semua ({batchResults.length}) ke Buku Kas
+                    {t("batchOcr.saveAll", { count: batchResults.length })}
                   </>
                 )}
               </Button>

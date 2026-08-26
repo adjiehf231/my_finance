@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import {
   History,
   PlusCircle,
@@ -31,6 +30,7 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
   const [search, setSearch] = useState("");
   const [selectedAction, setSelectedAction] = useState("all");
   const [selectedEntity, setSelectedEntity] = useState("all");
+  const { t, locale } = useTranslation();
 
   const filteredLogs = initialLogs.filter((log) => {
     if (selectedAction !== "all" && log.action !== selectedAction) return false;
@@ -49,31 +49,31 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
       case "create":
         return (
           <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
-            <PlusCircle className="h-3 w-3 mr-1" /> Dibuat
+            <PlusCircle className="h-3 w-3 mr-1" /> {t("activity.createAction")}
           </Badge>
         );
       case "update":
         return (
           <Badge className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[10px] font-bold">
-            <Edit className="h-3 w-3 mr-1" /> Diperbarui
+            <Edit className="h-3 w-3 mr-1" /> {t("activity.updateAction")}
           </Badge>
         );
       case "delete":
         return (
           <Badge className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-[10px] font-bold">
-            <Trash2 className="h-3 w-3 mr-1" /> Dihapus
+            <Trash2 className="h-3 w-3 mr-1" /> {t("activity.deleteAction")}
           </Badge>
         );
       case "reconcile":
         return (
           <Badge className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 text-[10px] font-bold">
-            <Scale className="h-3 w-3 mr-1" /> Rekonsiliasi
+            <Scale className="h-3 w-3 mr-1" /> {t("activity.reconcileAction")}
           </Badge>
         );
       case "join":
         return (
           <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-bold">
-            <UserPlus className="h-3 w-3 mr-1" /> Bergabung
+            <UserPlus className="h-3 w-3 mr-1" /> {t("activity.joinAction")}
           </Badge>
         );
       default:
@@ -115,7 +115,7 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               type="text"
-              placeholder="Cari aktivitas atau nama anggota..."
+              placeholder={t("activity.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 rounded-2xl h-11 bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08] text-xs font-medium"
@@ -129,12 +129,12 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
               onChange={(e) => setSelectedAction(e.target.value)}
               className="w-full h-11 px-3.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#07090E]/80 text-xs font-bold text-slate-700 dark:text-slate-200"
             >
-              <option value="all">Semua Jenis Aksi</option>
-              <option value="create">Dibuat (Create)</option>
-              <option value="update">Diperbarui (Update)</option>
-              <option value="delete">Dihapus (Delete)</option>
-              <option value="reconcile">Rekonsiliasi Kas</option>
-              <option value="join">Bergabung ke Keluarga</option>
+              <option value="all">{t("activity.allActions")}</option>
+              <option value="create">{t("activity.createAction")}</option>
+              <option value="update">{t("activity.updateAction")}</option>
+              <option value="delete">{t("activity.deleteAction")}</option>
+              <option value="reconcile">{t("activity.reconcileAction")}</option>
+              <option value="join">{t("activity.joinAction")}</option>
             </select>
           </div>
 
@@ -145,13 +145,13 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
               onChange={(e) => setSelectedEntity(e.target.value)}
               className="w-full h-11 px-3.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/80 dark:bg-[#07090E]/80 text-xs font-bold text-slate-700 dark:text-slate-200"
             >
-              <option value="all">Semua Entitas Modul</option>
-              <option value="transaction">Transaksi Kas</option>
-              <option value="wallet">Dompet & Rekening</option>
-              <option value="budget">Anggaran</option>
-              <option value="debt">Hutang & Piutang</option>
-              <option value="goal">Target Finansial</option>
-              <option value="family_member">Anggota Keluarga</option>
+              <option value="all">{t("activity.allEntities")}</option>
+              <option value="transaction">{t("activity.txEntity")}</option>
+              <option value="wallet">{t("activity.walletEntity")}</option>
+              <option value="budget">{t("activity.budgetEntity")}</option>
+              <option value="debt">{t("activity.debtEntity")}</option>
+              <option value="goal">{t("activity.goalEntity")}</option>
+              <option value="family_member">{t("activity.memberEntity")}</option>
             </select>
           </div>
         </div>
@@ -162,13 +162,13 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.06] pb-4">
           <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight font-display flex items-center gap-2">
             <History className="h-4 w-4 text-blue-500" />
-            Riwayat Log Audit ({filteredLogs.length} dari {totalCount})
+            {t("activity.auditTitle", { count: filteredLogs.length, total: totalCount })}
           </h3>
         </div>
 
         {filteredLogs.length === 0 ? (
           <div className="py-12 text-center text-slate-400 text-xs font-medium">
-            Tidak ada catatan aktivitas yang cocok dengan filter yang dipilih.
+            {t("activity.empty")}
           </div>
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -188,11 +188,11 @@ export function ActivityLogView({ initialLogs, totalCount }: ActivityLogViewProp
                     </p>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400">
                       <span className="font-medium text-slate-500 dark:text-slate-300">
-                        {log.users?.full_name || "Sistem"}
+                        {log.users?.full_name || (locale === "en" ? "System" : "Sistem")}
                       </span>
                       <span>•</span>
                       <span className="font-mono">
-                        {new Date(log.created_at).toLocaleString("id-ID", {
+                        {new Date(log.created_at).toLocaleString(locale === "en" ? "en-US" : "id-ID", {
                           dateStyle: "medium",
                           timeStyle: "short",
                         })}

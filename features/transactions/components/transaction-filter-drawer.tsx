@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Filter, RotateCcw, Search, Check, Calendar, ArrowRightLeft } from "lucide-react";
+import { Filter, RotateCcw, Search, Check } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/i18n-context";
 
 export interface TransactionFilterValues {
@@ -114,7 +114,7 @@ export function TransactionFilterDrawer({
           }`}
         >
           <Filter className="h-4 w-4" />
-          <span>Filter Lanjutan</span>
+          <span>{t("transactions.filterBtn")}</span>
           {activeCount > 0 && (
             <span className="h-5 w-5 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center font-mono shadow-sm">
               {activeCount}
@@ -128,11 +128,11 @@ export function TransactionFilterDrawer({
           <DialogTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center justify-between font-display">
             <span className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-blue-500" />
-              Filter Transaksi Lanjutan
+              {t("transactions.filterDrawerTitle")}
             </span>
             {activeCount > 0 && (
               <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full">
-                {activeCount} Filter Aktif
+                {t("transactions.activeFilters", { count: activeCount })}
               </span>
             )}
           </DialogTitle>
@@ -142,12 +142,12 @@ export function TransactionFilterDrawer({
           {/* Keyword Search */}
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Pencarian Kata Kunci
+              {t("common.search")}
             </Label>
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Contoh: Kopi, bensin, listrik, transfer..."
+                placeholder={t("transactions.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10 rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
@@ -158,21 +158,21 @@ export function TransactionFilterDrawer({
           {/* Transaction Type Tabs */}
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Jenis Mutasi
+              {t("transactions.dateAndType")}
             </Label>
             <Tabs value={type} onValueChange={setType} className="w-full">
               <TabsList className="grid grid-cols-4 w-full h-11 rounded-2xl p-1 bg-slate-100 dark:bg-[#07090E] border border-slate-200/40 dark:border-white/[0.04]">
                 <TabsTrigger value="all" className="rounded-xl text-xs font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#0D111A] data-[state=active]:shadow-sm">
-                  Semua
+                  {t("common.all")}
                 </TabsTrigger>
                 <TabsTrigger value="expense" className="rounded-xl text-xs font-bold data-[state=active]:bg-rose-500 data-[state=active]:text-white">
-                  Pengeluaran
+                  {t("transactions.expense")}
                 </TabsTrigger>
                 <TabsTrigger value="income" className="rounded-xl text-xs font-bold data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
-                  Pemasukan
+                  {t("transactions.income")}
                 </TabsTrigger>
                 <TabsTrigger value="transfer" className="rounded-xl text-xs font-bold data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                  Transfer
+                  {t("transactions.transfer")}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -181,11 +181,11 @@ export function TransactionFilterDrawer({
           {/* Date Range Picker */}
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Rentang Tanggal Khusus
+              {t("common.date")}
             </Label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="text-[11px] text-slate-400 block mb-1 font-medium">Dari Tanggal</span>
+                <span className="text-[11px] text-slate-400 block mb-1 font-medium">{t("transactions.startDate")}</span>
                 <Input
                   type="date"
                   value={startDate}
@@ -194,7 +194,7 @@ export function TransactionFilterDrawer({
                 />
               </div>
               <div>
-                <span className="text-[11px] text-slate-400 block mb-1 font-medium">Sampai Tanggal</span>
+                <span className="text-[11px] text-slate-400 block mb-1 font-medium">{t("transactions.endDate")}</span>
                 <Input
                   type="date"
                   value={endDate}
@@ -208,11 +208,11 @@ export function TransactionFilterDrawer({
           {/* Amount Range Picker */}
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-              Rentang Nominal (Rp)
+              {t("common.amount")}
             </Label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="text-[11px] text-slate-400 block mb-1 font-medium">Min Nominal</span>
+                <span className="text-[11px] text-slate-400 block mb-1 font-medium">{t("transactions.minAmount")}</span>
                 <CurrencyInput
                   value={minAmount}
                   onValueChange={setMinAmount}
@@ -221,7 +221,7 @@ export function TransactionFilterDrawer({
                 />
               </div>
               <div>
-                <span className="text-[11px] text-slate-400 block mb-1 font-medium">Max Nominal</span>
+                <span className="text-[11px] text-slate-400 block mb-1 font-medium">{t("transactions.maxAmount")}</span>
                 <CurrencyInput
                   value={maxAmount}
                   onValueChange={setMaxAmount}
@@ -236,14 +236,14 @@ export function TransactionFilterDrawer({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Rekening / Dompet
+                {t("common.wallet")}
               </Label>
               <Select value={walletId} onValueChange={setWalletId}>
                 <SelectTrigger className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
-                  <SelectValue placeholder="Semua Dompet" />
+                  <SelectValue placeholder={t("transactions.allWallets")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                  <SelectItem value="all">Semua Rekening</SelectItem>
+                  <SelectItem value="all">{t("transactions.allWallets")}</SelectItem>
                   {wallets.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
                       {w.name}
@@ -255,14 +255,14 @@ export function TransactionFilterDrawer({
 
             <div className="space-y-1.5">
               <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                Kategori
+                {t("common.category")}
               </Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
-                  <SelectValue placeholder="Semua Kategori" />
+                  <SelectValue placeholder={t("transactions.allCategories")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                  <SelectItem value="all">Semua Kategori</SelectItem>
+                  <SelectItem value="all">{t("transactions.allCategories")}</SelectItem>
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -282,7 +282,7 @@ export function TransactionFilterDrawer({
             className="rounded-2xl text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            Reset Filter
+            {t("transactions.resetFilter")}
           </Button>
 
           <Button
@@ -291,7 +291,7 @@ export function TransactionFilterDrawer({
             className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-6 shadow-glow flex items-center gap-1.5"
           >
             <Check className="h-4 w-4 stroke-[3]" />
-            Terapkan Filter
+            {t("transactions.applyFilter")}
           </Button>
         </DialogFooter>
       </DialogContent>

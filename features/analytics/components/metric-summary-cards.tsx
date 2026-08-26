@@ -49,7 +49,7 @@ export function MetricSummaryCards({
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-400/10 border border-blue-500/20 px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              Likuiditas Kas
+              {t("dashboard.liquidity")}
             </span>
           </div>
         </div>
@@ -75,7 +75,7 @@ export function MetricSummaryCards({
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Kas Masuk
+              {t("dashboard.cashInflow")}
             </span>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function MetricSummaryCards({
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-rose-700 dark:text-rose-300 bg-rose-500/10 dark:bg-rose-400/10 border border-rose-500/20 px-2.5 py-0.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-              Realisasi Belanja
+              {t("dashboard.cashOutflow")}
             </span>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function MetricSummaryCards({
 
         <div className="flex items-center justify-between mb-4">
           <span className="text-[11px] font-black uppercase tracking-widest text-blue-700 dark:text-blue-400 font-display">
-            Kekayaan Bersih
+            {t("dashboard.netWorth")}
           </span>
           <div className="h-11 w-11 rounded-2xl bg-blue-500/20 text-blue-700 dark:text-blue-300 flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:-rotate-6 transition-all">
             <Sparkles className="h-5 w-5 text-amber-400" />
@@ -127,7 +127,7 @@ export function MetricSummaryCards({
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-blue-800 dark:text-blue-200 bg-blue-500/20 dark:bg-blue-400/20 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
               <Percent className="h-3 w-3" />
-              Tabungan {savingsRate}%
+              {t("dashboard.savingsPercent", { rate: savingsRate })}
             </span>
           </div>
         </div>

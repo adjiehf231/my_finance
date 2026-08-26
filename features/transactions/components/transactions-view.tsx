@@ -8,6 +8,7 @@ import { AddTransactionModal } from "./add-transaction-modal";
 import { Input } from "@/components/ui/input";
 import { Search, Tags } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import Link from "next/link";
 
 interface TransactionsViewProps {
@@ -28,6 +29,7 @@ export function TransactionsView({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t, locale } = useTranslation();
 
   const handleApplyFilters = (newFilters: TransactionFilterValues) => {
     const params = new URLSearchParams();
@@ -67,7 +69,7 @@ export function TransactionsView({
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Cari transaksi cepat... (Tekan Enter)"
+            placeholder={locale === "en" ? "Quick search... (Press Enter)" : "Cari transaksi cepat... (Tekan Enter)"}
             defaultValue={initialFilters.search || ""}
             onKeyDown={handleQuickSearch}
             className="pl-10 h-10 rounded-2xl bg-white/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08] text-xs font-semibold"
@@ -88,7 +90,7 @@ export function TransactionsView({
               className="rounded-2xl border-slate-200/80 dark:border-white/[0.08] text-xs font-bold gap-1.5 bg-white/80 dark:bg-[#0D111A]/80 backdrop-blur-xl hover:border-blue-500/40"
             >
               <Tags className="h-3.5 w-3.5 text-blue-500" />
-              <span>Kategori</span>
+              <span>{t("transactions.manageCategories")}</span>
             </Button>
           </Link>
           <AddTransactionModal

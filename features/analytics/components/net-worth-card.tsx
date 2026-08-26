@@ -2,6 +2,7 @@
 
 import { formatCurrency } from "@/lib/utils";
 import { Sparkles, Wallet, HandCoins, CreditCard, TrendingUp } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import type { NetWorthSummary } from "../actions/analytics-actions";
 
 interface NetWorthCardProps {
@@ -9,6 +10,8 @@ interface NetWorthCardProps {
 }
 
 export function NetWorthCard({ netWorth }: NetWorthCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-3xl bg-gradient-to-br from-slate-950 via-[#0D111A] to-[#0A1224] text-white p-6 sm:p-8 border border-white/[0.08] relative overflow-hidden shadow-2xl shadow-blue-950/20">
       {/* Decorative ambient glowing orbs */}
@@ -20,7 +23,7 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
           <div>
             <p className="text-[11px] font-black uppercase tracking-widest text-blue-400 flex items-center gap-2 font-display">
               <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
-              Kekayaan Bersih Keluarga (Net Worth)
+              {t("dashboard.netWorthTitle")}
             </p>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight mt-1 font-mono text-white">
               {formatCurrency(netWorth.netWorth)}
@@ -29,7 +32,7 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
 
           <div className="bg-white/[0.08] backdrop-blur-xl border border-white/[0.1] px-4 py-2 rounded-2xl text-xs font-black text-slate-200 self-start sm:self-auto flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-blue-400" />
-            <span>Kalkulasi Aset Bersih Real-Time</span>
+            <span>{t("dashboard.netWorthBadge")}</span>
           </div>
         </div>
 
@@ -40,7 +43,7 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
               <div className="h-6 w-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
                 <Wallet className="h-3.5 w-3.5" />
               </div>
-              <span>Saldo Dompet</span>
+              <span>{t("dashboard.walletBalance")}</span>
             </div>
             <p className="font-black text-lg text-white font-mono">
               {formatCurrency(netWorth.totalWalletBalance)}
@@ -52,7 +55,7 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
               <div className="h-6 w-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                 <HandCoins className="h-3.5 w-3.5" />
               </div>
-              <span>Piutang Berjalan</span>
+              <span>{t("dashboard.activeReceivables")}</span>
             </div>
             <p className="font-black text-lg text-emerald-400 font-mono">
               +{formatCurrency(netWorth.totalReceivables)}
@@ -64,7 +67,7 @@ export function NetWorthCard({ netWorth }: NetWorthCardProps) {
               <div className="h-6 w-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center">
                 <CreditCard className="h-3.5 w-3.5" />
               </div>
-              <span>Hutang Kewajiban</span>
+              <span>{t("dashboard.activeLiabilities")}</span>
             </div>
             <p className="font-black text-lg text-rose-400 font-mono">
               -{formatCurrency(netWorth.totalLiabilities)}

@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, CheckCircle2, Lightbulb, ShieldCheck, Zap } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import type { FinancialAdviceResponse } from "@/lib/validations/ai";
 
 interface AIAdvisorCardProps {
@@ -9,6 +10,7 @@ interface AIAdvisorCardProps {
 }
 
 export function AIAdvisorCard({ advice }: AIAdvisorCardProps) {
+  const { t } = useTranslation();
   const isExcellent = advice.healthScore >= 85;
   const isGood = advice.healthScore >= 70 && advice.healthScore < 85;
   const isFair = advice.healthScore >= 50 && advice.healthScore < 70;
@@ -29,7 +31,7 @@ export function AIAdvisorCard({ advice }: AIAdvisorCardProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight font-display">
-                  AI Financial Health Advisor
+                  {t("dashboard.healthAdvisorTitle")}
                 </h3>
                 <Badge
                   className={`text-[10px] uppercase font-black rounded-full px-3 py-0.5 border shadow-sm ${
@@ -46,14 +48,16 @@ export function AIAdvisorCard({ advice }: AIAdvisorCardProps) {
                 </Badge>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                Analisis real-time arus kas & kesehatan finansial keluarga
+                {t("dashboard.healthAdvisorSubtitle")}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3.5 bg-white/90 dark:bg-[#07090E]/90 px-5 py-3 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm self-start sm:self-auto backdrop-blur-xl">
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">Skor Kesehatan</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-display">
+                {t("dashboard.healthScore")}
+              </p>
               <p className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mt-0.5 font-mono">
                 {advice.healthScore}<span className="text-xs font-bold text-slate-400">/100</span>
               </p>
@@ -73,7 +77,7 @@ export function AIAdvisorCard({ advice }: AIAdvisorCardProps) {
         {/* 3 Recommendations */}
         <div className="space-y-2.5 pt-1">
           <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest font-display">
-            Rekomendasi Strategis AI
+            {t("dashboard.strategicRecommendations")}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             {advice.recommendations.map((rec, index) => (

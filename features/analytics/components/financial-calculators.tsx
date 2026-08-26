@@ -6,14 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import {
   Calculator,
   ShieldCheck,
   Building2,
   TrendingUp,
   Sparkles,
-  PieChart,
-  Coins,
 } from "lucide-react";
 
 interface FinancialCalculatorsProps {
@@ -25,6 +24,8 @@ export function FinancialCalculators({
   currentMonthlyExpense = 5000000,
   currentLiquidBalance = 0,
 }: FinancialCalculatorsProps) {
+  const { t } = useTranslation();
+
   // 1. Emergency Fund State
   const [expense, setExpense] = useState<number | string>(currentMonthlyExpense || 5000000);
   const [multiplier, setMultiplier] = useState<number>(6); // 3, 6, 9, 12 months
@@ -63,7 +64,7 @@ export function FinancialCalculators({
   // 3. Compound Interest & Investment Growth State
   const [initialDeposit, setInitialDeposit] = useState<number | string>(10000000); // 10jt
   const [monthlyContribution, setMonthlyContribution] = useState<number | string>(1000000); // 1jt/bln
-  const [expectedReturn, setExpectedReturn] = useState<string>("10"); // 10% / year (e.g. S&P500 / IHSG / Reksadana Saham)
+  const [expectedReturn, setExpectedReturn] = useState<string>("10"); // 10% / year
   const [investmentYears, setInvestmentYears] = useState<string>("10"); // 10 years
 
   const numericInitDeposit = typeof initialDeposit === "number" ? initialDeposit : parseFloat(String(initialDeposit).replace(/[^0-9.-]+/g, "")) || 0;
@@ -97,10 +98,10 @@ export function FinancialCalculators({
           </div>
           <div>
             <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight font-display">
-              Kalkulator & Simulator Finansial Cerdas
+              {t("calculators.title")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-              Simulasikan target dana darurat, cicilan kredit KPR, dan akumulasi bunga majemuk investasi
+              {t("calculators.subtitle")}
             </p>
           </div>
         </div>
@@ -114,21 +115,21 @@ export function FinancialCalculators({
             className="rounded-xl font-bold text-xs flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
           >
             <ShieldCheck className="h-4 w-4" />
-            <span className="hidden sm:inline">Kalkulator</span> Dana Darurat
+            <span>{t("calculators.emergencyTab")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="kpr"
             className="rounded-xl font-bold text-xs flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
           >
             <Building2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Simulasi</span> KPR & Pinjaman
+            <span>{t("calculators.kprTab")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="compound"
             className="rounded-xl font-bold text-xs flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-glow transition-all"
           >
             <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Pertumbuhan</span> Investasi
+            <span>{t("calculators.compoundTab")}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -138,7 +139,7 @@ export function FinancialCalculators({
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                  Pengeluaran Rutin Bulanan
+                  {t("calculators.monthlyExpenseLabel")}
                 </Label>
                 <CurrencyInput
                   value={expense}
@@ -149,7 +150,7 @@ export function FinancialCalculators({
 
               <div className="space-y-2">
                 <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                  Target Kelipatan Ketahanan
+                  {t("calculators.multiplierLabel")}
                 </Label>
                 <div className="grid grid-cols-4 gap-2">
                   {[3, 6, 9, 12].map((m) => (
@@ -163,7 +164,7 @@ export function FinancialCalculators({
                           : "bg-slate-50 dark:bg-[#07090E] text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-white/[0.08] hover:border-blue-500/40"
                       }`}
                     >
-                      {m} Bulan
+                      {t("calculators.months", { count: m })}
                     </button>
                   ))}
                 </div>
@@ -176,10 +177,10 @@ export function FinancialCalculators({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-black uppercase tracking-widest text-blue-100 flex items-center gap-1.5 font-display">
                     <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-                    Target Ideal Dana Darurat ({multiplier}x)
+                    {t("calculators.emergencyIdealTarget", { multiplier })}
                   </span>
                   <span className="text-xs font-black bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-xl">
-                    {emergencyFundProgress}% Terpenuhi
+                    {t("calculators.fulfilled", { percent: emergencyFundProgress })}
                   </span>
                 </div>
 
@@ -189,8 +190,8 @@ export function FinancialCalculators({
 
                 <p className="text-xs text-blue-100 font-medium">
                   {currentLiquidBalance >= emergencyTarget
-                    ? "Selamat! Dana likuiditas keluarga Anda telah mencukupi standar ketahanan darurat ideal."
-                    : `Saldo likuid kas saat ini ${formatCurrency(currentLiquidBalance)}. Sisa kekurangan yang perlu ditabung adalah ${formatCurrency(emergencyShortfall)}.`}
+                    ? "✓ Saldo likuiditas kas keluarga Anda telah mencukupi standar ketahanan darurat ideal."
+                    : `Saldo kas saat ini ${formatCurrency(currentLiquidBalance)}. Sisa kekurangan tabungan adalah ${formatCurrency(emergencyShortfall)}.`}
                 </p>
               </div>
 
@@ -210,7 +211,7 @@ export function FinancialCalculators({
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                  Pokok Pinjaman / Plafon KPR (Rp)
+                  {t("calculators.loanPrincipalLabel")}
                 </Label>
                 <CurrencyInput
                   value={loanPrincipal}
@@ -222,7 +223,7 @@ export function FinancialCalculators({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Suku Bunga (% / Tahun)
+                    {t("calculators.interestRateLabel")}
                   </Label>
                   <Input
                     type="number"
@@ -237,7 +238,7 @@ export function FinancialCalculators({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Tenor Pinjaman (Tahun)
+                    {t("calculators.tenorLabel")}
                   </Label>
                   <Input
                     type="number"
@@ -256,7 +257,7 @@ export function FinancialCalculators({
               <div className="space-y-4">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 font-display">
-                    Estimasi Cicilan per Bulan
+                    {t("calculators.monthlyInstallment")}
                   </span>
                   <h3 className="text-3xl sm:text-4xl font-black text-rose-400 font-mono tracking-tight mt-1">
                     {formatCurrency(Math.round(monthlyInstallment))}
@@ -266,17 +267,23 @@ export function FinancialCalculators({
 
                 <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/[0.08]">
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 font-display">Total Pokok</span>
+                    <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 font-display">
+                      {t("calculators.totalPrincipal")}
+                    </span>
                     <p className="text-base font-black font-mono text-white mt-0.5">{formatCurrency(numericPrincipal)}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-wider text-rose-400 font-display">Total Porsi Bunga</span>
+                    <span className="text-[10px] uppercase font-black tracking-wider text-rose-400 font-display">
+                      {t("calculators.totalInterest")}
+                    </span>
                     <p className="text-base font-black font-mono text-rose-400 mt-0.5">+{formatCurrency(Math.round(totalLoanInterest))}</p>
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 font-display">Total Akumulasi Pembayaran</span>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 font-display">
+                    {t("calculators.totalRepayment")}
+                  </span>
                   <p className="text-lg font-black font-mono text-cyan-300">{formatCurrency(Math.round(totalLoanRepayment))}</p>
                 </div>
               </div>
@@ -291,7 +298,7 @@ export function FinancialCalculators({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Modal Awal (Rp)
+                    {t("calculators.initialDepositLabel")}
                   </Label>
                   <CurrencyInput
                     value={initialDeposit}
@@ -303,7 +310,7 @@ export function FinancialCalculators({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Setoran Rutin Bulanan (Rp)
+                    {t("calculators.monthlyDepositLabel")}
                   </Label>
                   <CurrencyInput
                     value={monthlyContribution}
@@ -317,7 +324,7 @@ export function FinancialCalculators({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Return (% / Tahun)
+                    {t("calculators.returnRateLabel")}
                   </Label>
                   <Input
                     type="number"
@@ -330,7 +337,7 @@ export function FinancialCalculators({
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
-                    Durasi (Tahun)
+                    {t("calculators.durationLabel")}
                   </Label>
                   <Input
                     type="number"
@@ -350,7 +357,7 @@ export function FinancialCalculators({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-black uppercase tracking-widest text-blue-100 flex items-center gap-1.5 font-display">
                     <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-                    Nilai Aset di Masa Depan ({investmentYears} Tahun)
+                    {t("calculators.futureAssetValue", { years: investmentYears })}
                   </span>
                 </div>
 
@@ -360,11 +367,15 @@ export function FinancialCalculators({
 
                 <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/20">
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-wider text-blue-100 font-display">Total Modal Disetor</span>
+                    <span className="text-[10px] uppercase font-black tracking-wider text-blue-100 font-display">
+                      {t("calculators.totalContributed")}
+                    </span>
                     <p className="text-base font-black font-mono text-white mt-0.5">{formatCurrency(totalPrincipalInvested)}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-black tracking-wider text-emerald-300 font-display">Total Keuntungan Bersih</span>
+                    <span className="text-[10px] uppercase font-black tracking-wider text-emerald-300 font-display">
+                      {t("calculators.totalGain")}
+                    </span>
                     <p className="text-base font-black font-mono text-emerald-300 mt-0.5">+{formatCurrency(Math.round(totalGains))}</p>
                   </div>
                 </div>

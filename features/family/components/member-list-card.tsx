@@ -16,7 +16,6 @@ import {
   Check,
   UserPlus,
   RefreshCw,
-  MoreVertical,
   Shield,
   Trash2,
   ChevronDown,
@@ -27,6 +26,7 @@ import {
   removeMemberAction,
 } from "../actions/family-actions";
 import { ROLE_DEFINITIONS, canManageMembers, type FamilyRole } from "@/lib/auth/rbac";
+import { useTranslation } from "@/lib/i18n/i18n-context";
 import { toast } from "sonner";
 
 interface MemberListCardProps {
@@ -60,25 +60,29 @@ export function MemberListCard({
   const [inviteCode, setInviteCode] = useState(family.invite_code);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const { t, locale } = useTranslation();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteCode);
     setCopied(true);
-    toast.success("Kode undangan keluarga disalin!");
+    toast.success(locale === "en" ? "Family invite code copied!" : "Kode undangan keluarga disalin!");
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleRegenerateCode = async () => {
-    if (!confirm("Yakin ingin membuat kode undangan baru? Kode lama tidak akan berlaku lagi.")) return;
+    const confirmMsg = locale === "en"
+      ? "Generate a new invitation code? The old code will expire."
+      : "Yakin ingin membuat kode undangan baru? Kode lama tidak akan berlaku lagi.";
+    if (!confirm(confirmMsg)) return;
     try {
       setIsRegenerating(true);
       const res = await regenerateInviteCodeAction(family.id);
       if (res.success && res.data) {
         setInviteCode(res.data);
-        toast.success("Kode undangan baru berhasil dibuat!");
+        toast.success(locale === "en" ? "New invitation code generated!" : "Kode undangan baru berhasil dibuat!");
       }
     } catch {
-      toast.error("Gagal memperbarui kode undangan");
+      toast.error("Failed to update invite code");
     } finally {
       setIsRegenerating(false);
     }
@@ -94,19 +98,22 @@ export function MemberListCard({
       });
 
       if (res.success) {
-        toast.success(`Hak akses anggota berhasil diubah ke ${ROLE_DEFINITIONS[newRole]?.label || newRole}!`);
+        toast.success(t("family.changeRoleSuccess"));
       } else {
-        toast.error(res.error || "Gagal mengubah hak akses");
+        toast.error(res.error || "Failed to update role");
       }
     } catch {
-      toast.error("Terjadi kesalahan");
+      toast.error("An error occurred");
     } finally {
       setUpdatingUserId(null);
     }
   };
 
   const handleRemoveMember = async (userId: string, memberName: string) => {
-    if (!confirm(`Keluarkan ${memberName} dari keluarga?`)) return;
+    const confirmMsg = locale === "en"
+      ? `Remove ${memberName} from family workspace?`
+      : `Keluarkan ${memberName} dari keluarga?`;
+    if (!confirm(confirmMsg)) return;
     try {
       setUpdatingUserId(userId);
       const res = await removeMemberAction({
@@ -115,12 +122,12 @@ export function MemberListCard({
       });
 
       if (res.success) {
-        toast.success(`${memberName} berhasil dikeluarkan dari keluarga`);
+        toast.success(locale === "en" ? `${memberName} removed from family` : `${memberName} berhasil dikeluarkan dari keluarga`);
       } else {
-        toast.error(res.error || "Gagal mengeluarkan anggota");
+        toast.error(res.error || "Failed to remove member");
       }
     } catch {
-      toast.error("Terjadi kesalahan");
+      toast.error("An error occurred");
     } finally {
       setUpdatingUserId(null);
     }
@@ -132,10 +139,10 @@ export function MemberListCard({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="text-xl font-black font-display text-slate-900 dark:text-white">
-              Daftar Anggota & Hak Akses ({family.name})
+              {t("family.cardTitle", { name: family.name })}
             </CardTitle>
             <CardDescription className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-              Kelola peran hak akses anggota ruang kerja keluarga (Owner, Admin, Member, Viewer).
+              {t("family.cardSubtitle")}
             </CardDescription>
           </div>
 
@@ -144,7 +151,7 @@ export function MemberListCard({
             <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <div className="text-xs">
               <span className="text-slate-400 block text-[9px] uppercase font-black tracking-widest font-display">
-                Kode Undangan
+                {t("family.codeLabel")}
               </span>
               <span className="font-mono font-black text-sm text-slate-900 dark:text-white tracking-widest">
                 {inviteCode}
@@ -168,7 +175,7 @@ export function MemberListCard({
                 variant="ghost"
                 disabled={isRegenerating}
                 onClick={handleRegenerateCode}
-                title="Ganti Kode Baru"
+                title={locale === "en" ? "Regenerate New Code" : "Ganti Kode Baru"}
                 className="h-8 w-8 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${isRegenerating ? "animate-spin" : ""}`} />
@@ -201,10 +208,10 @@ export function MemberListCard({
                   </Avatar>
                   <div>
                     <p className="text-sm font-black text-slate-900 dark:text-white font-display flex items-center gap-2">
-                      {member.users?.full_name || "Pengguna"}
+                      {member.users?.full_name || (locale === "en" ? "User" : "Pengguna")}
                       {isSelf && (
                         <span className="text-[10px] bg-slate-100 dark:bg-white/[0.08] text-slate-500 dark:text-slate-300 px-2 py-0.5 rounded-full font-sans font-bold">
-                          Anda
+                          {t("common.you")}
                         </span>
                       )}
                     </p>
@@ -243,7 +250,7 @@ export function MemberListCard({
                           className="text-xs font-bold text-rose-600 focus:text-rose-700 cursor-pointer border-t border-slate-100 dark:border-white/[0.06] mt-1 pt-1.5"
                         >
                           <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                          Keluarkan dari Keluarga
+                          {t("family.kickMember")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
