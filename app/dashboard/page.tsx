@@ -11,12 +11,16 @@ import {
   getCategoryBreakdownAction,
   getNetWorthSummaryAction,
 } from "@/features/analytics/actions/analytics-actions";
-import { getFinancialHealthAdviceAction } from "@/features/ai/actions/ai-actions";
+import {
+  getFinancialHealthAdviceAction,
+  getWeeklyFinancialDigestAction,
+} from "@/features/ai/actions/ai-actions";
 import { MetricSummaryCards } from "@/features/analytics/components/metric-summary-cards";
 import { CashflowAreaChart } from "@/features/analytics/components/cashflow-area-chart";
 import { CategoryDonutChart } from "@/features/analytics/components/category-donut-chart";
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
+import { AIWeeklyDigestCard } from "@/features/ai/components/ai-weekly-digest-card";
 import { BudgetWarningBanner } from "@/features/budgets/components/budget-warning-banner";
 import { AddTransactionModal } from "@/features/transactions/components/add-transaction-modal";
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
@@ -55,6 +59,7 @@ export default async function DashboardPage() {
     netWorthRes,
     adviceRes,
     budgetsRes,
+    digestRes,
   ] = await Promise.all([
     getWalletsAction(family.id),
     getCategoriesAction(family.id),
@@ -65,6 +70,7 @@ export default async function DashboardPage() {
     getNetWorthSummaryAction(family.id),
     getFinancialHealthAdviceAction(family.id),
     getBudgetsAction(family.id, currentPeriodMonth),
+    getWeeklyFinancialDigestAction(family.id),
   ]);
 
   const wallets = walletsRes.data || [];
@@ -76,6 +82,7 @@ export default async function DashboardPage() {
   const netWorth = netWorthRes.data;
   const advice = adviceRes.data;
   const budgets = budgetsRes.data || [];
+  const digest = digestRes.data;
 
   return (
     <AppLayout>
@@ -111,8 +118,11 @@ export default async function DashboardPage() {
         savingsRate={summary.savingsRate}
       />
 
-      {/* AI Financial Advisor Insight */}
-      {advice && <AIAdvisorCard advice={advice} />}
+      {/* AI Financial Advisor & Weekly Digest Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {advice && <AIAdvisorCard advice={advice} />}
+        {digest && <AIWeeklyDigestCard digest={digest} />}
+      </div>
 
       {/* Net Worth Card */}
       <NetWorthCard netWorth={netWorth} />

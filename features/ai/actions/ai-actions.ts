@@ -339,7 +339,7 @@ Berikan evaluasi kesehatan finansial objektif dalam format JSON murni:
       totalSavings,
     });
     return { success: true, data: fallback, source: "heuristic" };
-  } catch (err: any) {
+  } catch {
     const fallback = calculateLocalFinancialHealth({
       monthlyIncome: 10000000,
       monthlyExpense: 7000000,
@@ -347,5 +347,113 @@ Berikan evaluasi kesehatan finansial objektif dalam format JSON murni:
       totalSavings: 20000000,
     });
     return { success: true, data: fallback, source: "heuristic" };
+  }
+}
+
+export interface WeeklyDigestData {
+  weekLabel: string;
+  totalExpenseThisWeek: number;
+  totalExpenseLastWeek: number;
+  velocityPercentage: number;
+  topExpenseCategory: {
+    name: string;
+    amount: number;
+  } | null;
+  tips: string[];
+  summary: string;
+}
+
+/**
+ * Get Weekly AI Financial Digest & Saving Hacks
+ */
+export async function getWeeklyFinancialDigestAction(familyId: string) {
+  try {
+    const supabase = await createClient();
+
+    const now = new Date();
+    const d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const d14 = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+    const dateToday = now.toISOString().split("T")[0];
+    const date7DaysAgo = d7.toISOString().split("T")[0];
+    const date14DaysAgo = d14.toISOString().split("T")[0];
+
+    // Fetch transactions from last 14 days
+    const { data: transactions } = await (supabase as any)
+      .from("transactions")
+      .select(`
+        amount,
+        type,
+        transaction_date,
+        categories:category_id (name)
+      `)
+      .eq("family_id", familyId)
+      .eq("type", "expense")
+      .eq("is_deleted", false)
+      .gte("transaction_date", date14DaysAgo)
+      .lte("transaction_date", dateToday);
+
+    let expenseThisWeek = 0;
+    let expenseLastWeek = 0;
+    const categoryTotals: Record<string, number> = {};
+
+    (transactions || []).forEach((t: any) => {
+      const amt = Number(t.amount || 0);
+      const tDate = t.transaction_date;
+
+      if (tDate >= date7DaysAgo) {
+        expenseThisWeek += amt;
+        const catName = t.categories?.name || "Lainnya";
+        categoryTotals[catName] = (categoryTotals[catName] || 0) + amt;
+      } else {
+        expenseLastWeek += amt;
+      }
+    });
+
+    let topCatName = "";
+    let topCatAmt = 0;
+    Object.entries(categoryTotals).forEach(([name, amt]) => {
+      if (amt > topCatAmt) {
+        topCatAmt = amt;
+        topCatName = name;
+      }
+    });
+
+    let velocityPercentage = 0;
+    if (expenseLastWeek > 0) {
+      velocityPercentage = Math.round(
+        ((expenseThisWeek - expenseLastWeek) / expenseLastWeek) * 100
+      );
+    }
+
+    const tips = [
+      topCatName
+        ? `Pengeluaran terbesar 7 hari ini berada pada pos "${topCatName}". Coba tetapkan batas harian untuk menjaga laju anggaran.`
+        : "Pertahankan pencatatan struk harian agar evaluasi mingguan tetap akurat.",
+      velocityPercentage > 0
+        ? `Laju belanja mingguan Anda naik +${velocityPercentage}% dibanding pekan lalu. Prioritaskan kebutuhan pokok.`
+        : "Bagus! Pengeluaran pekan ini lebih hemat dibanding pekan lalu. Alokasikan selisihnya ke Dana Darurat.",
+      "Gunakan fitur pembayaran cicilan & pengingat WhatsApp agar tidak terkena denda keterlambatan.",
+    ];
+
+    const digest: WeeklyDigestData = {
+      weekLabel: `7 Hari Terakhir (${date7DaysAgo} s/d ${dateToday})`,
+      totalExpenseThisWeek: expenseThisWeek,
+      totalExpenseLastWeek: expenseLastWeek,
+      velocityPercentage,
+      topExpenseCategory: topCatName ? { name: topCatName, amount: topCatAmt } : null,
+      tips,
+      summary:
+        velocityPercentage <= 0
+          ? `Performa finansial minggu ini sangat terkendali! Pengeluaran Anda berada di Rp ${expenseThisWeek.toLocaleString("id-ID")}.`
+          : `Pengeluaran minggu ini mencapai Rp ${expenseThisWeek.toLocaleString("id-ID")} (naik ${velocityPercentage}%).`,
+    };
+
+    return { success: true, data: digest };
+  } catch {
+    return {
+      success: false,
+      data: null,
+    };
   }
 }
