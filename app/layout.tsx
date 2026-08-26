@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { I18nProvider } from "@/lib/i18n/i18n-context";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -53,15 +54,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            toastOptions={{
-              className: "font-sans rounded-2xl shadow-lg border",
-            }}
-          />
+          <I18nProvider>
+            {children}
+            <Toaster
+              position="top-right"
+              richColors
+              closeButton
+              toastOptions={{
+                className: "font-sans rounded-2xl shadow-lg border",
+              }}
+            />
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

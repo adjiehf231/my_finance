@@ -32,17 +32,17 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 160 84% 39%; /* Emerald */
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 222 47% 7%; /* Deep Navy Slate #0B0F17 */
+    --background: 224 71% 4%; /* Pure Deep Obsidian #0B0F17 */
     --foreground: 210 40% 98%; /* Slate 50 #F8FAFC */
 
-    --card: 222 42% 13%; /* Midnight Slate #131B2E */
+    --card: 223 47% 11%; /* Midnight Navy #111827 / #131B2E */
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 42% 13%;
+    --popover: 223 47% 11%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 160 84% 39%; /* Emerald 500 #10B981 */
@@ -76,6 +76,63 @@
   }
 }
 
+@layer utilities {
+  /* Gen-Z & Premium Glassmorphism & Card Utilities */
+  .glass-card {
+    @apply bg-white/80 dark:bg-[#131B2E]/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all duration-200;
+  }
+
+  .glass-card-hover {
+    @apply glass-card hover:border-emerald-500/40 dark:hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/5 transition-all duration-200;
+  }
+
+  .glass-panel {
+    @apply bg-slate-900/90 dark:bg-[#0B0F17]/90 backdrop-blur-2xl border border-slate-800/80 text-white;
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.25);
+  }
+
+  .glow-indigo {
+    box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.25);
+  }
+
+  /* Shimmer effect for skeleton components */
+  .shimmer-mask {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-mask::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.08) 20%,
+      rgba(255, 255, 255, 0.18) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+    content: "";
+  }
+
+  .dark .shimmer-mask::after {
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.03) 20%,
+      rgba(255, 255, 255, 0.08) 60%,
+      rgba(255, 255, 255, 0)
+    );
+  }
+}
+
 /* Custom scrollbars for ledger & modals */
 ::-webkit-scrollbar {
   width: 6px;
@@ -85,9 +142,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: hsl(var(--muted-foreground) / 0.25);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.45);
 }

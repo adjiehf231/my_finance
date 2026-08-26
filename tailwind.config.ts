@@ -56,18 +56,41 @@ const config: Config = {
           dark: "#881337",
         },
         transfer: {
-          DEFAULT: "#3B82F6", // Blue 500
-          light: "#DBEAFE",
-          dark: "#1E40AF",
+          DEFAULT: "#6366F1", // Indigo 500
+          light: "#E0E7FF",
+          dark: "#3730A3",
         },
       },
       borderRadius: {
+        "3xl": "1.5rem",
+        "2xl": "1rem",
+        xl: "0.875rem",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 2s infinite",
+        "pulse-subtle": "pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        float: "float 4s ease-in-out infinite",
+      },
       fontFamily: {
-        sans: ["var(--font-plus-jakarta)", "sans-serif"],
+        sans: ["var(--font-plus-jakarta)", "Inter", "sans-serif"],
+        display: ["Outfit", "var(--font-plus-jakarta)", "sans-serif"],
       },
     },
   },

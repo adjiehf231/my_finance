@@ -6,21 +6,19 @@ import { ExportModal } from "@/features/export/components/export-modal";
 import { RestoreModal } from "@/features/export/components/restore-modal";
 import { RefreshDataCard } from "@/features/export/components/refresh-data-card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Settings,
   ShieldCheck,
   Download,
-  Lock,
-  Trash2,
   Globe,
   SunMoon,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Pengaturan & Keamanan",
-  description: "Pusat pengaturan keamanan, privasi data UU PDP, dan ekspor laporan.",
+  description: "Pusat pengaturan keamanan, preferensi bahasa, privasi data UU PDP, dan ekspor laporan.",
 };
 
 export default async function SettingsPage() {
@@ -39,7 +37,7 @@ export default async function SettingsPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <Settings className="h-7 w-7 text-emerald-600" />
-            Pengaturan & Keamanan
+            Pengaturan & Preferensi
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Ruang Kerja: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{family.name}</span>
@@ -50,7 +48,41 @@ export default async function SettingsPage() {
       {/* Section 0: Sinkronisasi & Refresh Cache */}
       <RefreshDataCard />
 
-      {/* Section 1: Ekspor & Data Backup / Restore */}
+      {/* Section 1: Preferensi Bahasa & Tampilan */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+          Preferensi & Antarmuka
+        </h3>
+        <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-6 shadow-sm divide-y divide-slate-100 dark:divide-slate-800 space-y-4">
+          <CardContent className="p-0 flex items-center justify-between">
+            <div className="space-y-0.5">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Globe className="h-4 w-4 text-emerald-600" />
+                Bahasa Tampilan (Display Language)
+              </h4>
+              <p className="text-xs text-slate-500">
+                Pilih antara Bahasa Indonesia (🇮🇩 ID) atau English (🇬🇧 EN).
+              </p>
+            </div>
+            <LanguageSwitcher />
+          </CardContent>
+
+          <div className="pt-4 flex items-center justify-between">
+            <div className="space-y-0.5">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <SunMoon className="h-4 w-4 text-amber-500" />
+                Tema Tampilan
+              </h4>
+              <p className="text-xs text-slate-500">
+                Pilih mode Gelap (Dark Mode), Terang (Light Mode), atau Sistem.
+              </p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </Card>
+      </div>
+
+      {/* Section 2: Ekspor & Data Backup / Restore */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
           Pusat Data & Cadangan
@@ -74,12 +106,12 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      {/* Section 2: Keamanan & Privasi Data (UU PDP) */}
+      {/* Section 3: Keamanan & Privasi Data (UU PDP) */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
           Kepatuhan & Privasi Data
         </h3>
-        <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-6 shadow-sm divide-y divide-slate-100 dark:divide-slate-800 space-y-4">
+        <Card className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#131B2E] p-6 shadow-sm">
           <CardContent className="p-0 flex items-center justify-between">
             <div className="space-y-0.5">
               <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -94,19 +126,6 @@ export default async function SettingsPage() {
               Terproteksi
             </span>
           </CardContent>
-
-          <div className="pt-4 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <SunMoon className="h-4 w-4 text-amber-500" />
-                Tema Tampilan
-              </h4>
-              <p className="text-xs text-slate-500">
-                Pilih mode Gelap (Dark Mode), Terang (Light Mode), atau Sistem.
-              </p>
-            </div>
-            <ThemeToggle />
-          </div>
         </Card>
       </div>
     </AppLayout>
