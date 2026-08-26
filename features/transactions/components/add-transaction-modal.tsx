@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
   SelectContent,
@@ -46,7 +47,7 @@ export function AddTransactionModal({
 
   // Form State
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number | string>("");
   const [transactionDate, setTransactionDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -101,7 +102,7 @@ export function AddTransactionModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsedAmount = parseFloat(amount.replace(/[^0-9.-]+/g, "")) || 0;
+    const parsedAmount = typeof amount === "number" ? amount : parseFloat(String(amount).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (parsedAmount <= 0) {
       toast.error("Nominal transaksi harus lebih dari 0");
@@ -201,24 +202,17 @@ export function AddTransactionModal({
         </Tabs>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-          {/* Nominal Input (Large Display) */}
+          {/* Nominal Input with Live Rupiah Formatter */}
           <div className="space-y-1.5">
-            <Label htmlFor="tx-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">Nominal Transaksi</Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400 text-lg font-mono">
-                Rp
-              </span>
-              <Input
-                id="tx-amount"
-                type="number"
-                min="1"
-                placeholder="0"
-                className="pl-12 text-2xl sm:text-3xl font-black h-14 rounded-2xl tracking-tight font-mono bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-            </div>
+            <Label htmlFor="tx-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Nominal Transaksi
+            </Label>
+            <CurrencyInput
+              id="tx-amount"
+              value={amount}
+              onValueChange={setAmount}
+              required
+            />
           </div>
 
           {/* Date Picker */}

@@ -10,8 +10,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
   SelectContent,
@@ -42,12 +42,12 @@ export function UpsertBudgetModal({
   const [isLoading, setIsLoading] = useState(false);
 
   const [categoryId, setCategoryId] = useState(expenseCategories[0]?.id || "");
-  const [amountLimit, setAmountLimit] = useState("");
+  const [amountLimit, setAmountLimit] = useState<number | string>("");
   const [notifyThreshold, setNotifyThreshold] = useState("80");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const limitNum = parseFloat(amountLimit.replace(/[^0-9.-]+/g, "")) || 0;
+    const limitNum = typeof amountLimit === "number" ? amountLimit : parseFloat(String(amountLimit).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (limitNum <= 0) {
       toast.error("Batas anggaran harus lebih dari 0");
@@ -88,27 +88,29 @@ export function UpsertBudgetModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-md shadow-emerald-500/20">
-            <Plus className="h-4 w-4" />
+          <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
+            <Plus className="h-4 w-4 stroke-[3]" />
             Atur Anggaran
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
             Atur Batas Anggaran Bulanan
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="budget-cat">Kategori Pengeluaran</Label>
+            <Label htmlFor="budget-cat" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Kategori Pengeluaran
+            </Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger id="budget-cat">
+              <SelectTrigger id="budget-cat" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih kategori" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 {expenseCategories.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -119,31 +121,26 @@ export function UpsertBudgetModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="budget-amount">Batas Maksimal Pengeluaran (Rp)</Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">
-                Rp
-              </span>
-              <Input
-                id="budget-amount"
-                type="number"
-                min="1"
-                placeholder="Contoh: 1500000"
-                className="pl-12 text-xl font-bold h-12 rounded-2xl"
-                value={amountLimit}
-                onChange={(e) => setAmountLimit(e.target.value)}
-                required
-              />
-            </div>
+            <Label htmlFor="budget-amount" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Batas Maksimal Pengeluaran
+            </Label>
+            <CurrencyInput
+              id="budget-amount"
+              value={amountLimit}
+              onValueChange={setAmountLimit}
+              required
+            />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="budget-threshold">Peringatan Bahaya Pada Pemakaian (%)</Label>
+            <Label htmlFor="budget-threshold" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Peringatan Bahaya Pada Pemakaian (%)
+            </Label>
             <Select value={notifyThreshold} onValueChange={setNotifyThreshold}>
-              <SelectTrigger id="budget-threshold">
+              <SelectTrigger id="budget-threshold" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih batas" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 <SelectItem value="70">70% Dari Limit</SelectItem>
                 <SelectItem value="80">80% Dari Limit (Direkomendasikan)</SelectItem>
                 <SelectItem value="90">90% Dari Limit</SelectItem>
@@ -156,14 +153,14 @@ export function UpsertBudgetModal({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-2xl text-xs font-bold"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-5 shadow-glow"
             >
               {isLoading ? (
                 <>

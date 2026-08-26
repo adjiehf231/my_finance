@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useOptimistic, startTransition } from "react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { CategoryBadge } from "@/features/categories/components/category-badge";
 import { ReceiptPreviewDialog } from "./receipt-preview-dialog";
@@ -32,37 +32,57 @@ interface TransactionTableProps {
   onUpdate?: () => void;
 }
 
+type OptimisticAction = { type: "delete"; id: string };
+
 export function TransactionTable({ transactions, categories = [], onUpdate }: TransactionTableProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<TransactionWithDetails | null>(null);
   const { t } = useTranslation();
 
+  // Zero-Latency Optimistic State
+  const [optimisticTransactions, setOptimisticTransactions] = useOptimistic(
+    transactions,
+    (state: TransactionWithDetails[], action: OptimisticAction) => {
+      if (action.type === "delete") {
+        return state.filter((t) => t.id !== action.id);
+      }
+      return state;
+    }
+  );
+
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus transaksi ini? Saldo dompet akan disesuaikan otomatis.")) return;
 
-    try {
-      setIsDeleting(id);
-      const res = await deleteTransactionAction(id);
-      if (res.success) {
-        toast.success("Transaksi berhasil dihapus");
+    startTransition(async () => {
+      // 0ms instant UI update
+      setOptimisticTransactions({ type: "delete", id });
+
+      try {
+        setIsDeleting(id);
+        const res = await deleteTransactionAction(id);
+        if (res.success) {
+          toast.success("Transaksi berhasil dihapus");
+          onUpdate?.();
+        } else {
+          toast.error(res.error || "Gagal menghapus transaksi");
+          onUpdate?.();
+        }
+      } catch {
+        toast.error("Terjadi kesalahan sistem saat menghapus");
         onUpdate?.();
-      } else {
-        toast.error(res.error || "Gagal menghapus transaksi");
+      } finally {
+        setIsDeleting(null);
       }
-    } catch {
-      toast.error("Terjadi kesalahan");
-    } finally {
-      setIsDeleting(null);
-    }
+    });
   };
 
-  if (transactions.length === 0) {
+  if (optimisticTransactions.length === 0) {
     return (
-      <div className="py-16 text-center bg-white/80 dark:bg-[#0E131F]/80 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] p-8 shadow-sm">
-        <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center mx-auto mb-3 text-slate-400">
+      <div className="py-16 text-center bg-white/80 dark:bg-[#0D111A]/80 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] p-8 shadow-sm">
+        <div className="h-14 w-14 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mx-auto mb-3 text-blue-600 dark:text-blue-400">
           <Layers className="h-7 w-7" />
         </div>
-        <h4 className="text-base font-bold text-slate-900 dark:text-white">
+        <h4 className="text-base font-black text-slate-900 dark:text-white font-display">
           {t("transactions.noTransactions")}
         </h4>
         <p className="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto mt-1 font-medium">
@@ -73,11 +93,11 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
   }
 
   return (
-    <div className="bg-white/85 dark:bg-[#0E131F]/85 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm overflow-hidden">
+    <div className="bg-white/85 dark:bg-[#0D111A]/85 backdrop-blur-2xl rounded-3xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm overflow-hidden">
       {/* Desktop Ledger Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50/70 dark:bg-slate-800/30 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-white/[0.06]">
+          <thead className="bg-slate-50/70 dark:bg-[#07090E]/60 text-[11px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-white/[0.06] font-display">
             <tr>
               <th className="py-4 px-6">{t("transactions.dateAndType")}</th>
               <th className="py-4 px-6">{t("common.description")}</th>
@@ -88,7 +108,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-            {transactions.map((tx) => {
+            {optimisticTransactions.map((tx) => {
               const isIncome = tx.type === "income";
               const isTransfer = tx.type === "transfer";
 
@@ -138,7 +158,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
                   <td className="py-4 px-6 whitespace-nowrap">
                     {isTransfer ? (
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full border border-blue-500/20">
                         {t("transactions.transfer")}
                       </span>
                     ) : (
@@ -148,13 +168,13 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
                   <td className="py-4 px-6 whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">
                     {isTransfer ? (
-                      <div className="flex items-center gap-1.5 font-bold">
+                      <div className="flex items-center gap-1.5 font-bold font-mono">
                         <span>{tx.from_wallet?.name}</span>
                         <ArrowRightLeft className="h-3 w-3 text-slate-400" />
                         <span>{tx.to_wallet?.name}</span>
                       </div>
                     ) : (
-                      <span className="font-bold bg-slate-100 dark:bg-slate-800/70 px-2.5 py-1 rounded-xl">
+                      <span className="font-bold bg-slate-100 dark:bg-[#07090E] border border-slate-200/60 dark:border-white/[0.06] px-2.5 py-1 rounded-xl font-mono">
                         {tx.wallets?.name || "-"}
                       </span>
                     )}
@@ -191,18 +211,18 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
+                        <DropdownMenuContent align="end" className="rounded-2xl w-40 shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                           <DropdownMenuItem
                             onClick={() => setEditingTransaction(tx)}
                             className="text-slate-700 dark:text-slate-200 cursor-pointer text-xs font-semibold"
                           >
-                            <Edit3 className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+                            <Edit3 className="h-3.5 w-3.5 mr-2 text-blue-600" />
                             {t("common.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDelete(tx.id)}
                             disabled={isDeleting === tx.id}
-                            className="text-rose-600 focus:text-rose-700 cursor-pointer text-xs font-semibold"
+                            className="text-rose-600 focus:text-rose-700 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs font-semibold"
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-2" />
                             {t("common.delete")}
@@ -220,7 +240,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
 
       {/* Mobile Responsive Card Stream */}
       <div className="md:hidden divide-y divide-slate-100 dark:divide-white/[0.04]">
-        {transactions.map((tx) => {
+        {optimisticTransactions.map((tx) => {
           const isIncome = tx.type === "income";
           const isTransfer = tx.type === "transfer";
 
@@ -246,7 +266,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     )}
                   </div>
                   <div>
-                    <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                    <p className="font-black text-sm text-slate-900 dark:text-white leading-tight font-display">
                       {tx.description || (isTransfer ? t("transactions.transfer") : "Tanpa Judul")}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5 font-medium">
@@ -276,7 +296,7 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                   {!isTransfer ? (
                     <CategoryBadge category={tx.categories} />
                   ) : (
-                    <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-full border border-blue-500/20">
                       {t("transactions.transfer")}
                     </span>
                   )}
@@ -287,8 +307,8 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     <ReceiptPreviewDialog
                       url={tx.attachment_url}
                       triggerButton={
-                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800 font-bold">
-                          <Receipt className="h-3 w-3 mr-1 text-emerald-600" /> {t("transactions.receipt")}
+                        <Button size="sm" variant="outline" className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-white/[0.08] font-bold">
+                          <Receipt className="h-3 w-3 mr-1 text-blue-600" /> {t("transactions.receipt")}
                         </Button>
                       }
                     />
@@ -297,9 +317,9 @@ export function TransactionTable({ transactions, categories = [], onUpdate }: Tr
                     size="sm"
                     variant="outline"
                     onClick={() => setEditingTransaction(tx)}
-                    className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-slate-800 font-bold"
+                    className="h-7 px-2 text-xs rounded-xl border-slate-200 dark:border-white/[0.08] font-bold"
                   >
-                    <Edit3 className="h-3 w-3 mr-1 text-emerald-600" /> {t("common.edit")}
+                    <Edit3 className="h-3 w-3 mr-1 text-blue-600" /> {t("common.edit")}
                   </Button>
                   <Button
                     size="sm"

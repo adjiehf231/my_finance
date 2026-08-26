@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
   SelectContent,
@@ -39,15 +40,16 @@ export function AddDebtModal({
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"loan_payable" | "debt_receivable">("loan_payable");
-  const [totalAmount, setTotalAmount] = useState("");
-  const [monthlyPayment, setMonthlyPayment] = useState("");
+  const [totalAmount, setTotalAmount] = useState<number | string>("");
+  const [monthlyPayment, setMonthlyPayment] = useState<number | string>("");
   const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const totalNum = parseFloat(totalAmount.replace(/[^0-9.-]+/g, "")) || 0;
+    const totalNum = typeof totalAmount === "number" ? totalAmount : parseFloat(String(totalAmount).replace(/[^0-9.-]+/g, "")) || 0;
+    const monthlyNum = typeof monthlyPayment === "number" ? monthlyPayment : parseFloat(String(monthlyPayment).replace(/[^0-9.-]+/g, "")) || 0;
 
     if (totalNum <= 0) {
       toast.error("Total nominal harus lebih dari 0");
@@ -67,7 +69,7 @@ export function AddDebtModal({
         type,
         totalAmount: totalNum,
         interestRate: 0,
-        monthlyPayment: parseFloat(monthlyPayment) || 0,
+        monthlyPayment: monthlyNum,
         startDate,
         dueDate: dueDate || null,
         notes: notes.trim() || null,
@@ -99,27 +101,29 @@ export function AddDebtModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {triggerButton || (
-          <Button className="rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-md shadow-emerald-500/20">
-            <Plus className="h-4 w-4" />
+          <Button className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
+            <Plus className="h-4 w-4 stroke-[3]" />
             Catat Hutang / Piutang
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white/95 dark:bg-[#0D111A]/95 backdrop-blur-2xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
+          <DialogTitle className="text-xl font-black text-slate-900 dark:text-white font-display">
             Catat Kewajiban Hutang & Piutang
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="debt-type">Jenis Kewajiban</Label>
+            <Label htmlFor="debt-type" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Jenis Kewajiban
+            </Label>
             <Select value={type} onValueChange={(val: any) => setType(val)}>
-              <SelectTrigger id="debt-type">
+              <SelectTrigger id="debt-type" className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]">
                 <SelectValue placeholder="Pilih jenis" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
                 <SelectItem value="loan_payable">Hutang (Kita Berhutang ke Pihak Lain)</SelectItem>
                 <SelectItem value="debt_receivable">Piutang (Orang Lain Berhutang ke Kita)</SelectItem>
               </SelectContent>
@@ -127,10 +131,13 @@ export function AddDebtModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="debt-name">Nama Pihak / Deskripsi Pinjaman</Label>
+            <Label htmlFor="debt-name" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Nama Pihak / Deskripsi Pinjaman
+            </Label>
             <Input
               id="debt-name"
               placeholder="Contoh: KPR Bank Mandiri, Pinjam Teman Budi"
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -138,42 +145,38 @@ export function AddDebtModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="debt-total">Total Pokok Pinjaman (Rp)</Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">
-                Rp
-              </span>
-              <Input
-                id="debt-total"
-                type="number"
-                min="1"
-                placeholder="Contoh: 10000000"
-                className="pl-12 text-xl font-bold h-12 rounded-2xl"
-                value={totalAmount}
-                onChange={(e) => setTotalAmount(e.target.value)}
-                required
-              />
-            </div>
+            <Label htmlFor="debt-total" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Total Pokok Pinjaman
+            </Label>
+            <CurrencyInput
+              id="debt-total"
+              value={totalAmount}
+              onValueChange={setTotalAmount}
+              required
+            />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="debt-monthly">Estimasi Cicilan Bulanan (Rp) (Opsional)</Label>
-            <Input
+            <Label htmlFor="debt-monthly" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Estimasi Cicilan Bulanan (Opsional)
+            </Label>
+            <CurrencyInput
               id="debt-monthly"
-              type="number"
-              min="0"
-              placeholder="Contoh: 1000000"
               value={monthlyPayment}
-              onChange={(e) => setMonthlyPayment(e.target.value)}
+              onValueChange={setMonthlyPayment}
+              placeholder="0"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="debt-start">Tanggal Pinjam</Label>
+              <Label htmlFor="debt-start" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                Tanggal Pinjam
+              </Label>
               <Input
                 id="debt-start"
                 type="date"
+                className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 required
@@ -181,10 +184,13 @@ export function AddDebtModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="debt-due">Jatuh Tempo (Opsional)</Label>
+              <Label htmlFor="debt-due" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+                Jatuh Tempo (Opsional)
+              </Label>
               <Input
                 id="debt-due"
                 type="date"
+                className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
@@ -192,10 +198,13 @@ export function AddDebtModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="debt-notes">Catatan Tambahan</Label>
+            <Label htmlFor="debt-notes" className="text-xs font-black uppercase tracking-widest text-slate-400 font-display">
+              Catatan Tambahan
+            </Label>
             <Input
               id="debt-notes"
               placeholder="Contoh: Bunga 0%, jaminan BPKB"
+              className="rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border-slate-200/80 dark:border-white/[0.08]"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -206,14 +215,14 @@ export function AddDebtModal({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="rounded-xl"
+              className="rounded-2xl text-xs font-bold"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-5 shadow-glow"
             >
               {isLoading ? (
                 <>
