@@ -23,52 +23,51 @@
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Fitur Utama & Keunggulan
 
-### 1. 👨‍👩‍👧‍👦 Family Shared Workspace & Multi-Role
+### 1. 👨‍👩‍👧‍👦 Family Shared Workspace & Granular RBAC
 - Ruang kerja terpusat berbasis `family_id` untuk seluruh anggota keluarga.
-- Sistem hak akses berjenjang (RBAC):
-  - **Owner**: Kontrol penuh workspace, invite/remove member, ganti role, konfigurasi akun & hapus workspace.
-  - **Admin**: Mengelola transaksi, budget, goals, rekening, dan mengundang member.
-  - **Member**: Menambahkan transaksi harian, melihat dashboard, budget, dan progress tabungan keluarga.
+- Sistem hak akses 4 level (*Role-Based Access Control*): **Owner**, **Admin**, **Member**, dan **View-Only** serta hak akses per-dompet (*wallet-level permissions*).
+- Riwayat aktivitas perubahan transparan pada halaman **Activity Audit Log** (`/activity`).
 
-### 2. 💳 Multi-Wallet & Multi-Account Management
-- Pemisahan sumber dana fleksibel: **Kas Tunai**, **Rekening Bank (BCA, Mandiri, dll)**, **E-Wallet (GoPay, OVO, ShopeePay)**, **Kartu Kredit**, hingga **Portofolio Investasi**.
-- Perhitungan saldo atomik otomatis (*initial balance* + mutasi transaksi & transfer).
-- Monitoring saldo per dompet dan total likuiditas keluarga.
+### 2. 💳 Multi-Wallet Management & Nomor Rekening
+- Pemisahan sumber dana: **Kas Tunai**, **Rekening Bank (BCA, Mandiri, BRI, BNI, dll)**, **E-Wallet (GoPay, OVO, ShopeePay, DANA)**, **Kartu Kredit**, dan **Investasi**.
+- Dukungan **Nomor Rekening / No. HP** dengan tombol 1-klik *Copy to Clipboard*.
+- Fitur **Auto-Reconciliation** untuk memastikan saldo dompet selalu sinkron dengan riwayat mutasi dari awal (*Zero Drift*).
 
-### 3. 💸 Transaksi Lengkap (Income, Expense, Transfer)
-- **Pemasukan (Income)**: Pencatatan gaji, bonus, dividen, freelance, dan bisnis sampingan.
-- **Pengeluaran (Expense)**: Kategorisasi detail (kebutuhan dapur, utilitas listrik/air, transportasi, pendidikan, cicilan).
-- **Transfer Antar-Akun**: Perpindahan dana antar-dompet tanpa mendistorsi arus kas (*net cash flow*).
-- **Lampiran Struk/Nota**: Upload bukti transaksi ke Supabase Storage terenkripsi.
-- **Transaksi Berulang (Recurring)**: Otomatisasi pengeluaran rutin bulanan (kontrak rumah, asuransi, tagihan internet).
+### 3. 💸 Transaksi Cepat & Zero-Latency Optimistic UI
+- **Pemasukan, Pengeluaran, dan Transfer Antar-Rekening** (dengan opsi input biaya admin otomatis).
+- **Auto-Formatting Rupiah Real-Time** (`<CurrencyInput />`) yang memformat `Rp 50.000` saat mengetik untuk mencegah salah ketik nol.
+- **Zero-Latency UI** via React 19 `useOptimistic` untuk respon antarmuka instan tanpa jeda loading.
+- **Filter Pencarian Lanjutan**: Filter rentang tanggal custom, rentang nominal min-max, tipe akun dompet, dan multi-select kategori.
 
-### 4. 🎯 Budgeting & Dynamic Warning Alerts
-- Alokasi anggaran bulanan per kategori (*Family + Month + Category + Limit*).
-- Indikator visual pintar (*Progress Bar* & Status):
-  - 🟢 **Aman**: Realisasi `< 70%`
-  - 🟡 **Waspada**: Realisasi `70% - 90%`
-  - 🔴 **Bahaya / Melebihi**: Realisasi `> 100%`
+### 4. 🤖 AI Multimodal Vision OCR & Smart Predictor (Gemini 1.5 Flash)
+- **Batch / Multi-Receipt Upload**: Ekstraksi 2–5 nota belanja sekaligus secara paralel.
+- **Real-Time Auto-Categorization**: AI otomatis memilih kategori yang tepat saat pengguna mengetik deskripsi transaksi.
+- **Weekly AI Financial Digest**: Ringkasan narasi mingguan perbandingan pola belanja 7 hari terakhir beserta tips penghematan kontekstual.
+- **One-Click Bill & Debt Due Reminders**: Pembuat template pengingat jatuh tempo hutang via tautan WhatsApp & Email.
 
-### 5. 🏆 Financial Goals & Alokasi Tabungan
-- Rencana tabungan keluarga terarah (Dana Darurat, Rumah Impian, Liburan, Pendidikan Anak, Ibadah).
-- Buku besar kontribusi (*goal_contributions*) yang mencatat setiap pengalihan dana dari wallet ke target tabungan.
+### 5. 🎯 Smart Budgeting & Warning Banner
+- Alokasi anggaran bulanan dinamis per kategori (*Family + Month + Category + Limit*).
+- **Smart Budget Warning Banner** di Dashboard utama yang memberi peringatan dini saat pengeluaran mendekati atau melampaui batas (80% / 100%).
 
-### 6. 📊 Dashboard, Analytics & Health Score
-- Kartu ringkasan finansial: Total Saldo, Pemasukan Bulan Ini, Pengeluaran Bulan Ini, *Net Cash Flow*, *Savings Rate*.
-- Visualisasi interaktif dengan Chart modern (Recharts): Arus kas bulanan, komposisi pengeluaran per kategori, kontribusi pengeluaran per anggota keluarga.
-- **Financial Health Score (0 - 100)**: Penilaian kesehatan keuangan keluarga berdasarkan rasio tabungan, disiplin anggaran, dan rasio utang.
+### 6. 🏆 Financial Goals & Suite Kalkulator Finansial
+- Perencanaan target tabungan keluarga (Dana Darurat, Rumah, Pendidikan Anak, Liburan).
+- **Suite Kalkulator Finansial Interaktif** di `/analytics`:
+  - Kalkulator Target Dana Darurat (3, 6, 12 bulan pengeluaran).
+  - Kalkulator Investasi & Bunga Majemuk (*Compound Interest*).
+  - Simulasi Pelunasan Hutang Tercepat (*Debt Snowball vs Avalanche*).
 
-### 7. 📑 Export Laporan (PDF, Excel & CSV)
-- **PDF Report**: Desain formal dan rapi untuk arsip bulanan keluarga.
-- **Excel (.xlsx) & CSV**: Ekspor data mentah terstruktur untuk analisis mendalam di spreadsheet.
+### 7. 📑 Laporan Keuangan Siap Cetak & Portabilitas Data
+- **Printable Monthly PDF Statement**: Ekspor laporan keuangan resmi bulanan keluarga siap cetak.
+- **Excel (.xlsx) & CSV**: Ekspor data mentah terstruktur untuk analisis spreadsheet.
+- **Takeout Backup & Restore (UU PDP & GDPR)**: Ekspor dan pemulihan data cadangan JSON utuh.
 
-### 8. 🌐 Pengalaman Pengguna Modern
-- 🌓 **Dark Mode / Light Mode / System Default**.
-- 🇮🇩 **Bilingual Localization**: Bahasa Indonesia & English.
-- 📱 **Mobile-First & PWA Ready**: Navigasi bawah (*bottom bar*) di smartphone, *sidebar navigation* di desktop.
-- 🧙‍♂️ **Interactive Onboarding Wizard**: Panduan praktis bagi pengguna baru untuk menyiapkan workspace keluarga dalam hitungan menit.
+### 8. 🎨 Desain Gen-Z Premium, Skeleton Shimmer & Dwibahasa
+- Estetika modern tanpa kesan AI slop: *layered glassmorphism*, tipografi **Outfit** & **Inter**, dark/light mode elegan.
+- **Skeleton Shimmer Loading**: Transisi halaman tanpa kedipan spinner konvensional.
+- **Dual-Language Switcher (ID/EN)**: Beralih bahasa instan antara Bahasa Indonesia dan English.
+- **Keyboard Shortcuts**: `Ctrl + K` untuk Command Palette pencarian instan, dan `N` untuk catat transaksi baru.
 
 ---
 

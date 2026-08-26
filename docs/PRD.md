@@ -92,23 +92,25 @@
 - **FR-02.1**: Pengguna dapat membuat dompet dengan kategori: `cash`, `bank`, `ewallet`, `credit_card`, `investment`, `other`.
 - **FR-02.2**: Setiap dompet menyimpan `initial_balance` dan menghitung `current_balance` secara atomik.
 - **FR-02.3**: Dukungan arsip/nonaktifkan (*soft delete / status active/inactive*) pada rekening yang tidak digunakan.
+- **FR-02.4**: Dukungan kolom `account_number` (nomor rekening bank / no. HP e-wallet / nomor kartu) pada setiap dompet beserta tombol salin cepat (*one-click clipboard copy*).
+- **FR-02.5 (Auto-Reconciliation)**: Fitur rekonsiliasi saldo dompet otomatis yang menghitung ulang total mutasi dari awal untuk memastikan akurasi saldo 100% tanpa drift.
 
 ### 5.3 Modul Transaksi (*Transactions Engine*) (FR-03)
 - **FR-03.1**: Pencatatan tiga jenis transaksi:
   - **Income**: Menambah saldo dompet tujuan, dihitung dalam arus kas masuk.
   - **Expense**: Mengurangi saldo dompet sumber, dihitung dalam arus kas keluar.
-  - **Transfer**: Memindahkan saldo dari `from_wallet_id` ke `to_wallet_id` tanpa memengaruhi total pendapatan/pengeluaran keluarga.
+  - **Transfer**: Memindahkan saldo dari `from_wallet_id` ke `to_wallet_id` dengan dukungan biaya admin otomatis.
 - **FR-03.2**: Pengunggahan bukti transaksi (nota/struk) format JPG, PNG, WEBP, atau PDF (maksimal 5MB) ke Supabase Storage.
-- **FR-03.3**: Pencarian dan filter transaksi multi-parameter: rentang tanggal, jenis transaksi, kategori, dompet, anggota pembuat, dan nominal.
+- **FR-03.3 (Deep Filtering)**: Pencarian dan filter transaksi multi-dimensi: rentang tanggal custom (date picker), rentang nominal min-max, tipe akun dompet, kategori multi-select, dan pencarian kata kunci real-time.
 - **FR-03.4**: Fitur Transaksi Berulang (*Recurring Transactions*) dengan frekuensi Harian, Mingguan, Bulanan, atau Tahunan.
+- **FR-03.5 (Currency Formatter)**: Auto-formatting input Rupiah real-time (`Rp 50.000`) pada seluruh form input nominal guna mencegah salah ketik nol.
+- **FR-03.6 (Zero-Latency Optimistic UI)**: Pembaruan data instan di antarmuka tabel (0 ms delay) menggunakan React 19 `useOptimistic` saat operasi create, update, dan delete.
 
 ### 5.4 Modul Anggaran (*Budgeting*) (FR-04)
 - **FR-04.1**: Penetapan batas anggaran per bulan per kategori (*Family + Month (YYYY-MM) + Category + Limit*).
 - **FR-04.2**: Perhitungan persentase realisasi otomatis: `(actual_expense / budget_limit) * 100%`.
-- **FR-04.3**: Penandaan status visual:
-  - `Aman` (< 70%)
-  - `Waspada` (70% - 90%)
-  - `Bahaya / Overbudget` (> 100%)
+- **FR-04.3**: Penandaan status visual: `Aman` (< 70%), `Waspada` (70% - 90%), `Bahaya / Overbudget` (> 100%).
+- **FR-04.4 (Smart Budget Warning Banner)**: Banner notifikasi visual interaktif di Dashboard utama saat salah satu kategori pengeluaran mendekati atau melampaui batas anggaran (80% / 100%).
 
 ### 5.5 Modul Target Finansial (*Financial Goals*) (FR-05)
 - **FR-05.1**: Pembuatan target finansial dengan target dana, batas waktu (*deadline*), prioritas, ikon, dan deskripsi.
@@ -117,69 +119,59 @@
 
 ### 5.6 Modul Dashboard & Analitik (FR-06)
 - **FR-06.1**: Summary Cards: Total Likuiditas (*Total Balance*), Pemasukan Bulan Ini, Pengeluaran Bulan Ini, *Net Cash Flow*, Total Tabungan, Total Kewajiban/Cicilan.
-- **FR-06.2**: Visualisasi Grafik Interaktif (Recharts):
-  - Arus kas bulanan (Income vs Expense bar chart).
-  - Distribusi pengeluaran per kategori (Donut / Pie chart).
-  - Kontribusi pengeluaran per anggota keluarga (Stacked bar chart).
-  - Pelacakan progress anggaran dan target tabungan.
+- **FR-06.2**: Visualisasi Grafik Interaktif (Recharts): Arus kas bulanan, distribusi pengeluaran per kategori, dan kontribusi anggota keluarga.
 - **FR-06.3**: Algoritma **Financial Health Score** (Skala 0 - 100) berdasarkan rasio tabungan, ketertiban anggaran, dan rasio utang.
 - **FR-06.4**: Perhitungan **Net Worth** (`Total Assets - Total Liabilities`).
+- **FR-06.5 (Interactive Financial Calculators)**: Suite kalkulator finansial interaktif di `/analytics`:
+  - Kalkulator Target Dana Darurat (Emergency Fund Target).
+  - Kalkulator Investasi & Bunga Majemuk (Compound Interest).
+  - Simulasi Pelunasan Hutang Tercepat (*Debt Snowball vs Avalanche Method*).
 
 ### 5.7 Modul Ekspor & Pelaporan (FR-07)
-- **FR-07.1**: Ekspor Laporan Keuangan format **PDF** berdesain rapi untuk arsip bulanan keluarga.
+- **FR-07.1 (Printable Monthly PDF Statement)**: Ekspor Laporan Keuangan format **PDF** resmi siap cetak berlayout rapi, menyertakan kop keluarga, tabel mutasi, dan ringkasan arus kas bulanan.
 - **FR-07.2**: Ekspor data mentah terstruktur format **Excel (.xlsx)** dan **CSV**.
+- **FR-07.3 (GDPR & UU PDP Data Takeout & Restore)**: Ekspor cadangan data utuh (JSON) dan pemulihan data cadangan (*Restore Backup*) ke dalam workspace.
 
-### 5.8 Modul Pengaturan & Lokalisasi (FR-08)
+### 5.8 Modul Pengaturan, Desain & Lokalisasi (FR-08)
 - **FR-08.1**: Tema antarmuka: *Light*, *Dark*, dan *System Default*.
-- **FR-08.2**: Pengaturan bahasa: Bahasa Indonesia (`id`) & English (`en`).
+- **FR-08.2 (Dual-Language Switcher ID/EN)**: Tombol switch dwibahasa instan antara Bahasa Indonesia dan English dengan persistensi preference.
 - **FR-08.3**: Konfigurasi mata uang default (`IDR`) dan zona waktu default (`Asia/Jakarta`).
+- **FR-08.4 (Gen-Z Premium UI Redesign)**: Desain antarmuka modern non-AI generic dengan tipografi kontemporer (Outfit/Inter), aksen visual elegan, dan responsivitas mobile-first mutakhir.
+- **FR-08.5 (Skeleton Shimmer Loading)**: Efek shimmer card placeholder transparan untuk transisi antar halaman instan tanpa blank spinner.
 
 ### 5.9 Modul Kecerdasan Buatan / AI Financial Assistant (FR-09)
-- **FR-09.1 (Smart Receipt OCR)**: Ekstraksi otomatis nominal, tanggal, merchant, dan rekomendasi kategori dari foto struk belanja via Vision AI.
-- **FR-09.2 (Natural Language & Voice Input)**: Pencatatan transaksi kilat melalui teks percakapan biasa atau transkripsi pesan suara via LLM Function Calling.
-- **FR-09.3 (Interactive Financial Advisor)**: Chatbot asisten finansial interaktif yang menganalisis cash flow keluarga dan menjawab pertanyaan strategis secara kontekstual dan aman.
-- **FR-09.4 (Predictive Anomaly & Burn-Rate Alert)**: Deteksi dini laju pengeluaran abnormal dan proyeksi potensi overbudget sebelum akhir bulan.
-- **FR-09.5 (Monthly Family Narrative Digest)**: Pembuatan ringkasan narasi pencapaian tabungan dan evaluasi keuangan keluarga bulanan.
+- **FR-09.1 (Smart Receipt OCR)**: Ekstraksi otomatis nominal, tanggal, merchant, dan rekomendasi kategori dari foto struk belanja via Gemini Vision AI.
+- **FR-09.2 (Batch / Multi-Receipt Upload)**: Kemampuan mengunggah 2–5 foto nota sekaligus untuk diekstrak dan didrafkan secara berurutan.
+- **FR-09.3 (Real-Time Auto-Category Suggestion)**: AI memprediksi dan memilih kategori yang tepat secara instan saat pengguna mengetik deskripsi transaksi.
+- **FR-09.4 (Weekly Spending Trends & AI Insights)**: Ringkasan narasi mingguan perbandingan pola belanja 7 hari terakhir beserta tips penghematan kontekstual.
+- **FR-09.5 (One-Click Bill & Debt Due Reminders)**: Tombol pembuat template pengingat jatuh tempo hutang / tagihan berulang via WhatsApp Link dan Email.
+
+### 5.10 Modul Kolaborasi Keluarga & Audit Observabilitas (FR-10)
+- **FR-10.1 (Granular Family RBAC)**: Manajemen izin anggota keluarga dengan 4 level peran (Owner, Admin, Member, View-Only) serta pengaturan izin akses per dompet (*wallet-level permissions*).
+- **FR-10.2 (Comprehensive Activity Audit Log)**: Halaman pelacakan riwayat aktivitas keluarga (`/activity`) yang mencatat siapa yang menambah, mengedit, atau menghapus data lengkap dengan timestamp.
 
 ---
 
 ## 6. Non-Functional Requirements (NFR)
 
 ### 6.1 Keamanan & Privasi Data
-- **NFR-01 (Database Isolation)**: Seluruh tabel dilindungi oleh **PostgreSQL Row Level Security (RLS)**. Data antar-keluarga terisolasi total secara kriptografis & logis.
-- **NFR-02 (Enkripsi Transmisi & Storage)**: Seluruh komunikasi menggunakan HTTPS (TLS 1.3). File struk pada Supabase Storage dilindungi RLS dan URL bertanda tangan (*Signed URLs*).
-- **NFR-03 (Audit Trail)**: Setiap perubahan data krusial dicatat dalam `activity_logs`.
-- **NFR-04 (AI Data Privacy & PII Scrubbing)**: Data pribadi sensitif disamarkan sebelum dikirim ke AI API, dan data pengguna tidak digunakan untuk pelatihan model.
+- **NFR-01 (Database Isolation)**: Seluruh tabel dilindungi oleh **PostgreSQL Row Level Security (RLS)**. Data antar-keluarga terisolasi total.
+- **NFR-02 (Enkripsi Transmisi & Storage)**: Komunikasi HTTPS (TLS 1.3), enkripsi AES-256 data cadangan, PIN Lock SHA-256.
+- **NFR-03 (Audit Trail)**: Setiap penambahan, pengubahan, dan penghapusan data krusial tercatat dalam `activity_logs`.
+- **NFR-04 (AI Data Privacy & PII Scrubbing)**: Data pribadi disamarkan sebelum dikirim ke AI API.
 
 ### 6.2 Performa & Keandalan
-- **NFR-05 (Response Time)**: Waktu muat halaman pertama (*First Contentful Paint*) `< 1.2 detik` pada koneksi 4G standar.
-- **NFR-06 (Server Actions)**: Eksekusi transaksi database selesai dalam waktu `< 300 ms`.
-- **NFR-07 (Uptime Target)**: SLA ketersediaan sistem `99.9%` didukung oleh infrastruktur Vercel Serverless & Supabase Cloud.
-
-### 6.3 Aksesibilitas, Responsivitas & Kualitas Otomatisasi
-- **NFR-08 (Mobile-First)**: Responsif sempurna dari layar smartphone (min. 320px) hingga layar desktop ultra-wide (4K).
-- **NFR-09 (A11y)**: Memenuhi standar **WCAG 2.1 Level AA** untuk rasio kontras warna, pembaca layar (*screen reader*), dan navigasi keyboard.
-- **NFR-10 (QA Automation Coverage)**: Minimal **80% code coverage** pada pipeline CI/CD (Vitest, Playwright, pgTAP).
+- **NFR-05 (Composite Indexing)**: Indeks komposit PostgreSQL pada kolom relasi utama memastikan query di bawah `50 ms` pada dataset skala besar.
+- **NFR-06 (Response Time)**: Waktu muat halaman pertama (*FCP*) `< 1.0 detik`.
+- **NFR-07 (Zero-Latency Optimistic UI)**: Reaktivitas antarmuka instan pada mutasi data.
+- **NFR-08 (Uptime Target)**: SLA ketersediaan sistem `99.9%`.
 
 ---
 
-## 7. Batasan & Edge Cases
+## 7. MVP Success Metrics & KPI
 
-| Skenario Edge Case | Solusi Sistem |
-|---|---|
-| User menghapus dompet yang memiliki riwayat ratusan transaksi. | Mencegah *hard delete*. Sistem memberlakukan *soft delete / archiving* (`is_active = false`) agar integritas saldo masa lalu tetap valid. |
-| Transfer antar-dompet dengan mata uang berbeda. | Pada fase MVP, seluruh akun dibatasi dalam satu mata uang basis keluarga (default: IDR). |
-| Pengeluaran melebihi saldo dompet yang tersedia. | Sistem memberikan peringatan (*warning dialog*), namun tetap mengizinkan transaksi tercatat (saldo negatif pada wallet khusus seperti kartu kredit atau talangan). |
-| Dua anggota keluarga mengedit anggaran yang sama bersamaan. | Menggunakan transaksi database PostgreSQL dengan status penguncian optimis (*optimistic concurrency*) dan validasi timestamp `updated_at`. |
-| User keluar (*leave family*) yang merupakan satu-satunya Owner. | Sistem mewajibkan Owner mentransfer hak kepemilikan (*transfer ownership*) ke admin lain sebelum dapat meninggalkan workspace. |
-| Gambar struk buram atau rusak saat dipindai AI OCR. | Sistem memberikan notifikasi kegagalan ramah dan beralih otomatis ke mode input manual dengan foto tetap terlampir. |
-
----
-
-## 8. MVP Success Metrics & KPI
-
-1. **User Activation Rate**: > 85% pengguna baru berhasil menyelesaikan Onboarding Wizard dan mencatat minimal 1 transaksi dalam 48 jam pertama.
-2. **Data Integrity Score**: 100% konsistensi saldo dompet terhadap jumlah akumulasi transaksi (*Zero Drift*).
-3. **AI Logging Adoption**: > 50% transaksi belanja offline dicatat menggunakan fitur AI Vision OCR / Natural Language input.
-4. **Monthly Retention**: > 70% keluarga aktif mencatat transaksi secara rutin setiap minggunya.
-5. **QA Test Pass Rate**: 100% lolos automated test gates pada pipeline rilis CI/CD.
+1. **User Activation Rate**: > 85% pengguna baru berhasil menyelesaikan Onboarding Wizard dan mencatat transaksi dalam 24 jam.
+2. **Data Integrity Score**: 100% konsistensi saldo dompet terhadap total mutasi (*Zero Drift*).
+3. **AI Logging Adoption**: > 50% transaksi belanja dicatat menggunakan AI Multi-Receipt OCR / Auto-Category Suggestion.
+4. **Monthly Retention**: > 75% keluarga aktif mencatat transaksi secara rutin setiap minggunya.
+5. **QA Test Pass Rate**: 100% lolos automated unit & E2E test gates.

@@ -76,6 +76,7 @@ erDiagram
         uuid user_id FK
         string name
         string type
+        string account_number
         numeric initial_balance
         numeric current_balance
         string currency

@@ -204,7 +204,7 @@ gantt
   - Pasangan suami-istri dapat berkonsultasi langsung mengenai cash flow keluarga ke AI Advisor.
   - Skor kesehatan keuangan dan nilai kekayaan bersih keluarga terhitung akurat.
 
-#### 🏃‍♂️ Sprint 12: QA Automation Suite, PWA, Security Hardening & Vercel Launch
+#### 🏃‍♂️ Sprint 12: QA Automation Suite, PWA, Security Hardening & Initial Launch
 - **Durasi**: Minggu 23 – 24
 - **Tujuan Sprint**: Menjalankan seluruh test suite QA Automation (Unit, Integration, RLS Security, Playwright Multi-device, Axe A11y), konfigurasi PWA, dan deploy produksi ke Vercel.
 - **Task Backlog**:
@@ -218,27 +218,145 @@ gantt
 
 ---
 
-## 3. Matriks Ketergantungan Antar-Sprint
+### 🟢 PHASE 7: NEXT-GEN UX, ERGONOMICS & GEN-Z DESIGN SYSTEM
+**Fokus**: Redesign menyeluruh antarmuka premium non-AI slop, animasi halus, skeleton shimmer loading, auto-formatting rupiah real-time, optimistic UI updates, dan dukungan dwibahasa (ID/EN).
+
+#### 🏃‍♂️ Sprint 13: Premium Gen-Z Redesign, Shimmer Skeleton & Multi-Language (ID/EN)
+- **Durasi**: Minggu 25 – 26
+- **Tujuan Sprint**: Melakukan transformasi visual menyeluruh pada antarmuka pengguna agar modern, elegan, berjiwa Gen-Z, tanpa kesan AI slop, dilengkapi skeleton shimmer loading dan toggle bahasa ID/EN.
+- **Task Backlog**:
+  1. Redesign sistem tema dan token warna (Dark/Light mode) dengan estetika glassmorphism halus, tipografi kontemporer (Outfit & Inter), dan visual hierarchy yang tegas.
+  2. Implementasi komponen *Skeleton Shimmer Loading* untuk menggantikan seluruh spinner konvensional pada Dashboard, Transaksi, Dompet, dan Analitik.
+  3. Pembuatan sistem switch dwibahasa (Bahasa Indonesia & English) dengan kamus dictionary i18n terstruktur dan persistensi cookie/localStorage.
+  4. Penyesuaian micro-interactions dan feedback animasi menggunakan Tailwind CSS utilities.
+- **Deliverables**:
+  - Tampilan visual web app tampak eksklusif, rapi, responsif 100%, dan bebas dari kesan template murahan / AI generic.
+  - Transisi loading terasa secepat aplikasi native dengan skeleton shimmer.
+  - Pengguna dapat beralih bahasa antara Indonesia dan Inggris dengan 1 klik.
+
+#### 🏃‍♂️ Sprint 14: High-Velocity Form Ergonomics & Zero-Latency Optimistic UI
+- **Durasi**: Minggu 27 – 28
+- **Tujuan Sprint**: Mengoptimalkan kecepatan input transaksi dengan auto-format rupiah interaktif saat mengetik dan implementasi React 19 `useOptimistic` untuk pembaruan data instan (0 ms latency).
+- **Task Backlog**:
+  1. Pembuatan komponen reusable `<CurrencyInput />` dengan pemformatan rupiah otomatis real-time (mencegah salah ketik jumlah nol).
+  2. Integrasi React 19 `useOptimistic` hook pada tabel transaksi dan mutasi rekening untuk respon klik instan sebelum roundtrip server.
+  3. Penambahan keyboard shortcuts global (`Ctrl + K` untuk Command Palette pencarian instan, dan `N` untuk form transaksi baru).
+  4. Optimasi penanganan form validation error secara visual (*inline field error toast*).
+- **Deliverables**:
+  - Pengguna mengetik nominal dengan auto-format rupiah yang mulus dan nyaman di mata.
+  - Penambahan, pengeditan, dan penghapusan transaksi terjadi secara instan tanpa jeda loading.
+
+---
+
+### 🟢 PHASE 8: ADVANCED TRANSACTION INTELLIGENCE, DEEP FILTERS & FINANCIAL SIMULATIONS
+**Fokus**: Filter pencarian multi-dimensi, rekonsiliasi saldo otomatis, indeks database performa tinggi, peringatan visual anggaran cerdas, generator laporan PDF siap cetak, dan kalkulator simulasi keuangan.
+
+#### 🏃‍♂️ Sprint 15: Deep Transaction Filtering, Balance Auto-Reconciliation & Composite Indexing
+- **Durasi**: Minggu 29 – 30
+- **Tujuan Sprint**: Menyediakan kapabilitas pencarian dan filter transaksi tingkat lanjut, fitur rekonsiliasi saldo dompet otomatis, dan pengoptimalan query PostgreSQL dengan indeks komposit.
+- **Task Backlog**:
+  1. Implementasi drawer filter mutasi lanjutan di `/transactions` (rentang tanggal custom, rentang nominal min-max, tipe akun dompet, dan multi-select kategori).
+  2. Pembuatan fitur dan Server Action `reconcileWalletBalancesAction()` untuk memverifikasi dan menyinkronkan saldo dompet terhadap total riwayat mutasi dari awal.
+  3. Penambahan migrasi PostgreSQL composite indexing pada tabel `transactions` (`family_id`, `transaction_date DESC`, `is_deleted`) untuk query super cepat pada dataset besar.
+  4. Optimasi pagination transaksi server-side.
+- **Deliverables**:
+  - Pengguna dapat menemukan mutasi spesifik dalam hitungan detik dengan filter multi-kriteria.
+  - Saldo dompet dapat direkonsiliasi otomatis untuk jaminan integritas 100%.
+  - Query mutasi puluhan ribu baris berjalan di bawah 50 ms.
+
+#### 🏃‍♂️ Sprint 16: Smart Budget Warning Banners, Financial Simulation Calculators & Printable PDF Reports
+- **Durasi**: Minggu 31 – 32
+- **Tujuan Sprint**: Menghadirkan notifikasi visual status anggaran di dashboard, tiga kalkulator simulasi finansial interaktif, dan ekspor laporan PDF bulanan resmi siap cetak.
+- **Task Backlog**:
+  1. Komponen *Smart Budget Warning Banner* di dashboard utama saat salah satu kategori mendekati/melampaui batas limit anggaran (80% / 100%).
+  2. Pembuatan suite Kalkulator Simulasi Finansial di `/analytics`:
+     - Kalkulator Dana Darurat (Emergency Fund Target berbasis kebutuhan bulanan).
+     - Kalkulator Investasi & Bunga Majemuk (Compound Interest Calculator).
+     - Simulasi Pelunasan Hutang Tercepat (Metode *Snowball* vs *Avalanche*).
+  3. Pembuatan generator laporan keuangan bulanan keluarga dalam format PDF siap cetak (Monthly Financial Statement) berlayout elegan dengan tabel mutasi, logo keluarga, dan ringkasan arus kas.
+- **Deliverables**:
+  - Peringatan dini over-budgeting tampil jelas di dashboard.
+  - Pengguna dapat merencanakan masa depan keuangan dengan simulasi interaktif.
+  - Laporan keuangan keluarga dapat diunduh dalam PDF resmi untuk arsip atau cetak.
+
+---
+
+### 🟢 PHASE 9: MULTIMODAL AI AUTOMATION, MULTI-RECEIPT & CONTEXTUAL INSIGHTS
+**Fokus**: Peningkatan kemampuan Gemini AI untuk upload multi-struk belanja sekaligus, auto-sugesti kategori cerdas saat mengetik, analisis tren mingguan, dan pengingat jatuh tempo tagihan via WhatsApp/Email.
+
+#### 🏃‍♂️ Sprint 17: Gemini Multi-Receipt Batch OCR & Real-Time Contextual Auto-Categorization
+- **Durasi**: Minggu 33 – 34
+- **Tujuan Sprint**: Mengizinkan pengguna mengunggah 2–5 foto struk belanja sekaligus untuk ekstraksi paralel oleh Gemini Vision AI dan menghadirkan auto-kategori cerdas instan saat mengetik deskripsi transaksi.
+- **Task Backlog**:
+  1. Pembuatan antarmuka modal upload multi-nota (Batch Receipt Scanner) yang memproses hingga 5 gambar struk belanja secara asinkron.
+  2. Pipeline antrian ekstraksi OCR Gemini AI dengan validasi total belanja dan daftar item per struk.
+  3. Endpoint auto-categorization instan dengan *debounced typing predictor* yang otomatis mencocokkan teks deskripsi dengan kategori keluarga tanpa klik dropdown.
+- **Deliverables**:
+  - Pengguna dapat memfoto tumpukan struk sekaligus dan langsung mendapatkan draft transaksi berurutan.
+  - Kategori transaksi terisi otomatis saat pengguna selesai mengetik keterangan.
+
+#### 🏃‍♂️ Sprint 18: Weekly AI Financial Digest & Automated Bill/Debt Due Reminders
+- **Durasi**: Minggu 35 – 36
+- **Tujuan Sprint**: Menyediakan rangkuman tren pengeluaran mingguan dengan rekomendasi penghematan cerdas oleh AI, serta tombol/notifikasi pengingat jatuh tempo tagihan dan hutang.
+- **Task Backlog**:
+  1. Modul AI Spending Trend Analyzer yang membandingkan performa arus kas 7 hari terakhir dan memberikan tip hemat kontekstual.
+  2. Pembuatan widget *Weekly AI Financial Insights* di dashboard dan menu advisor.
+  3. Fitur *One-Click Debt Reminder Link* (WhatsApp & Email preview) untuk mengingatkan pihak peminjam atau anggota keluarga sebelum jatuh tempo cicilan/piutang.
+  4. Pengingat jadwal tagihan berulang (*recurring bills countdown*).
+- **Deliverables**:
+  - Keluarga mendapatkan wawasan keuangan mingguan yang mudah dipahami dan aplikatif.
+  - Tidak ada lagi tagihan atau hutang yang terlewat jatuh temponya.
+
+---
+
+### 🟢 PHASE 10: ENTERPRISE FAMILY GOVERNANCE, ROLE ACCESS CONTROL & AUDIT LOGS
+**Fokus**: Manajemen hak akses anggota keluarga (RBAC granular), pembatasan akses rekening tertentu, dan pencatatan audit log perubahan aktivitas secara komprehensif.
+
+#### 🏃‍♂️ Sprint 19: Granular Family Member Management & RBAC Permissions Matrix
+- **Durasi**: Minggu 37 – 38
+- **Tujuan Sprint**: Memperluas manajemen anggota keluarga dengan matriks peran granular (Owner, Admin, Member, View-Only) serta pengaturan izin per-dompet (*wallet-level access permission*).
+- **Task Backlog**:
+  1. Pembuatan halaman Manajemen Hak Akses Keluarga di `/settings` atau `/family`.
+  2. Implementasi matriks perizinan:
+     - **Owner**: Kontrol penuh (hapus keluarga, kelola langganan, ubah semua data).
+     - **Admin**: Menambah/mengedit seluruh transaksi, dompet, dan anggaran.
+     - **Member**: Hanya dapat mencatat transaksi pada dompet yang diizinkan.
+     - **View-Only (Anak/Auditor)**: Hanya dapat melihat dashboard dan laporan tanpa hak edit.
+  3. Kebijakan PostgreSQL RLS tambahan yang mengevaluasi hak akses per-dompet pengguna.
+- **Deliverables**:
+  - Kepala keluarga dapat mengatur siapa saja yang berhak melihat atau mengelola rekening tertentu.
+  - Privasi rekening pribadi tetap terjaga meski berada di ruang kerja keluarga bersama.
+
+#### 🏃‍♂️ Sprint 20: Comprehensive Activity Audit Log & System Observability
+- **Durasi**: Minggu 39 – 40
+- **Tujuan Sprint**: Membangun halaman audit log aktivitas keluarga (`/activity`) untuk melacak riwayat penambahan, modifikasi, dan penghapusan data secara transparan.
+- **Task Backlog**:
+  1. Halaman Riwayat Perubahan Keluarga (`/activity`) dengan filter per anggota, per entitas (transaksi, dompet, anggaran), dan rentang waktu.
+  2. Trigger pencatatan audit log otomatis pada level database PostgreSQL untuk transaksi nominal besar (> Rp 10.000.000) dan perubahan parameter penting.
+  3. Visualisasi *Diff Viewer* untuk melihat data sebelum dan sesudah diedit oleh anggota keluarga.
+  4. Pengujian regresi menyeluruh pada seluruh 20 sprint dan final release packaging.
+- **Deliverables**:
+  - Seluruh perubahan data keluarga terdokumentasi rapi dan dapat ditelusuri riwayatnya secara akurat.
+  - Ekosistem aplikasi **MY FINANCE** mencapai tingkat kematangan maksimal kelas enterprise.
+
+---
+
+## 3. Matriks Ketergantungan Antar-Sprint (Sprint 1 - 20)
 
 ```
-Sprint 1 (Auth & DB) ──► Sprint 2 (Workspace & Wallets)
+[Phase 1 - 6: Baseline MVP & Production Foundation (Sprint 1 - 12)]
                                │
                                ▼
-Sprint 3 (Transactions) ──► Sprint 4 (Transfers & Filters)
-                               │
-            ┌──────────────────┴──────────────────┐
-            ▼                                     ▼
-Sprint 5 (Budgeting Engine)             Sprint 6 (Financial Goals)
-            │                                     │
-            └──────────────────┬──────────────────┘
-                               ▼
-Sprint 7 (Dashboard) ───► Sprint 8 (Reports & Export)
+Sprint 13 (Gen-Z Redesign & i18n) ──► Sprint 14 (Currency Formatter & Optimistic UI)
                                │
                                ▼
-Sprint 9 (Recurring & AI OCR) ──► Sprint 10 (Voice AI & Debts)
+Sprint 15 (Deep Filters & Reconcile) ──► Sprint 16 (Budget Warning, Simulators & PDF)
                                │
                                ▼
-Sprint 11 (AI Advisor & Health) ──► Sprint 12 (QA Suite, PWA & Launch)
+Sprint 17 (Multi-Receipt & Auto-Cat) ──► Sprint 18 (Weekly AI Digest & Due Reminders)
+                               │
+                               ▼
+Sprint 19 (Family RBAC & Permissions) ──► Sprint 20 (Activity Audit Logs & Observability)
 ```
 
 ---
@@ -251,4 +369,5 @@ Setiap task dalam sprint dinyatakan selesai jika memenuhi kriteria berikut:
 4. Tampilan responsif diuji pada resolusi mobile (375px), tablet (768px), dan desktop (1440px).
 5. Memiliki Unit Test / Integration Test dengan code coverage minimal **80%**.
 6. Lolos uji aksesibilitas otomatis **WCAG 2.1 Level AA** tanpa pelanggaran serius.
-7. Berhasil lolos build di Vercel Preview Deployment tanpa error.
+7. Berhasil lolos build di Vercel Deployment tanpa error.
+

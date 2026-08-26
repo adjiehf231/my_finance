@@ -5,15 +5,28 @@ Semua perubahan penting pada proyek **My Finance** akan didokumentasikan dalam b
 
 ---
 
-## [Unreleased]
+## [Unreleased] (Phase 7 – 10: Enterprise & Gen-Z Evolution)
 
-### 🔮 Planned (Phase 5 & 6)
-- **Recurring Transactions**: Penjadwalan transaksi rutin otomatis (gaji, tagihan bulanan, langganan).
-- **Financial Health Score (0-100)**: Algoritma cerdas penilai kesehatan finansial keluarga berdasarkan rasio tabungan, disiplin anggaran, dan rasio utang.
-- **Net Worth Tracking Engine**: Pelacakan nilai kekayaan bersih keluarga (*Total Assets - Total Liabilities*) dengan grafik tren historis.
-- **Debt & Installment Management**: Modul khusus pelacakan sisa pokok pinjaman, bunga, dan tenggat waktu cicilan.
-- **PWA (Progressive Web App)**: Dukungan instalasi ke home screen smartphone dengan service worker caching.
-- **AI Financial Assistant**: Asisten pintar berbasis LLM untuk menganalisis anomali pengeluaran keluarga dan memberikan saran penghematan.
+### 🔮 Planned (Sprint 13 – 20)
+- **Sprint 13 (Gen-Z Redesign & i18n)**: Redesign antarmuka modern non-AI generic, tipografi Outfit/Inter, glassmorphism halus, skeleton shimmer loading, dan tombol switch dwibahasa (ID/EN).
+- **Sprint 14 (Currency Formatter & Optimistic UI)**: Auto-format rupiah real-time (`<CurrencyInput />`), React 19 `useOptimistic` 0 ms latency, dan global shortcut (`Ctrl+K` & `N`).
+- **Sprint 15 (Deep Filters & Balance Reconciliation)**: Filter transaksi multi-kriteria, auto-rekonsiliasi saldo dompet, dan composite indexing PostgreSQL.
+- **Sprint 16 (Budget Warning, Simulators & PDF)**: Smart Budget Warning Banner di Dashboard, kalkulator simulasi finansial (Dana Darurat, Compound Interest, Debt Snowball/Avalanche), dan Printable Monthly Financial Statement PDF.
+- **Sprint 17 (Multi-Receipt & Auto-Categorization)**: Batch 2–5 struk belanja sekaligus via Gemini Vision OCR dan live auto-category predictor saat mengetik deskripsi.
+- **Sprint 18 (Weekly AI Digest & Due Reminders)**: Wawasan tren pengeluaran mingguan AI dan one-click bill/debt due reminders (WhatsApp & Email).
+- **Sprint 19 (Family RBAC & Member Management)**: Matriks peran berjenjang (Owner, Admin, Member, View-Only) dan pengaturan hak akses per-dompet.
+- **Sprint 20 (Activity Audit Logs & Observability)**: Halaman pelacakan riwayat aktivitas keluarga (`/activity`) dengan timestamp dan diff viewer.
+
+---
+
+## [1.1.0] - 2026-08-26
+
+### 🚀 Ditambahkan (Added)
+- **Dukungan Nomor Rekening Dompet**: Penambahan kolom `account_number` pada seluruh tipe dompet (Bank, E-Wallet, Kartu) dengan tombol 1-klik *Copy to Clipboard* dan monospace badge.
+- **Siklus Edit & Hapus Lengkap**: Seluruh 7 entitas data (Transaksi, Rekening, Anggaran, Target Tabungan, Hutang/Piutang, Transaksi Berulang, Kategori) kini memiliki modal edit dan aksi hapus aman.
+- **Fitur Restore & Refresh Data di Pengaturan**: Fitur pemulihan data cadangan JSON (*Restore Backup*) dengan UUID remapping dan validasi skema menyeluruh.
+- **Kepatuhan Next.js 15 Server Actions**: Refactor konstanta kategori bawaan ke `lib/constants/` untuk mematuhi regulasi `"use server"` export async.
+- **Database Migration 00003**: Penambahan kolom `account_number` ke tabel `public.wallets`.
 
 ---
 

@@ -203,6 +203,43 @@ Membuat laporan naratif bulanan yang merayakan pencapaian tabungan dan memberika
 
 ---
 
+### 3.6 📸 Batch / Multi-Receipt Upload OCR Pipeline
+Memungkinkan pengguna mengunggah 2 hingga 5 foto nota belanja sekaligus untuk diekstrak secara paralel oleh Gemini 1.5 Flash Vision.
+
+* **Pipeline Flow**:
+  1. Kompresi gambar batch di sisi browser (Web Worker / Canvas resizing max 1200px).
+  2. Eksekusi paralel `Promise.allSettled()` menuju endpoint Vision OCR.
+  3. Validasi skema Zod dan penyusunan draft transaksi berurutan di modal review (*Multi-Receipt Queue Drawer*).
+  4. Pengguna dapat melakukan koreksi massal dengan satu tombol "Simpan Semua Transaksi".
+
+---
+
+### 3.7 🏷️ Real-Time Contextual Auto-Categorization Predictor
+Model klasifikasi cepat yang memprediksi kategori transaksi secara instan saat pengguna mengetik deskripsi.
+
+* **Endpoint**: Server Action `predictCategoryWithAIAction(description, categories)`
+* **Latency Target**: `< 300 ms` dengan *debounced typing* (300ms delay setelah ketikan berhenti).
+* **Mekanisme**: Membandingkan deskripsi teks (misal: *"Beli pertalite di pom bensin"*) dengan daftar kategori aktif keluarga, lalu mengembalikan `categoryId` dengan confidence score > 0.85 untuk auto-select dropdown otomatis.
+
+---
+
+### 3.8 📈 Weekly AI Financial Trends & Actionable Savings Insights
+Menganalisis fluktuasi arus kas 7 hari terakhir dibandingkan minggu sebelumnya.
+
+* **Output Contoh**:
+  > *"📊 Wawasan Mingguan: Pengeluaran kategori 'Jajan & Kopi' minggu ini naik 35% (Rp 420.000 vs Rp 310.000). Anda berpotensi menghemat hingga Rp 150.000 minggu depan jika menyeduh kopi sendiri di rumah."*
+* Ditampilkan di dashboard utama dan tab Advisor sebagai rekomendasi proaktif.
+
+---
+
+### 3.9 ⏰ One-Click Bill & Debt Due Reminders Template Generator
+Menghasilkan pesan pengingat jatuh tempo tagihan atau piutang yang sopan dan siap dikirim via WhatsApp Link (`https://wa.me/?text=...`) atau Email.
+
+* **Template WhatsApp Dinamis**:
+  > *"Halo [Nama], sekadar mengingatkan ramah mengenai cicilan/piutang sebesar [Rp Nominal] yang akan jatuh tempo pada tanggal [Tanggal Jatuh Tempo]. Terima kasih banyak ya! 🙏"*
+
+---
+
 ## 4. Keamanan, Privasi & Kepatuhan AI
 
 1. **Zero Data Retention for Training**: Menggunakan API berbayar tingkat enterprise (Enterprise Tier) yang menjamin data pengguna **tidak akan digunakan** untuk melatih model (*model training*).
@@ -215,9 +252,9 @@ Membuat laporan naratif bulanan yang merayakan pencapaian tabungan dan memberika
 
 | Fitur | Model AI Rekomendasi | Estimasi Latensi | Estimasi Biaya per 1.000 Panggilan |
 |---|---|---|---|
-| **Scan Struk OCR** | Google Gemini 1.5 Flash (Vision) | ~1.1 detik | **$0.25** (~Rp 4.000,-) |
-| **Natural Language Parser** | GPT-4o-mini / Gemini Flash | ~0.6 detik | **$0.08** (~Rp 1.300,-) |
-| **Advisor Chat (Streaming)** | GPT-4o-mini / Claude 3.5 Haiku | Real-time (TTFT < 400ms) | **$0.30** (~Rp 4.800,-) |
-| **Monthly Digest** | Gemini 1.5 Flash | Batch Job | **$0.05** (~Rp 800,-) |
+| **Scan Struk OCR Single** | Google Gemini 1.5 Flash (Vision) | ~1.1 detik | **$0.25** (~Rp 4.000,-) |
+| **Batch Multi-Receipt (3-5 struk)** | Gemini 1.5 Flash (Parallel) | ~1.8 detik | **$0.75** (~Rp 12.000,-) |
+| **Auto-Category Predictor** | Gemini Flash / Fast Embedding | ~0.3 detik | **$0.05** (~Rp 800,-) |
+| **Weekly AI Digest** | Gemini 1.5 Flash | Batch Job | **$0.05** (~Rp 800,-) |
+| **Advisor Chat (Streaming)** | Gemini 1.5 Flash / GPT-4o-mini | Real-time (TTFT < 400ms) | **$0.30** (~Rp 4.800,-) |
 
-*Optimasi Sisi Klien*: Gambar struk dikompresi di browser (maksimal lebar 1200px, kualitas JPEG 80%) sebelum dikirim ke API untuk menghemat kuota pengguna dan mempercepat waktu inferensi hingga 60%.
