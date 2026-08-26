@@ -62,7 +62,7 @@ export default async function DebtsPage({
       <PageHeader
         titleKey="debts.title"
         subtitleKey="debts.subtitle"
-        icon={CreditCard}
+        iconName="debts"
         familyName={family.name}
       >
         <AddDebtModal familyId={family.id} />

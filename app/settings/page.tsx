@@ -9,7 +9,6 @@ import { RefreshDataCard } from "@/features/export/components/refresh-data-card"
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import {
-  Settings,
   ShieldCheck,
   Download,
   Globe,
@@ -36,7 +35,7 @@ export default async function SettingsPage() {
       <PageHeader
         titleKey="settings.title"
         subtitleKey="settings.subtitle"
-        icon={Settings}
+        iconName="settings"
         familyName={family.name}
       />
 

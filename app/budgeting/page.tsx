@@ -50,7 +50,7 @@ export default async function BudgetingPage({
       <PageHeader
         titleKey="budgeting.title"
         subtitleKey="budgeting.subtitle"
-        icon={PieChart}
+        iconName="budgeting"
         familyName={family.name}
       >
         <MonthSelector currentPeriod={currentPeriod} />

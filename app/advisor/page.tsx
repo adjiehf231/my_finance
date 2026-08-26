@@ -8,7 +8,6 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/ui/page-header";
 import { AIAdvisorCard } from "@/features/ai/components/ai-advisor-card";
 import { ReceiptScannerModal } from "@/features/ai/components/receipt-scanner-modal";
-import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AI Financial Health Advisor",
@@ -39,7 +38,7 @@ export default async function AdvisorPage() {
       <PageHeader
         titleKey="ai.advisorTitle"
         subtitleKey="ai.advisorSubtitle"
-        icon={Sparkles}
+        iconName="advisor"
         badgeText="AI COPILOT"
         familyName={family.name}
       >

@@ -46,7 +46,7 @@ export default async function GoalsPage() {
       <PageHeader
         titleKey="goals.title"
         subtitleKey="goals.subtitle"
-        icon={Target}
+        iconName="goals"
         familyName={family.name}
       >
         <AddGoalModal familyId={family.id} />

@@ -15,7 +15,6 @@ import { CategoryDonutChart } from "@/features/analytics/components/category-don
 import { NetWorthCard } from "@/features/analytics/components/net-worth-card";
 import { TimeframeSelector } from "@/features/analytics/components/timeframe-selector";
 import { type TimeframeType } from "@/lib/validations/analytics";
-import { BarChart3 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Laporan & Analisis Finansial Mendalam",
@@ -60,7 +59,7 @@ export default async function AnalyticsPage({
       <PageHeader
         titleKey="analytics.title"
         subtitleKey="analytics.subtitle"
-        icon={BarChart3}
+        iconName="analytics"
         familyName={family.name}
       >
         <TimeframeSelector currentTimeframe={timeframe} />

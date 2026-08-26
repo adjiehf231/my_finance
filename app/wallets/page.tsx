@@ -32,7 +32,7 @@ export default async function WalletsPage() {
       <PageHeader
         titleKey="wallets.title"
         subtitleKey="wallets.subtitle"
-        icon={Wallet}
+        iconName="wallets"
         familyName={family.name}
       >
         <AddWalletModal familyId={family.id} />

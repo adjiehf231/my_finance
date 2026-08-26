@@ -8,7 +8,7 @@ import { AddTransactionModal } from "@/features/transactions/components/add-tran
 import { TransactionTable } from "@/features/transactions/components/transaction-table";
 import { AppLayout } from "@/components/layout/app-layout";
 import { PageHeader } from "@/components/ui/page-header";
-import { ArrowRightLeft, Tags } from "lucide-react";
+import { Tags } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -59,7 +59,7 @@ export default async function TransactionsPage({
       <PageHeader
         titleKey="transactions.title"
         subtitleKey="transactions.subtitle"
-        icon={ArrowRightLeft}
+        iconName="transactions"
         familyName={family.name}
       >
         <Link href="/categories">

@@ -2,12 +2,61 @@
 
 import React from "react";
 import { useTranslation } from "@/lib/i18n/i18n-context";
-import { Users, LucideIcon } from "lucide-react";
+import {
+  Users,
+  ArrowRightLeft,
+  Wallet,
+  PieChart,
+  Target,
+  CreditCard,
+  Repeat,
+  BarChart3,
+  Sparkles,
+  Settings,
+  Tags,
+  Activity,
+  Trophy,
+  LayoutDashboard,
+  LucideIcon,
+} from "lucide-react";
+
+export type PageHeaderIconName =
+  | "dashboard"
+  | "transactions"
+  | "wallets"
+  | "budgeting"
+  | "goals"
+  | "debts"
+  | "recurring"
+  | "analytics"
+  | "advisor"
+  | "settings"
+  | "categories"
+  | "family"
+  | "activity"
+  | "gamification";
+
+const ICONS: Record<PageHeaderIconName, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  transactions: ArrowRightLeft,
+  wallets: Wallet,
+  budgeting: PieChart,
+  goals: Target,
+  debts: CreditCard,
+  recurring: Repeat,
+  analytics: BarChart3,
+  advisor: Sparkles,
+  settings: Settings,
+  categories: Tags,
+  family: Users,
+  activity: Activity,
+  gamification: Trophy,
+};
 
 interface PageHeaderProps {
   titleKey: string;
   subtitleKey?: string;
-  icon?: LucideIcon;
+  iconName?: PageHeaderIconName;
   badgeText?: string;
   familyName?: string;
   children?: React.ReactNode;
@@ -16,12 +65,13 @@ interface PageHeaderProps {
 export function PageHeader({
   titleKey,
   subtitleKey,
-  icon: Icon,
+  iconName,
   badgeText,
   familyName,
   children,
 }: PageHeaderProps) {
   const { t } = useTranslation();
+  const Icon = iconName ? ICONS[iconName] : undefined;
 
   return (
     <div className="rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/80 dark:bg-[#0E131F]/80 backdrop-blur-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300">
