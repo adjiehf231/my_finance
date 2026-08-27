@@ -434,3 +434,57 @@ export async function updateFamilyNameAction(familyId: string, name: string) {
   }
 }
 
+/**
+ * Update family custom RBAC / CRUD permissions config (Owner required)
+ */
+export async function updateFamilyPermissionsAction(
+  familyId: string,
+  permissions: any
+) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthenticated" };
+    }
+
+    // Verify user is Owner
+    const { data: member } = await (supabase as any)
+      .from("family_members")
+      .select("role")
+      .eq("family_id", familyId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!member || member.role !== "owner") {
+      return { success: false, error: "Hanya Pemilik (Owner) yang dapat mengubah matriks hak akses" };
+    }
+
+    // Update custom_permissions column in families table
+    await (supabase as any)
+      .from("families")
+      .update({ custom_permissions: permissions })
+      .eq("id", familyId);
+
+    // Log activity
+    await (supabase as any).from("activity_logs").insert({
+      family_id: familyId,
+      user_id: user.id,
+      action: "update",
+      entity: "family_permissions",
+      entity_id: familyId,
+      description: `Matriks perizinan dan kontrol akses CRUD keluarga diperbarui oleh Pemilik.`,
+    });
+
+    revalidatePath("/family");
+    return { success: true, data: permissions };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Gagal memperbarui matriks perizinan" };
+  }
+}
+
+

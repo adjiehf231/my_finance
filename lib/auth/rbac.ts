@@ -7,6 +7,67 @@ export interface RoleDefinition {
   badgeClass: string;
 }
 
+export interface CrudPermission {
+  create: boolean;
+  read: boolean;
+  update: boolean;
+  delete: boolean;
+}
+
+export interface RolePermissions {
+  transactions: CrudPermission;
+  wallets: CrudPermission;
+  budgets: CrudPermission;
+  goals: CrudPermission;
+  debts: CrudPermission;
+  receiptOcr: boolean;
+  exportData: boolean;
+  inviteMembers: boolean;
+  editFamily: boolean;
+}
+
+export type FamilyPermissionsConfig = {
+  admin: RolePermissions;
+  member: RolePermissions;
+  viewer: RolePermissions;
+};
+
+export const DEFAULT_ROLE_PERMISSIONS: FamilyPermissionsConfig = {
+  admin: {
+    transactions: { create: true, read: true, update: true, delete: true },
+    wallets: { create: true, read: true, update: true, delete: true },
+    budgets: { create: true, read: true, update: true, delete: true },
+    goals: { create: true, read: true, update: true, delete: true },
+    debts: { create: true, read: true, update: true, delete: true },
+    receiptOcr: true,
+    exportData: true,
+    inviteMembers: true,
+    editFamily: true,
+  },
+  member: {
+    transactions: { create: true, read: true, update: true, delete: false },
+    wallets: { create: false, read: true, update: false, delete: false },
+    budgets: { create: true, read: true, update: true, delete: false },
+    goals: { create: true, read: true, update: true, delete: false },
+    debts: { create: true, read: true, update: true, delete: false },
+    receiptOcr: true,
+    exportData: false,
+    inviteMembers: false,
+    editFamily: false,
+  },
+  viewer: {
+    transactions: { create: false, read: true, update: false, delete: false },
+    wallets: { create: false, read: true, update: false, delete: false },
+    budgets: { create: false, read: true, update: false, delete: false },
+    goals: { create: false, read: true, update: false, delete: false },
+    debts: { create: false, read: true, update: false, delete: false },
+    receiptOcr: false,
+    exportData: false,
+    inviteMembers: false,
+    editFamily: false,
+  },
+};
+
 export const ROLE_DEFINITIONS: Record<FamilyRole, RoleDefinition> = {
   owner: {
     role: "owner",

@@ -48,7 +48,11 @@ export default async function FamilyPage() {
         familyName={family.name}
       >
         <div className="flex items-center gap-2 flex-wrap">
-          <PermissionMatrixModal />
+          <PermissionMatrixModal
+            familyId={family.id}
+            currentUserRole={role as any}
+            initialPermissions={(family as any).custom_permissions}
+          />
           {isManager && (
             <>
               <EditFamilyModal familyId={family.id} currentName={family.name} />
