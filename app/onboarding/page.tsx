@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,23 +15,50 @@ import {
   ArrowLeft,
   CheckCircle2,
   Plus,
-  PiggyBank,
   PieChart,
   ShieldCheck,
   Building2,
   Smartphone,
-  Layers,
+  TrendingUp,
+  Loader2,
 } from "lucide-react";
-import { createFamilyAction, joinFamilyByCodeAction } from "@/features/family/actions/family-actions";
+import {
+  createFamilyAction,
+  joinFamilyByCodeAction,
+  getCurrentFamilyAction,
+} from "@/features/family/actions/family-actions";
 import { createWalletAction } from "@/features/wallets/actions/wallet-actions";
+import { useTranslation } from "@/lib/i18n/i18n-context";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { toast } from "sonner";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { t, locale } = useTranslation();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // State
+  // Auto-redirect if user already has an active family
+  useEffect(() => {
+    async function checkExistingFamily() {
+      try {
+        const res = await getCurrentFamilyAction();
+        if (res.success && res.data?.family) {
+          router.replace("/dashboard");
+          return;
+        }
+      } catch {
+        // Continue with onboarding
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    }
+    checkExistingFamily();
+  }, [router]);
+
+  // Family State
   const [familyMode, setFamilyMode] = useState<"create" | "join">("create");
   const [familyName, setFamilyName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -57,8 +84,8 @@ export default function OnboardingPage() {
   // Step 2: Handle Family Setup
   const handleFamilyStep = async () => {
     if (familyMode === "create") {
-      if (familyName.trim().length < 3) {
-        toast.error("Nama keluarga minimal 3 karakter");
+      if (familyName.trim().length < 2) {
+        toast.error(locale === "en" ? "Family name must be at least 2 characters" : "Nama keluarga minimal 2 karakter");
         return;
       }
 
@@ -68,14 +95,14 @@ export default function OnboardingPage() {
 
       if (res.success && res.data) {
         setCreatedFamilyId(res.data.id);
-        toast.success(`Keluarga "${res.data.name}" berhasil dibuat!`);
+        toast.success(locale === "en" ? `Family "${res.data.name}" created!` : `Keluarga "${res.data.name}" berhasil dibuat!`);
         setStep(3);
       } else {
-        toast.error(res.error || "Gagal membuat keluarga");
+        toast.error(res.error || (locale === "en" ? "Failed to create family" : "Gagal membuat keluarga"));
       }
     } else {
       if (inviteCode.trim().length < 6) {
-        toast.error("Kode undangan minimal 6 karakter");
+        toast.error(locale === "en" ? "Invite code must be at least 6 characters" : "Kode undangan minimal 6 karakter");
         return;
       }
 
@@ -85,11 +112,10 @@ export default function OnboardingPage() {
 
       if (res.success && res.data) {
         setCreatedFamilyId(res.data.id);
-        toast.success(`Berhasil bergabung ke keluarga "${res.data.name}"!`);
-        // Joined users can skip straight to celebration or complete remaining setup
+        toast.success(locale === "en" ? `Joined family "${res.data.name}"!` : `Berhasil bergabung ke keluarga "${res.data.name}"!`);
         setStep(7);
       } else {
-        toast.error(res.error || "Kode undangan tidak valid");
+        toast.error(res.error || (locale === "en" ? "Invalid invite code" : "Kode undangan tidak valid"));
       }
     }
   };
@@ -102,7 +128,7 @@ export default function OnboardingPage() {
     }
 
     if (!walletName.trim()) {
-      toast.error("Nama dompet tidak boleh kosong");
+      toast.error(locale === "en" ? "Account name cannot be empty" : "Nama dompet tidak boleh kosong");
       return;
     }
 
@@ -114,16 +140,16 @@ export default function OnboardingPage() {
       type: walletType,
       initialBalance: balanceNum,
       currency: "IDR",
-      color: walletType === "bank" ? "#3B82F6" : walletType === "ewallet" ? "#10B981" : "#F59E0B",
+      color: walletType === "bank" ? "#2563EB" : walletType === "ewallet" ? "#4F46E5" : "#0891B2",
       icon: walletType,
     });
     setIsLoading(false);
 
     if (res.success) {
-      toast.success("Rekening pertama berhasil dibuat!");
+      toast.success(locale === "en" ? "First account created successfully!" : "Rekening pertama berhasil dibuat!");
       setStep(5);
     } else {
-      toast.error(res.error || "Gagal membuat rekening");
+      toast.error(res.error || (locale === "en" ? "Failed to create account" : "Gagal membuat rekening"));
     }
   };
 
@@ -131,71 +157,96 @@ export default function OnboardingPage() {
     router.push("/dashboard");
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+          <p className="text-xs font-semibold text-slate-400">Memeriksa ruang kerja...</p>
+        </div>
+      </div>
+    );
+  }
+
   const progressPercentage = (step / 7) * 100;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex flex-col justify-between p-4 sm:p-6 transition-colors duration-300">
-      {/* Top Header & Progress Indicator */}
-      <header className="max-w-2xl w-full mx-auto pt-4 pb-2">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex flex-col justify-between p-4 sm:p-6 transition-colors duration-300 relative overflow-hidden">
+      {/* Background glow accents */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top Header & Progress Bar */}
+      <header className="max-w-2xl w-full mx-auto pt-4 pb-2 z-10">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-              MF
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
+              <TrendingUp className="h-5 w-5" />
             </div>
-            <span className="font-bold text-slate-900 dark:text-white">
-              Setup Keuangan Keluarga
-            </span>
+            <div>
+              <span className="font-black text-sm text-slate-900 dark:text-white block leading-none font-display">
+                My<span className="text-blue-600 dark:text-blue-400">Finance</span>
+              </span>
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                {t("onboarding.headerTitle")}
+              </span>
+            </div>
           </div>
-          <span className="text-xs font-semibold text-slate-500">
-            Langkah {step} dari 7
-          </span>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 hidden sm:inline">
+              {t("onboarding.stepIndicator", { current: step, total: 7 })}
+            </span>
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
-        <Progress value={progressPercentage} className="h-2 rounded-full" />
+        <Progress value={progressPercentage} className="h-2 rounded-full bg-slate-200 dark:bg-white/[0.08]" />
       </header>
 
       {/* Main Wizard Form Card */}
-      <main className="flex-1 flex items-center justify-center py-6">
-        <Card className="max-w-xl w-full rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#131B2E]/90 backdrop-blur-xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8">
+      <main className="flex-1 flex items-center justify-center py-6 z-10">
+        <Card className="max-w-xl w-full rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#0E131F]/90 backdrop-blur-2xl shadow-xl shadow-blue-500/5 p-6 sm:p-8">
           <CardContent className="p-0">
             {/* STEP 1: Welcome */}
             {step === 1 && (
               <div className="text-center py-4 space-y-6">
-                <div className="h-20 w-20 rounded-3xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center shadow-inner">
+                <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30">
                   <Sparkles className="h-10 w-10" />
                 </div>
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Selamat Datang di My Finance! 🎉
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
+                    {t("onboarding.step1Title")}
                   </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
-                    Platform cerdas untuk mengelola arus kas, anggaran, dan target impian bersama keluarga dalam satu ruang kerja transparan.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed font-medium">
+                    {t("onboarding.step1Subtitle")}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 pt-2 text-left">
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                    <ShieldCheck className="h-5 w-5 text-emerald-600 mb-1" />
-                    <p className="font-semibold text-xs text-slate-900 dark:text-slate-200">Aman & Terisolasi</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">PostgreSQL RLS</p>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <ShieldCheck className="h-5 w-5 text-blue-500 mb-1" />
+                    <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature1Title")}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature1Desc")}</p>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                    <Users className="h-5 w-5 text-blue-600 mb-1" />
-                    <p className="font-semibold text-xs text-slate-900 dark:text-slate-200">Kolaborasi</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Ruang Bersama</p>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <Users className="h-5 w-5 text-indigo-500 mb-1" />
+                    <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature2Title")}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature2Desc")}</p>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                    <PieChart className="h-5 w-5 text-purple-600 mb-1" />
-                    <p className="font-semibold text-xs text-slate-900 dark:text-slate-200">Wawasan AI</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Scan Nota Instan</p>
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <PieChart className="h-5 w-5 text-cyan-500 mb-1" />
+                    <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature3Title")}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature3Desc")}</p>
                   </div>
                 </div>
 
                 <Button
                   onClick={() => setStep(2)}
-                  className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base flex items-center justify-center gap-2 mt-4 shadow-md shadow-emerald-600/20"
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-500/25"
                 >
-                  Mulai Setup Sekarang
-                  <ArrowRight className="h-5 w-5" />
+                  {t("onboarding.startBtn")}
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
             )}
@@ -204,11 +255,11 @@ export default function OnboardingPage() {
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Pilih Ruang Kerja Keluarga
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+                    {t("onboarding.step2Title")}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Buat keluarga baru atau gabung dengan kode undangan yang sudah ada.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {t("onboarding.step2Subtitle")}
                   </p>
                 </div>
 
@@ -218,13 +269,13 @@ export default function OnboardingPage() {
                     onClick={() => setFamilyMode("create")}
                     className={`p-4 rounded-2xl border text-left transition-all ${
                       familyMode === "create"
-                        ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 ring-2 ring-emerald-500/20"
-                        : "border-slate-200 dark:border-slate-800"
+                        ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 ring-2 ring-blue-500/20"
+                        : "border-slate-200 dark:border-white/[0.08]"
                     }`}
                   >
-                    <Plus className="h-5 w-5 text-emerald-600 mb-2" />
-                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">Buat Keluarga Baru</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Sebagai Pemilik (Owner)</p>
+                    <Plus className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-2" />
+                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">{t("onboarding.createFamilyOpt")}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{t("onboarding.createFamilyDesc")}</p>
                   </button>
 
                   <button
@@ -232,33 +283,38 @@ export default function OnboardingPage() {
                     onClick={() => setFamilyMode("join")}
                     className={`p-4 rounded-2xl border text-left transition-all ${
                       familyMode === "join"
-                        ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 ring-2 ring-blue-500/20"
-                        : "border-slate-200 dark:border-slate-800"
+                        ? "border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20"
+                        : "border-slate-200 dark:border-white/[0.08]"
                     }`}
                   >
-                    <Users className="h-5 w-5 text-blue-600 mb-2" />
-                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">Gabung Keluarga</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Pakai Kode Undangan</p>
+                    <Users className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mb-2" />
+                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">{t("onboarding.joinFamilyOpt")}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{t("onboarding.joinFamilyDesc")}</p>
                   </button>
                 </div>
 
                 {familyMode === "create" ? (
                   <div className="space-y-2">
-                    <Label htmlFor="family-name">Nama Keluarga</Label>
+                    <Label htmlFor="family-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      {t("onboarding.familyNameLabel")}
+                    </Label>
                     <Input
                       id="family-name"
-                      placeholder="Contoh: Keluarga Adjie, Tanur Family"
+                      placeholder={t("onboarding.familyNamePlaceholder")}
                       value={familyName}
                       onChange={(e) => setFamilyName(e.target.value)}
+                      className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-sm font-medium"
                     />
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Label htmlFor="invite-code">Kode Undangan (6 Karakter)</Label>
+                    <Label htmlFor="invite-code" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      {t("onboarding.inviteCodeLabel")}
+                    </Label>
                     <Input
                       id="invite-code"
-                      placeholder="Contoh: 7K9X2M"
-                      className="uppercase font-mono tracking-widest text-base"
+                      placeholder={t("onboarding.inviteCodePlaceholder")}
+                      className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 uppercase font-mono tracking-widest text-sm font-bold"
                       value={inviteCode}
                       onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                       maxLength={16}
@@ -267,15 +323,15 @@ export default function OnboardingPage() {
                 )}
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(1)} className="rounded-2xl h-11">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
+                  <Button variant="outline" onClick={() => setStep(1)} className="rounded-2xl h-11 text-xs font-bold">
+                    <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
                     onClick={handleFamilyStep}
                     disabled={isLoading}
-                    className="flex-1 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    className="flex-1 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
                   >
-                    {isLoading ? "Memproses..." : "Lanjutkan"}
+                    {isLoading ? t("onboarding.processingBtn") : t("onboarding.nextBtn")}
                   </Button>
                 </div>
               </div>
@@ -285,16 +341,16 @@ export default function OnboardingPage() {
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Setup Rekening Pertama Anda
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+                    {t("onboarding.step3Title")}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Pilih tipe rekening utama yang sering Anda gunakan untuk bertransaksi.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {t("onboarding.step3Subtitle")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tipe Rekening</Label>
+                  <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t("onboarding.walletTypeLabel")}</Label>
                   <div className="grid grid-cols-3 gap-2.5">
                     <button
                       type="button"
@@ -302,14 +358,14 @@ export default function OnboardingPage() {
                         setWalletType("bank");
                         setWalletName("BCA Tabungan");
                       }}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
+                      className={`p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "bank"
-                          ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 text-blue-600 font-semibold"
-                          : "border-slate-200 dark:border-slate-800"
+                          ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 font-bold shadow-sm"
+                          : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Building2 className="h-5 w-5 mx-auto mb-1" />
-                      <span className="text-xs">Bank</span>
+                      <Building2 className="h-5 w-5 mx-auto mb-1.5" />
+                      <span className="text-xs">{t("onboarding.bankOpt")}</span>
                     </button>
                     <button
                       type="button"
@@ -317,14 +373,14 @@ export default function OnboardingPage() {
                         setWalletType("ewallet");
                         setWalletName("GoPay / OVO");
                       }}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
+                      className={`p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "ewallet"
-                          ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-600 font-semibold"
-                          : "border-slate-200 dark:border-slate-800"
+                          ? "border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm"
+                          : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Smartphone className="h-5 w-5 mx-auto mb-1" />
-                      <span className="text-xs">E-Wallet</span>
+                      <Smartphone className="h-5 w-5 mx-auto mb-1.5" />
+                      <span className="text-xs">{t("onboarding.ewalletOpt")}</span>
                     </button>
                     <button
                       type="button"
@@ -332,36 +388,39 @@ export default function OnboardingPage() {
                         setWalletType("cash");
                         setWalletName("Dompet Tunai");
                       }}
-                      className={`p-3 rounded-2xl border text-center transition-all ${
+                      className={`p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "cash"
-                          ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20 text-amber-600 font-semibold"
-                          : "border-slate-200 dark:border-slate-800"
+                          ? "border-cyan-500 bg-cyan-50/60 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400 font-bold shadow-sm"
+                          : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Wallet className="h-5 w-5 mx-auto mb-1" />
-                      <span className="text-xs">Uang Tunai</span>
+                      <Wallet className="h-5 w-5 mx-auto mb-1.5" />
+                      <span className="text-xs">{t("onboarding.cashOpt")}</span>
                     </button>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="step3-wallet-name">Nama Dompet / Rekening</Label>
+                  <Label htmlFor="step3-wallet-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t("onboarding.walletNameLabel")}
+                  </Label>
                   <Input
                     id="step3-wallet-name"
                     value={walletName}
                     onChange={(e) => setWalletName(e.target.value)}
+                    className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-sm font-medium"
                   />
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(2)} className="rounded-2xl h-11">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
+                  <Button variant="outline" onClick={() => setStep(2)} className="rounded-2xl h-11 text-xs font-bold">
+                    <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
                     onClick={() => setStep(4)}
-                    className="flex-1 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    className="flex-1 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
                   >
-                    Lanjutkan ke Saldo
+                    {t("onboarding.nextBtn")}
                   </Button>
                 </div>
               </div>
@@ -371,25 +430,27 @@ export default function OnboardingPage() {
             {step === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Berapa Saldo Awal {walletName}?
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+                    {t("onboarding.step4Title", { name: walletName })}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Masukkan estimasi saldo saat ini untuk memulai pelacakan yang akurat.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {t("onboarding.step4Subtitle")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="step4-balance">Saldo Awal (Rupiah)</Label>
+                  <Label htmlFor="step4-balance" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t("onboarding.balanceLabel")}
+                  </Label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400 text-base">
                       Rp
                     </span>
                     <Input
                       id="step4-balance"
                       type="number"
                       min="0"
-                      className="pl-12 text-xl font-bold h-14 rounded-2xl"
+                      className="pl-12 text-lg font-bold h-12 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70"
                       value={initialBalance}
                       onChange={(e) => setInitialBalance(e.target.value)}
                     />
@@ -397,15 +458,15 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(3)} className="rounded-2xl h-11">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
+                  <Button variant="outline" onClick={() => setStep(3)} className="rounded-2xl h-11 text-xs font-bold">
+                    <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
                     onClick={handleWalletStep}
                     disabled={isLoading}
-                    className="flex-1 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    className="flex-1 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
                   >
-                    {isLoading ? "Menyimpan..." : "Simpan & Lanjutkan"}
+                    {isLoading ? t("onboarding.processingBtn") : t("onboarding.saveAndContinueBtn")}
                   </Button>
                 </div>
               </div>
@@ -415,16 +476,16 @@ export default function OnboardingPage() {
             {step === 5 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Atur Batas Anggaran Bulanan
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+                    {t("onboarding.step5Title")}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Tentukan limit pengeluaran bulanan agar keuangan tetap terkendali.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {t("onboarding.step5Subtitle")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Kategori Prioritas Terpilih</Label>
+                  <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t("onboarding.categoriesLabel")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {["Makanan & Minuman", "Transportasi", "Kebutuhan Rumah Tangga", "Listrik & Air", "Pendidikan"].map((cat) => (
                       <button
@@ -437,10 +498,10 @@ export default function OnboardingPage() {
                             setSelectedCategories([...selectedCategories, cat]);
                           }
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                           selectedCategories.includes(cat)
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300"
-                            : "border-slate-200 text-slate-600 dark:border-slate-800"
+                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30"
+                            : "border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-400"
                         }`}
                       >
                         {cat}
@@ -450,25 +511,28 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="step5-budget">Limit Total Anggaran Bulan Ini (Rp)</Label>
+                  <Label htmlFor="step5-budget" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t("onboarding.budgetLimitLabel")}
+                  </Label>
                   <Input
                     id="step5-budget"
                     type="number"
                     min="0"
                     value={budgetLimit}
                     onChange={(e) => setBudgetLimit(e.target.value)}
+                    className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-sm font-medium"
                   />
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(4)} className="rounded-2xl h-11">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
+                  <Button variant="outline" onClick={() => setStep(4)} className="rounded-2xl h-11 text-xs font-bold">
+                    <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
                     onClick={() => setStep(6)}
-                    className="flex-1 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    className="flex-1 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
                   >
-                    Lanjutkan ke Target Tabungan
+                    {t("onboarding.nextBtn")}
                   </Button>
                 </div>
               </div>
@@ -478,45 +542,51 @@ export default function OnboardingPage() {
             {step === 6 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    Target Tabungan Pertama (Goal)
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
+                    {t("onboarding.step6Title")}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Mulai menabung untuk impian keluarga seperti dana darurat atau liburan.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {t("onboarding.step6Subtitle")}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="step6-goal-name">Nama Target Tabungan</Label>
+                    <Label htmlFor="step6-goal-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      {t("onboarding.goalNameLabel")}
+                    </Label>
                     <Input
                       id="step6-goal-name"
                       value={goalName}
                       onChange={(e) => setGoalName(e.target.value)}
+                      className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-sm font-medium"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="step6-goal-target">Nominal Target (Rp)</Label>
+                    <Label htmlFor="step6-goal-target" className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      {t("onboarding.goalTargetLabel")}
+                    </Label>
                     <Input
                       id="step6-goal-target"
                       type="number"
                       min="0"
                       value={goalTarget}
                       onChange={(e) => setGoalTarget(e.target.value)}
+                      className="h-11 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-sm font-medium"
                     />
                   </div>
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(5)} className="rounded-2xl h-11">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
+                  <Button variant="outline" onClick={() => setStep(5)} className="rounded-2xl h-11 text-xs font-bold">
+                    <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
                     onClick={() => setStep(7)}
-                    className="flex-1 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    className="flex-1 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
                   >
-                    Selesaikan Setup
+                    {t("onboarding.finishSetupBtn")}
                   </Button>
                 </div>
               </div>
@@ -525,24 +595,24 @@ export default function OnboardingPage() {
             {/* STEP 7: Celebration & Ready */}
             {step === 7 && (
               <div className="text-center py-4 space-y-6">
-                <div className="h-20 w-20 rounded-3xl bg-emerald-500 text-white mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/30 animate-bounce">
+                <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce">
                   <CheckCircle2 className="h-10 w-10" />
                 </div>
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Ruang Kerja Keluarga Siap! 🚀
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
+                    {t("onboarding.step7Title")}
                   </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
-                    Selamat! Anda telah menyelesaikan seluruh setup awal. Anda siap mencatat transaksi dan memantau kesehatan finansial keluarga.
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed font-medium">
+                    {t("onboarding.step7Subtitle")}
                   </p>
                 </div>
 
                 <Button
                   onClick={handleFinish}
-                  className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base flex items-center justify-center gap-2 mt-4 shadow-lg shadow-emerald-600/20"
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-500/25"
                 >
-                  Buka Dashboard Sekarang
-                  <ArrowRight className="h-5 w-5" />
+                  {t("onboarding.openDashboardBtn")}
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
             )}
@@ -551,8 +621,8 @@ export default function OnboardingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-xs text-slate-400">
-        My Finance &copy; {new Date().getFullYear()} — Setup Wizard Keuangan Keluarga
+      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-xs text-slate-400 font-medium">
+        &copy; {new Date().getFullYear()} My Finance — Modern Family Financial Hub
       </footer>
     </div>
   );
