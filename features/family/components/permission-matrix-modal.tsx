@@ -19,6 +19,8 @@ import {
   Save,
   Loader2,
   ArrowLeft,
+  Sparkles,
+  Lock,
 } from "lucide-react";
 import {
   DEFAULT_ROLE_PERMISSIONS,
@@ -47,6 +49,7 @@ export function PermissionMatrixModal({
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedMobileViewRole, setSelectedMobileViewRole] = useState<"owner" | "admin" | "member" | "viewer">("owner");
   const [permissions, setPermissions] = useState<FamilyPermissionsConfig>(
     initialPermissions || DEFAULT_ROLE_PERMISSIONS
   );
@@ -132,6 +135,18 @@ export function PermissionMatrixModal({
     { key: "editFamily", label: locale === "en" ? "Edit Family Workspace Name" : "Ubah Nama Ruang Kerja" },
   ];
 
+  // Helper for Mobile Role Capabilities Check
+  const getRoleCrud = (role: "owner" | "admin" | "member" | "viewer", key: keyof Omit<RolePermissions, "receiptOcr" | "exportData" | "inviteMembers" | "editFamily">): CrudPermission => {
+    if (role === "owner") return { create: true, read: true, update: true, delete: true };
+    return permissions[role][key];
+  };
+
+  const getRoleFeature = (role: "owner" | "admin" | "member" | "viewer", key: "receiptOcr" | "exportData" | "inviteMembers" | "editFamily" | "deleteFamily"): boolean => {
+    if (role === "owner") return true;
+    if (key === "deleteFamily") return false;
+    return permissions[role][key];
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -146,14 +161,15 @@ export function PermissionMatrixModal({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="w-[94vw] sm:max-w-2xl rounded-3xl p-4 sm:p-6 max-h-[88vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+
+      <DialogContent className="w-[calc(100vw-24px)] sm:max-w-2xl rounded-3xl p-4 sm:p-6 max-h-[88vh] overflow-y-auto">
+        <DialogHeader className="pr-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
               <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <span className="truncate">
+              <span className="leading-tight">
                 {isEditing
                   ? (locale === "en" ? "Configure Role & CRUD" : "Konfigurasi Hak Akses & CRUD")
                   : t("familyManagement.matrixTitle")}
@@ -164,7 +180,7 @@ export function PermissionMatrixModal({
               <Button
                 size="sm"
                 onClick={() => setIsEditing(true)}
-                className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 h-8 px-3.5 shrink-0 self-start sm:self-auto"
+                className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 h-8 px-3 self-start sm:self-auto shrink-0 shadow-sm"
               >
                 <Settings2 className="h-3.5 w-3.5" />
                 {locale === "en" ? "Configure (Owner)" : "Konfigurasi (Owner)"}
@@ -176,130 +192,275 @@ export function PermissionMatrixModal({
         <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-1">
           {isEditing
             ? (locale === "en"
-              ? "As Owner, toggle active/inactive access and granular CRUD permissions for each role."
-              : "Sebagai Pemilik (Owner), Anda dapat mengatur aktif/non-aktif hak akses dan operasi CRUD (Create, Read, Update, Delete) untuk setiap peran.")
+              ? "Toggle active/inactive access and granular CRUD permissions for each role."
+              : "Atur aktif/non-aktif hak akses dan operasi CRUD (Create, Read, Update, Delete) untuk setiap peran.")
             : t("familyManagement.matrixDesc")}
         </p>
 
-        {/* VIEW MODE: Read-Only Comparison Matrix */}
+        {/* VIEW MODE: Read-Only */}
         {!isEditing ? (
           <div className="space-y-4 pt-1">
-            {/* Roles Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-500/20 text-center">
-                <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 block">{t("familyManagement.roleOwner")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Full Access" : "Akses Penuh"}</span>
+            {/* --- MOBILE VIEW (Segmented Role Tabs + Card List) --- */}
+            <div className="block sm:hidden space-y-3">
+              {/* Role Selector Tabs */}
+              <div className="grid grid-cols-4 gap-1 p-1 bg-slate-100 dark:bg-white/[0.04] rounded-2xl">
+                {(["owner", "admin", "member", "viewer"] as const).map((r) => {
+                  const active = selectedMobileViewRole === r;
+                  const labels: Record<string, string> = {
+                    owner: "Owner",
+                    admin: "Admin",
+                    member: "Member",
+                    viewer: "Viewer",
+                  };
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setSelectedMobileViewRole(r)}
+                      className={`py-1.5 px-1 rounded-xl text-xs font-bold transition-all text-center ${
+                        active
+                          ? "bg-white dark:bg-[#0E131F] text-slate-900 dark:text-white shadow-sm"
+                          : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                      }`}
+                    >
+                      {labels[r]}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="p-2 sm:p-2.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-500/20 text-center">
-                <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 block">{t("familyManagement.roleAdmin")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+
+              {/* Role Header Info */}
+              <div className="p-3 rounded-2xl bg-slate-50/80 dark:bg-[#07090E]/80 border border-slate-200/70 dark:border-white/[0.06] flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-black text-slate-900 dark:text-white block">
+                    {selectedMobileViewRole === "owner" && "Pemilik (Owner)"}
+                    {selectedMobileViewRole === "admin" && "Administrator"}
+                    {selectedMobileViewRole === "member" && "Anggota (Member)"}
+                    {selectedMobileViewRole === "viewer" && "Peninjau (Viewer)"}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {selectedMobileViewRole === "owner" && "Akses penuh tanpa batas (Terkunci)"}
+                    {selectedMobileViewRole === "admin" && "Dapat dikonfigurasi oleh Owner"}
+                    {selectedMobileViewRole === "member" && "Dapat dikonfigurasi oleh Owner"}
+                    {selectedMobileViewRole === "viewer" && "Dapat dikonfigurasi oleh Owner"}
+                  </span>
+                </div>
+                {selectedMobileViewRole === "owner" && (
+                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-500/20 flex items-center gap-1">
+                    <Lock className="h-3 w-3" /> Full
+                  </span>
+                )}
               </div>
-              <div className="p-2 sm:p-2.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-500/20 text-center">
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">{t("familyManagement.roleMember")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+
+              {/* Modules CRUD Card List for Mobile */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 font-display block px-1">
+                  {locale === "en" ? "Module CRUD Access" : "Akses CRUD per Modul"}
+                </span>
+
+                {modulesList.map((m) => {
+                  const crud = getRoleCrud(selectedMobileViewRole, m.key);
+                  return (
+                    <div
+                      key={m.key}
+                      className="p-3 rounded-2xl bg-white dark:bg-[#0E131F] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between gap-2 shadow-sm"
+                    >
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {m.label}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {(["create", "read", "update", "delete"] as const).map((action) => {
+                          const active = crud[action];
+                          const shortLabels: Record<string, string> = {
+                            create: "C",
+                            read: "R",
+                            update: "U",
+                            delete: "D",
+                          };
+                          return (
+                            <span
+                              key={action}
+                              className={`h-6 w-6 rounded-lg text-[10px] font-black flex items-center justify-center border ${
+                                active
+                                  ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                                  : "bg-slate-100 dark:bg-white/[0.04] text-slate-300 dark:text-slate-600 border-slate-200/50 dark:border-white/[0.04]"
+                              }`}
+                              title={`${shortLabels[action]}: ${active ? "Aktif" : "Non-Aktif"}`}
+                            >
+                              {shortLabels[action]}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] text-center">
-                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">{t("familyManagement.roleViewer")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+
+              {/* Special Features Card List for Mobile */}
+              <div className="space-y-2 pt-1">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 font-display block px-1">
+                  {locale === "en" ? "Feature Access" : "Akses Fitur Khusus"}
+                </span>
+
+                {featuresList.map((f) => {
+                  const active = getRoleFeature(selectedMobileViewRole, f.key);
+                  return (
+                    <div
+                      key={f.key}
+                      className="p-2.5 rounded-2xl bg-white dark:bg-[#0E131F] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between gap-2 shadow-sm"
+                    >
+                      <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                        {f.label}
+                      </span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 ${
+                        active
+                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                          : "bg-slate-100 dark:bg-white/[0.04] text-slate-400 border border-slate-200/60 dark:border-white/[0.06]"
+                      }`}>
+                        {active ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        {active ? "Aktif" : "Non-Aktif"}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {/* Workspace Deletion Row for Mobile */}
+                <div className="p-2.5 rounded-2xl bg-white dark:bg-[#0E131F] border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between gap-2 shadow-sm">
+                  <span className="text-xs font-medium text-rose-600 dark:text-rose-400">
+                    {locale === "en" ? "Delete Family Workspace" : "Hapus Ruang Kerja Keluarga"}
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 ${
+                    selectedMobileViewRole === "owner"
+                      ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                      : "bg-slate-100 dark:bg-white/[0.04] text-slate-400 border border-slate-200/60 dark:border-white/[0.06]"
+                  }`}>
+                    {selectedMobileViewRole === "owner" ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                    {selectedMobileViewRole === "owner" ? "Owner Only" : "Non-Aktif"}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Matrix Table with Horizontal Scroll */}
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] overflow-x-auto">
-              <table className="w-full text-xs text-left min-w-[480px]">
-                <thead className="bg-slate-50 dark:bg-[#07090E] border-b border-slate-200/80 dark:border-white/[0.08] text-[11px] font-bold text-slate-500">
-                  <tr>
-                    <th className="p-3 font-semibold">{locale === "en" ? "Capability / Module" : "Modul & Wewenang"}</th>
-                    <th className="p-3 text-center text-blue-600 font-bold">Owner</th>
-                    <th className="p-3 text-center text-indigo-600 font-bold">Admin</th>
-                    <th className="p-3 text-center text-emerald-600 font-bold">Member</th>
-                    <th className="p-3 text-center text-slate-400 font-bold">Viewer</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] font-medium">
-                  {modulesList.map((m) => (
-                    <tr key={m.key} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3 text-slate-800 dark:text-slate-200 font-bold">
-                        {m.label}
-                        <span className="block text-[10px] font-normal text-slate-400 mt-0.5">
-                          CRUD (Buat, Lihat, Edit, Hapus)
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md">
-                          CRUD
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          permissions.admin[m.key].create && permissions.admin[m.key].delete
-                            ? "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50"
-                            : "text-slate-500 bg-slate-100 dark:bg-white/[0.04]"
-                        }`}>
-                          {[
-                            permissions.admin[m.key].create ? "C" : "",
-                            permissions.admin[m.key].read ? "R" : "",
-                            permissions.admin[m.key].update ? "U" : "",
-                            permissions.admin[m.key].delete ? "D" : "",
-                          ].filter(Boolean).join("") || "-"}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          permissions.member[m.key].create
-                            ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50"
-                            : "text-slate-500 bg-slate-100 dark:bg-white/[0.04]"
-                        }`}>
-                          {[
-                            permissions.member[m.key].create ? "C" : "",
-                            permissions.member[m.key].read ? "R" : "",
-                            permissions.member[m.key].update ? "U" : "",
-                            permissions.member[m.key].delete ? "D" : "",
-                          ].filter(Boolean).join("") || "-"}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-white/[0.04] px-2 py-0.5 rounded-md">
-                          {[
-                            permissions.viewer[m.key].create ? "C" : "",
-                            permissions.viewer[m.key].read ? "R" : "",
-                            permissions.viewer[m.key].update ? "U" : "",
-                            permissions.viewer[m.key].delete ? "D" : "",
-                          ].filter(Boolean).join("") || "-"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+            {/* --- DESKTOP VIEW (Comparative Table) --- */}
+            <div className="hidden sm:block space-y-4">
+              {/* Roles Badges */}
+              <div className="grid grid-cols-4 gap-2">
+                <div className="p-2.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-500/20 text-center">
+                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 block">{t("familyManagement.roleOwner")}</span>
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Full Access" : "Akses Penuh"}</span>
+                </div>
+                <div className="p-2.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-500/20 text-center">
+                  <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 block">{t("familyManagement.roleAdmin")}</span>
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+                </div>
+                <div className="p-2.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-500/20 text-center">
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">{t("familyManagement.roleMember")}</span>
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+                </div>
+                <div className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] text-center">
+                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">{t("familyManagement.roleViewer")}</span>
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
+                </div>
+              </div>
 
-                  {/* Feature Toggles */}
-                  {featuresList.map((f) => (
-                    <tr key={f.key} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3 text-slate-800 dark:text-slate-200">{f.label}</td>
-                      <td className="p-3 text-center"><Check className="h-4 w-4 text-blue-500 mx-auto" /></td>
-                      <td className="p-3 text-center">
-                        {permissions.admin[f.key] ? <Check className="h-4 w-4 text-indigo-500 mx-auto" /> : <X className="h-4 w-4 text-slate-400 mx-auto" />}
-                      </td>
-                      <td className="p-3 text-center">
-                        {permissions.member[f.key] ? <Check className="h-4 w-4 text-emerald-500 mx-auto" /> : <X className="h-4 w-4 text-slate-400 mx-auto" />}
-                      </td>
-                      <td className="p-3 text-center">
-                        {permissions.viewer[f.key] ? <Check className="h-4 w-4 text-slate-500 mx-auto" /> : <X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" />}
-                      </td>
+              {/* Table */}
+              <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] overflow-hidden">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-50 dark:bg-[#07090E] border-b border-slate-200/80 dark:border-white/[0.08] text-[11px] font-bold text-slate-500">
+                    <tr>
+                      <th className="p-3 font-semibold">{locale === "en" ? "Capability / Module" : "Modul & Wewenang"}</th>
+                      <th className="p-3 text-center text-blue-600 font-bold">Owner</th>
+                      <th className="p-3 text-center text-indigo-600 font-bold">Admin</th>
+                      <th className="p-3 text-center text-emerald-600 font-bold">Member</th>
+                      <th className="p-3 text-center text-slate-400 font-bold">Viewer</th>
                     </tr>
-                  ))}
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] font-medium">
+                    {modulesList.map((m) => (
+                      <tr key={m.key} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="p-3 text-slate-800 dark:text-slate-200 font-bold">
+                          {m.label}
+                          <span className="block text-[10px] font-normal text-slate-400 mt-0.5">
+                            CRUD (Buat, Lihat, Edit, Hapus)
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md">
+                            CRUD
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            permissions.admin[m.key].create && permissions.admin[m.key].delete
+                              ? "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50"
+                              : "text-slate-500 bg-slate-100 dark:bg-white/[0.04]"
+                          }`}>
+                            {[
+                              permissions.admin[m.key].create ? "C" : "",
+                              permissions.admin[m.key].read ? "R" : "",
+                              permissions.admin[m.key].update ? "U" : "",
+                              permissions.admin[m.key].delete ? "D" : "",
+                            ].filter(Boolean).join("") || "-"}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            permissions.member[m.key].create
+                              ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50"
+                              : "text-slate-500 bg-slate-100 dark:bg-white/[0.04]"
+                          }`}>
+                            {[
+                              permissions.member[m.key].create ? "C" : "",
+                              permissions.member[m.key].read ? "R" : "",
+                              permissions.member[m.key].update ? "U" : "",
+                              permissions.member[m.key].delete ? "D" : "",
+                            ].filter(Boolean).join("") || "-"}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-white/[0.04] px-2 py-0.5 rounded-md">
+                            {[
+                              permissions.viewer[m.key].create ? "C" : "",
+                              permissions.viewer[m.key].read ? "R" : "",
+                              permissions.viewer[m.key].update ? "U" : "",
+                              permissions.viewer[m.key].delete ? "D" : "",
+                            ].filter(Boolean).join("") || "-"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
 
-                  {/* Permanent Delete Workspace Row */}
-                  <tr className="hover:bg-rose-50/20 dark:hover:bg-rose-950/10 transition-colors">
-                    <td className="p-3 text-rose-600 dark:text-rose-400 font-bold">
-                      {locale === "en" ? "Delete Family Workspace Permanently" : "Hapus Ruang Kerja Keluarga Permanen"}
-                    </td>
-                    <td className="p-3 text-center"><Check className="h-4 w-4 text-rose-500 mx-auto" /></td>
-                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
-                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
-                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
-                  </tr>
-                </tbody>
-              </table>
+                    {/* Feature Toggles */}
+                    {featuresList.map((f) => (
+                      <tr key={f.key} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="p-3 text-slate-800 dark:text-slate-200">{f.label}</td>
+                        <td className="p-3 text-center"><Check className="h-4 w-4 text-blue-500 mx-auto" /></td>
+                        <td className="p-3 text-center">
+                          {permissions.admin[f.key] ? <Check className="h-4 w-4 text-indigo-500 mx-auto" /> : <X className="h-4 w-4 text-slate-400 mx-auto" />}
+                        </td>
+                        <td className="p-3 text-center">
+                          {permissions.member[f.key] ? <Check className="h-4 w-4 text-emerald-500 mx-auto" /> : <X className="h-4 w-4 text-slate-400 mx-auto" />}
+                        </td>
+                        <td className="p-3 text-center">
+                          {permissions.viewer[f.key] ? <Check className="h-4 w-4 text-slate-500 mx-auto" /> : <X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" />}
+                        </td>
+                      </tr>
+                    ))}
+
+                    {/* Permanent Delete Workspace Row */}
+                    <tr className="hover:bg-rose-50/20 dark:hover:bg-rose-950/10 transition-colors">
+                      <td className="p-3 text-rose-600 dark:text-rose-400 font-bold">
+                        {locale === "en" ? "Delete Family Workspace Permanently" : "Hapus Ruang Kerja Keluarga Permanen"}
+                      </td>
+                      <td className="p-3 text-center"><Check className="h-4 w-4 text-rose-500 mx-auto" /></td>
+                      <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                      <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                      <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         ) : (
@@ -332,7 +493,7 @@ export function PermissionMatrixModal({
                         return (
                           <div
                             key={m.key}
-                            className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0E131F] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                            className="p-2.5 sm:p-3 rounded-2xl bg-white dark:bg-[#0E131F] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs"
                           >
                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                               {m.label}
@@ -382,7 +543,7 @@ export function PermissionMatrixModal({
                             key={f.key}
                             type="button"
                             onClick={() => handleToggleFeature(role, f.key)}
-                            className={`p-2.5 sm:p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                            className={`p-3 rounded-2xl border text-left flex items-center justify-between transition-all ${
                               active
                                 ? "bg-blue-50/80 dark:bg-blue-950/30 border-blue-500 text-blue-900 dark:text-blue-200 font-bold"
                                 : "bg-white dark:bg-[#0E131F] border-slate-200/80 dark:border-white/[0.06] text-slate-500 font-medium"
