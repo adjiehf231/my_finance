@@ -529,4 +529,18 @@ export const enDictionary: TranslationDictionary = {
     feature3: "Visual reporting & family cash flow analysis",
     terms: "By signing in, you agree to My Finance Terms of Service & Privacy Policy.",
   },
+  familyManagement: {
+    title: "Family Management",
+    subtitle: "Manage permissions, edit family workspace name, and invite members to your shared workspace.",
+    editFamilyBtn: "Edit Family Name",
+    editFamilyTitle: "Edit Family Workspace Name",
+    editFamilyDesc: "Update the family workspace name displayed across all member dashboards.",
+    nameLabel: "Family Name",
+    namePlaceholder: "e.g., The Johnsons, Harmony Family, etc.",
+    saveBtn: "Save Changes",
+    savingBtn: "Saving...",
+    successMsg: "Family workspace name updated successfully!",
+    errorMsg: "Failed to update family name",
+  },
 };
+

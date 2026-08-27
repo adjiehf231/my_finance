@@ -527,6 +527,20 @@ export const idDictionary = {
     feature3: "Pelaporan visual & analisis cash flow keluarga",
     terms: "Dengan masuk, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi My Finance.",
   },
+  familyManagement: {
+    title: "Manajemen Keluarga",
+    subtitle: "Atur hak akses, ubah nama keluarga, dan undang anggota ke ruang kerja bersama.",
+    editFamilyBtn: "Ubah Nama Keluarga",
+    editFamilyTitle: "Ubah Nama Ruang Kerja Keluarga",
+    editFamilyDesc: "Perbarui nama ruang kerja keluarga yang tampil di seluruh dashboard anggota.",
+    nameLabel: "Nama Keluarga",
+    namePlaceholder: "Contoh: Keluarga Harmonis, Sastro Wardoyo, dsb.",
+    saveBtn: "Simpan Perubahan",
+    savingBtn: "Menyimpan...",
+    successMsg: "Nama keluarga berhasil diperbarui!",
+    errorMsg: "Gagal memperbarui nama keluarga",
+  },
 };
 
 export type TranslationDictionary = typeof idDictionary;
+

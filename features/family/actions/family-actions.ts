@@ -365,3 +365,72 @@ export async function regenerateInviteCodeAction(familyId: string) {
   revalidatePath("/family");
   return { success: true, data: data.invite_code };
 }
+
+/**
+ * Update family workspace name (Owner / Admin required)
+ */
+export async function updateFamilyNameAction(familyId: string, name: string) {
+  try {
+    if (!name || name.trim().length < 2) {
+      return { success: false, error: "Nama keluarga minimal 2 karakter" };
+    }
+
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthenticated" };
+    }
+
+    // Verify user role
+    const { data: member } = await (supabase as any)
+      .from("family_members")
+      .select("role")
+      .eq("family_id", familyId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!member || (member.role !== "owner" && member.role !== "admin")) {
+      return { success: false, error: "Hanya Owner atau Admin yang dapat mengubah nama keluarga" };
+    }
+
+    const cleanName = name.trim();
+
+    const { error } = await (supabase as any)
+      .from("families")
+      .update({ name: cleanName })
+      .eq("id", familyId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    // Log activity
+    await (supabase as any).from("activity_logs").insert({
+      family_id: familyId,
+      user_id: user.id,
+      action: "update",
+      entity: "family",
+      entity_id: familyId,
+      description: `Nama ruang kerja keluarga diubah menjadi "${cleanName}".`,
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/family");
+    revalidatePath("/wallets");
+    revalidatePath("/budgeting");
+    revalidatePath("/goals");
+    revalidatePath("/debts");
+    revalidatePath("/recurring");
+    revalidatePath("/analytics");
+    revalidatePath("/settings");
+
+    return { success: true, data: { name: cleanName } };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Gagal mengubah nama keluarga" };
+  }
+}
+

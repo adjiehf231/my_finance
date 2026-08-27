@@ -2,11 +2,13 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentFamilyAction, getFamilyMembersAction } from "@/features/family/actions/family-actions";
 import { AppLayout } from "@/components/layout/app-layout";
+import { PageHeader } from "@/components/ui/page-header";
 import { MemberListCard } from "@/features/family/components/member-list-card";
+import { EditFamilyModal } from "@/features/family/components/edit-family-modal";
 
 export const metadata: Metadata = {
   title: "Ruang Kerja Keluarga & Anggota",
-  description: "Kelola anggota keluarga dan kode undangan My Finance.",
+  description: "Kelola anggota keluarga, ubah nama, dan kode undangan My Finance.",
 };
 
 export default async function FamilyPage() {
@@ -22,16 +24,16 @@ export default async function FamilyPage() {
 
   return (
     <AppLayout>
-      <div className="flex items-center gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Manajemen Keluarga
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Atur hak akses dan undang anggota keluarga ke ruang kerja bersama.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        titleKey="familyManagement.title"
+        subtitleKey="familyManagement.subtitle"
+        iconName="family"
+        familyName={family.name}
+      >
+        {(role === "owner" || role === "admin") && (
+          <EditFamilyModal familyId={family.id} currentName={family.name} />
+        )}
+      </PageHeader>
 
       <MemberListCard
         family={family}
