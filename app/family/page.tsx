@@ -10,6 +10,7 @@ import { MemberListCard } from "@/features/family/components/member-list-card";
 import { EditFamilyModal } from "@/features/family/components/edit-family-modal";
 import { InviteMemberModal } from "@/features/family/components/invite-member-modal";
 import { PermissionMatrixModal } from "@/features/family/components/permission-matrix-modal";
+import { DeleteFamilyModal } from "@/features/family/components/delete-family-modal";
 import { FamilyStatsCard } from "@/features/family/components/family-stats-card";
 import { FamilyRulesCard } from "@/features/family/components/family-rules-card";
 
@@ -29,6 +30,7 @@ export default async function FamilyPage() {
   const membersRes = await getFamilyMembersAction(family.id);
   const members = (membersRes.data || []) as any[];
 
+  const isOwner = role === "owner";
   const isManager = role === "owner" || role === "admin";
 
   const roleCounts = {
@@ -40,14 +42,14 @@ export default async function FamilyPage() {
 
   return (
     <AppLayout>
-      {/* FinTech Page Header */}
+      {/* FinTech Page Header with Mobile Responsive Action Grid */}
       <PageHeader
         titleKey="familyManagement.title"
         subtitleKey="familyManagement.subtitle"
         iconName="family"
         familyName={family.name}
       >
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
           <PermissionMatrixModal
             familyId={family.id}
             currentUserRole={role as any}
@@ -62,6 +64,12 @@ export default async function FamilyPage() {
                 inviteCode={family.invite_code}
               />
             </>
+          )}
+          {isOwner && (
+            <DeleteFamilyModal
+              familyId={family.id}
+              familyName={family.name}
+            />
           )}
         </div>
       </PageHeader>

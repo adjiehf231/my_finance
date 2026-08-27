@@ -18,9 +18,7 @@ import {
   RotateCcw,
   Save,
   Loader2,
-  Layers,
   ArrowLeft,
-  Sparkles,
 } from "lucide-react";
 import {
   DEFAULT_ROLE_PERMISSIONS,
@@ -141,30 +139,32 @@ export function PermissionMatrixModal({
           <Button
             variant="outline"
             size="sm"
-            className="rounded-2xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.04] text-xs font-bold gap-2 text-slate-700 dark:text-slate-200"
+            className="rounded-2xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.04] text-xs font-bold gap-1.5 text-slate-700 dark:text-slate-200 w-full sm:w-auto h-9"
           >
-            <Shield className="h-3.5 w-3.5 text-indigo-500" />
-            {t("familyManagement.permissionMatrixBtn")}
+            <Shield className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+            <span className="truncate">{t("familyManagement.permissionMatrixBtn")}</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl rounded-3xl p-6 max-h-[88vh] overflow-y-auto">
+      <DialogContent className="w-[94vw] sm:max-w-2xl rounded-3xl p-4 sm:p-6 max-h-[88vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between gap-4">
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <div className="h-9 w-9 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                <Shield className="h-5 w-5" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+              <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              {isEditing
-                ? (locale === "en" ? "Configure Role & CRUD Permissions" : "Konfigurasi Hak Akses & Kontrol CRUD")
-                : t("familyManagement.matrixTitle")}
+              <span className="truncate">
+                {isEditing
+                  ? (locale === "en" ? "Configure Role & CRUD" : "Konfigurasi Hak Akses & CRUD")
+                  : t("familyManagement.matrixTitle")}
+              </span>
             </DialogTitle>
 
             {isOwner && !isEditing && (
               <Button
                 size="sm"
                 onClick={() => setIsEditing(true)}
-                className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 h-8 px-3.5"
+                className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 h-8 px-3.5 shrink-0 self-start sm:self-auto"
               >
                 <Settings2 className="h-3.5 w-3.5" />
                 {locale === "en" ? "Configure (Owner)" : "Konfigurasi (Owner)"}
@@ -173,7 +173,7 @@ export function PermissionMatrixModal({
           </div>
         </DialogHeader>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-2">
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-1">
           {isEditing
             ? (locale === "en"
               ? "As Owner, toggle active/inactive access and granular CRUD permissions for each role."
@@ -183,30 +183,30 @@ export function PermissionMatrixModal({
 
         {/* VIEW MODE: Read-Only Comparison Matrix */}
         {!isEditing ? (
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 pt-1">
             {/* Roles Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-500/20 text-center">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-500/20 text-center">
                 <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 block">{t("familyManagement.roleOwner")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Full Access (Locked)" : "Akses Penuh (Kunci)"}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Full Access" : "Akses Penuh"}</span>
               </div>
-              <div className="p-2.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-500/20 text-center">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-500/20 text-center">
                 <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 block">{t("familyManagement.roleAdmin")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Configurable" : "Dapat Diatur"}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
               </div>
-              <div className="p-2.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-500/20 text-center">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-500/20 text-center">
                 <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">{t("familyManagement.roleMember")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Configurable" : "Dapat Diatur"}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
               </div>
-              <div className="p-2.5 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] text-center">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.08] text-center">
                 <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">{t("familyManagement.roleViewer")}</span>
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Configurable" : "Dapat Diatur"}</span>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">{locale === "en" ? "Custom" : "Kustom"}</span>
               </div>
             </div>
 
-            {/* Matrix Table */}
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] overflow-hidden">
-              <table className="w-full text-xs text-left">
+            {/* Matrix Table with Horizontal Scroll */}
+            <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] overflow-x-auto">
+              <table className="w-full text-xs text-left min-w-[480px]">
                 <thead className="bg-slate-50 dark:bg-[#07090E] border-b border-slate-200/80 dark:border-white/[0.08] text-[11px] font-bold text-slate-500">
                   <tr>
                     <th className="p-3 font-semibold">{locale === "en" ? "Capability / Module" : "Modul & Wewenang"}</th>
@@ -287,60 +287,71 @@ export function PermissionMatrixModal({
                       </td>
                     </tr>
                   ))}
+
+                  {/* Permanent Delete Workspace Row */}
+                  <tr className="hover:bg-rose-50/20 dark:hover:bg-rose-950/10 transition-colors">
+                    <td className="p-3 text-rose-600 dark:text-rose-400 font-bold">
+                      {locale === "en" ? "Delete Family Workspace Permanently" : "Hapus Ruang Kerja Keluarga Permanen"}
+                    </td>
+                    <td className="p-3 text-center"><Check className="h-4 w-4 text-rose-500 mx-auto" /></td>
+                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                    <td className="p-3 text-center"><X className="h-4 w-4 text-slate-300 dark:text-slate-600 mx-auto" /></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         ) : (
           /* EDIT MODE: Owner Configurator */
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 pt-1">
             <Tabs defaultValue="member" className="w-full">
               <TabsList className="grid grid-cols-3 rounded-2xl h-10 p-1 bg-slate-100 dark:bg-white/[0.04]">
-                <TabsTrigger value="admin" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-indigo-600">
+                <TabsTrigger value="admin" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-indigo-600 truncate">
                   {t("familyManagement.roleAdmin")}
                 </TabsTrigger>
-                <TabsTrigger value="member" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-emerald-600">
+                <TabsTrigger value="member" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-emerald-600 truncate">
                   {t("familyManagement.roleMember")}
                 </TabsTrigger>
-                <TabsTrigger value="viewer" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-slate-600">
+                <TabsTrigger value="viewer" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F] text-slate-600 truncate">
                   {t("familyManagement.roleViewer")}
                 </TabsTrigger>
               </TabsList>
 
               {(["admin", "member", "viewer"] as const).map((role) => (
-                <TabsContent key={role} value={role} className="space-y-4 pt-3">
+                <TabsContent key={role} value={role} className="space-y-3 pt-2">
                   {/* CRUD Modules Header */}
-                  <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] p-4 bg-slate-50/50 dark:bg-[#07090E]/50 space-y-3">
-                    <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider font-display block">
+                  <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] p-3 sm:p-4 bg-slate-50/50 dark:bg-[#07090E]/50 space-y-2.5">
+                    <span className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider font-display block">
                       {locale === "en" ? "Granular CRUD Operations" : "Operasi CRUD per Modul"}
                     </span>
 
-                    <div className="space-y-2.5">
+                    <div className="space-y-2">
                       {modulesList.map((m) => {
                         const crud = permissions[role][m.key];
                         return (
                           <div
                             key={m.key}
-                            className="p-3 rounded-xl bg-white dark:bg-[#0E131F] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                            className="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-[#0E131F] border border-slate-200/70 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                           >
                             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                               {m.label}
                             </span>
-                            <div className="flex items-center gap-1.5">
+                            <div className="grid grid-cols-4 sm:flex items-center gap-1">
                               {(["create", "read", "update", "delete"] as const).map((action) => {
                                 const active = crud[action];
                                 const labels: Record<string, string> = {
-                                  create: locale === "en" ? "Create (C)" : "Buat (C)",
-                                  read: locale === "en" ? "Read (R)" : "Lihat (R)",
-                                  update: locale === "en" ? "Edit (U)" : "Ubah (U)",
-                                  delete: locale === "en" ? "Delete (D)" : "Hapus (D)",
+                                  create: "Buat (C)",
+                                  read: "Lihat (R)",
+                                  update: "Ubah (U)",
+                                  delete: "Hapus (D)",
                                 };
                                 return (
                                   <button
                                     key={action}
                                     type="button"
                                     onClick={() => handleToggleCrud(role, m.key, action)}
-                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                                    className={`h-8 px-2 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all border text-center ${
                                       active
                                         ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                                         : "bg-slate-100 dark:bg-white/[0.04] text-slate-400 border-slate-200/60 dark:border-white/[0.06] hover:bg-slate-200"
@@ -358,12 +369,12 @@ export function PermissionMatrixModal({
                   </div>
 
                   {/* Feature Toggles */}
-                  <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] p-4 bg-slate-50/50 dark:bg-[#07090E]/50 space-y-3">
-                    <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider font-display block">
+                  <div className="rounded-2xl border border-slate-200/80 dark:border-white/[0.08] p-3 sm:p-4 bg-slate-50/50 dark:bg-[#07090E]/50 space-y-2.5">
+                    <span className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider font-display block">
                       {locale === "en" ? "Special Feature Access" : "Akses Fitur Khusus"}
                     </span>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {featuresList.map((f) => {
                         const active = permissions[role][f.key];
                         return (
@@ -371,7 +382,7 @@ export function PermissionMatrixModal({
                             key={f.key}
                             type="button"
                             onClick={() => handleToggleFeature(role, f.key)}
-                            className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                            className={`p-2.5 sm:p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
                               active
                                 ? "bg-blue-50/80 dark:bg-blue-950/30 border-blue-500 text-blue-900 dark:text-blue-200 font-bold"
                                 : "bg-white dark:bg-[#0E131F] border-slate-200/80 dark:border-white/[0.06] text-slate-500 font-medium"
@@ -390,28 +401,28 @@ export function PermissionMatrixModal({
               ))}
             </Tabs>
 
-            {/* Bottom Actions */}
-            <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-200/80 dark:border-white/[0.08]">
-              <div className="flex items-center gap-2">
+            {/* Bottom Actions Sticky */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-3 border-t border-slate-200/80 dark:border-white/[0.08]">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsEditing(false)}
-                  className="rounded-2xl text-xs font-bold"
+                  className="flex-1 sm:flex-none rounded-2xl text-xs font-bold h-9"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                  {locale === "en" ? "Back to Overview" : "Kembali ke Ringkasan"}
+                  {locale === "en" ? "Back" : "Kembali"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleResetDefaults}
-                  className="rounded-2xl text-xs font-bold gap-1.5"
+                  className="flex-1 sm:flex-none rounded-2xl text-xs font-bold gap-1.5 h-9"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
-                  {locale === "en" ? "Reset Defaults" : "Reset Standar"}
+                  {locale === "en" ? "Reset" : "Reset Standar"}
                 </Button>
               </div>
 
@@ -419,7 +430,7 @@ export function PermissionMatrixModal({
                 type="button"
                 disabled={isSaving}
                 onClick={handleSavePermissions}
-                className="rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 gap-1.5 shadow-md shadow-blue-500/20"
+                className="w-full sm:w-auto rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 h-9 gap-1.5 shadow-md shadow-blue-500/20"
               >
                 {isSaving ? (
                   <>

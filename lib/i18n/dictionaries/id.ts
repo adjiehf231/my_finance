@@ -582,11 +582,22 @@ export const idDictionary = {
     statsTotalMembers: "Total Anggota",
     statsActiveRoles: "Distribusi Peran",
     statsInviteCode: "Kode Undangan Aktif",
+    deleteFamilyBtn: "Hapus Ruang Kerja",
+    deleteModalTitle: "Hapus Ruang Kerja Keluarga",
+    deleteModalDesc: "Tindakan ini bersifat permanen. Seluruh mutasi kas, dompet rekening, anggaran, target tabungan, dan riwayat keluarga akan dihapus secara permanen.",
+    deleteConfirmPrompt: "Ketik nama keluarga \"{name}\" untuk mengonfirmasi:",
+    deleteConfirmBtn: "Saya Mengerti, Hapus Keluarga Ini",
+    deletingBtn: "Menghapus Ruang Kerja...",
+    deleteSuccess: "Ruang kerja keluarga berhasil dihapus.",
+    deleteError: "Gagal menghapus ruang kerja keluarga",
+    deleteNameMismatch: "Nama keluarga yang Anda ketik tidak cocok",
   },
 
   onboarding: {
     headerTitle: "Setup Ruang Kerja Finansial",
     stepIndicator: "Langkah {current} dari {total}",
+    loginBtn: "Masuk ke Akun",
+    alreadyHaveAccount: "Sudah punya akun?",
     step1Title: "Selamat Datang di My Finance! 🎉",
     step1Subtitle: "Platform cerdas untuk mengelola arus kas, anggaran, dan target impian bersama keluarga dalam satu ruang kerja modern.",
     feature1Title: "Aman & Terisolasi",
@@ -636,5 +647,6 @@ export const idDictionary = {
 };
 
 export type TranslationDictionary = typeof idDictionary;
+
 
 

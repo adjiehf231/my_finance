@@ -63,29 +63,29 @@ export function EditFamilyModal({
           <Button
             variant="outline"
             size="sm"
-            className="rounded-2xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.04] text-xs font-bold gap-2 text-slate-700 dark:text-slate-200"
+            className="rounded-2xl border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.04] text-xs font-bold gap-1.5 text-slate-700 dark:text-slate-200 w-full sm:w-auto h-9"
           >
-            <Edit3 className="h-3.5 w-3.5 text-blue-500" />
-            {t("familyManagement.editFamilyBtn")}
+            <Edit3 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+            <span className="truncate">{t("familyManagement.editFamilyBtn")}</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md rounded-3xl p-6">
+      <DialogContent className="w-[94vw] sm:max-w-md rounded-3xl p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold flex items-center gap-2">
-            <div className="h-9 w-9 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <Users className="h-5 w-5" />
+          <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            {t("familyManagement.editFamilyTitle")}
+            <span className="truncate">{t("familyManagement.editFamilyTitle")}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSave} className="space-y-4 pt-2">
-          <p className="text-xs text-slate-500 leading-relaxed">
+        <form onSubmit={handleSave} className="space-y-4 pt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-1">
             {t("familyManagement.editFamilyDesc")}
           </p>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="family-name" className="text-xs font-bold text-slate-700 dark:text-slate-200">
               {t("familyManagement.nameLabel")}
             </Label>
@@ -102,7 +102,7 @@ export function EditFamilyModal({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3">
+          <div className="flex items-center justify-end gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
@@ -115,11 +115,11 @@ export function EditFamilyModal({
             <Button
               type="submit"
               disabled={isLoading || !name.trim() || name.trim() === currentName}
-              className="rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5"
+              className="rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 shadow-md shadow-blue-500/20"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
                   {t("familyManagement.savingBtn")}
                 </>
               ) : (

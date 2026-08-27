@@ -584,11 +584,22 @@ export const enDictionary: TranslationDictionary = {
     statsTotalMembers: "Total Members",
     statsActiveRoles: "Role Distribution",
     statsInviteCode: "Active Invite Code",
+    deleteFamilyBtn: "Delete Workspace",
+    deleteModalTitle: "Delete Family Workspace",
+    deleteModalDesc: "This action is permanent and cannot be undone. All cash flow records, wallets, budgets, goals, and history in this workspace will be permanently erased.",
+    deleteConfirmPrompt: "Type the family name \"{name}\" to confirm:",
+    deleteConfirmBtn: "I Understand, Delete This Workspace",
+    deletingBtn: "Deleting Workspace...",
+    deleteSuccess: "Family workspace deleted successfully.",
+    deleteError: "Failed to delete family workspace",
+    deleteNameMismatch: "The family name you typed does not match",
   },
 
   onboarding: {
     headerTitle: "Financial Workspace Setup",
     stepIndicator: "Step {current} of {total}",
+    loginBtn: "Log In to Account",
+    alreadyHaveAccount: "Already have an account?",
     step1Title: "Welcome to My Finance! 🎉",
     step1Subtitle: "Smart platform to manage cash flow, budgets, and family financial goals in a unified modern workspace.",
     feature1Title: "Secure & Isolated",
@@ -636,5 +647,6 @@ export const enDictionary: TranslationDictionary = {
     finishSetupBtn: "Complete Setup",
   },
 };
+
 
 

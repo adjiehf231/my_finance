@@ -487,4 +487,64 @@ export async function updateFamilyPermissionsAction(
   }
 }
 
+/**
+ * Delete family workspace permanently (Owner only)
+ */
+export async function deleteFamilyWorkspaceAction(familyId: string, confirmationName: string) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: "Unauthenticated" };
+    }
+
+    // 1. Verify user is Owner
+    const { data: member } = await (supabase as any)
+      .from("family_members")
+      .select("role")
+      .eq("family_id", familyId)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!member || member.role !== "owner") {
+      return { success: false, error: "Hanya Pemilik (Owner) yang dapat menghapus ruang kerja keluarga" };
+    }
+
+    // 2. Verify family name confirmation
+    const { data: family } = await (supabase as any)
+      .from("families")
+      .select("name")
+      .eq("id", familyId)
+      .single();
+
+    if (!family || family.name.trim().toLowerCase() !== confirmationName.trim().toLowerCase()) {
+      return { success: false, error: "Nama keluarga konfirmasi tidak sesuai" };
+    }
+
+    // 3. Delete family from families table (cascade deletes all children)
+    const { error: deleteError } = await (supabase as any)
+      .from("families")
+      .delete()
+      .eq("id", familyId);
+
+    if (deleteError) {
+      return { success: false, error: deleteError.message };
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/family");
+    revalidatePath("/onboarding");
+    revalidatePath("/");
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Gagal menghapus keluarga" };
+  }
+}
+
+
 

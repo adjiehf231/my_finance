@@ -27,7 +27,6 @@ import {
   Copy,
   Check,
   Send,
-  Shield,
   Smartphone,
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/i18n-context";
@@ -56,9 +55,7 @@ export function InviteMemberModal({
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://my-finance.vercel.app";
   const joinUrl = `${baseUrl}/onboarding?invite=${inviteCode}`;
 
-  const inviteMessage = locale === "en"
-    ? `Halo! Ayo bergabung ke ruang kerja keuangan keluarga kita "${familyName}" di My Finance.\n\nKlik tautan ini untuk bergabung langsung:\n${joinUrl}\n\nAtau gunakan kode undangan berikut: *${inviteCode}*\n\nMari kita kelola keuangan keluarga bersama dengan transparan!`
-    : `Halo! Ayo bergabung ke ruang kerja keuangan keluarga kita "${familyName}" di My Finance.\n\nKlik tautan ini untuk bergabung langsung:\n${joinUrl}\n\nAtau gunakan kode undangan berikut: *${inviteCode}*\n\nMari kita kelola keuangan keluarga bersama dengan transparan!`;
+  const inviteMessage = `Halo! Ayo bergabung ke ruang kerja keuangan keluarga kita "${familyName}" di My Finance.\n\nKlik tautan ini untuk bergabung langsung:\n${joinUrl}\n\nAtau gunakan kode undangan berikut: *${inviteCode}*\n\nMari kita kelola keuangan keluarga bersama dengan transparan!`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(joinUrl);
@@ -103,34 +100,34 @@ export function InviteMemberModal({
         {triggerButton || (
           <Button
             size="sm"
-            className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold gap-2 shadow-md shadow-blue-500/20"
+            className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold gap-1.5 shadow-md shadow-blue-500/20 w-full sm:w-auto h-9"
           >
-            <UserPlus className="h-4 w-4" />
-            {t("familyManagement.inviteBtn")}
+            <UserPlus className="h-4 w-4 shrink-0" />
+            <span className="truncate">{t("familyManagement.inviteBtn")}</span>
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg rounded-3xl p-6">
+      <DialogContent className="w-[94vw] sm:max-w-lg rounded-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold flex items-center gap-2">
-            <div className="h-9 w-9 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <UserPlus className="h-5 w-5" />
+          <DialogTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            {t("familyManagement.inviteModalTitle")}
+            <span className="truncate">{t("familyManagement.inviteModalTitle")}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-2">
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed -mt-1">
           {t("familyManagement.inviteModalDesc")}
         </p>
 
         {/* Invite Code Highlight */}
-        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/80 dark:border-white/[0.08] my-1">
+        <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/80 dark:border-white/[0.08] my-1">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-display">
               {t("familyManagement.statsInviteCode")}
             </span>
-            <span className="font-mono font-black text-base text-slate-900 dark:text-white tracking-widest">
+            <span className="font-mono font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-widest">
               {inviteCode}
             </span>
           </div>
@@ -138,7 +135,7 @@ export function InviteMemberModal({
             size="sm"
             variant="outline"
             onClick={handleCopyLink}
-            className="rounded-xl text-xs font-bold gap-1.5 h-8"
+            className="rounded-xl text-xs font-bold gap-1.5 h-8 px-3"
           >
             {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
             <span>{copiedLink ? "Disalin" : "Salin Link"}</span>
@@ -146,40 +143,40 @@ export function InviteMemberModal({
         </div>
 
         {/* Tab Selection */}
-        <Tabs defaultValue="whatsapp" className="w-full mt-2">
+        <Tabs defaultValue="whatsapp" className="w-full mt-1">
           <TabsList className="grid grid-cols-3 rounded-2xl h-10 p-1 bg-slate-100 dark:bg-white/[0.04]">
-            <TabsTrigger value="whatsapp" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
-              <Smartphone className="h-3.5 w-3.5 text-emerald-500" />
-              {t("familyManagement.waTab")}
+            <TabsTrigger value="whatsapp" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
+              <Smartphone className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span className="truncate">{t("familyManagement.waTab")}</span>
             </TabsTrigger>
-            <TabsTrigger value="email" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
-              <Mail className="h-3.5 w-3.5 text-blue-500" />
-              {t("familyManagement.emailTab")}
+            <TabsTrigger value="email" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
+              <Mail className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+              <span className="truncate">{t("familyManagement.emailTab")}</span>
             </TabsTrigger>
-            <TabsTrigger value="link" className="rounded-xl text-xs font-bold gap-1.5 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
-              <Link2 className="h-3.5 w-3.5 text-indigo-500" />
-              {t("familyManagement.linkTab")}
+            <TabsTrigger value="link" className="rounded-xl text-[11px] sm:text-xs font-bold gap-1 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0E131F]">
+              <Link2 className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+              <span className="truncate">{t("familyManagement.linkTab")}</span>
             </TabsTrigger>
           </TabsList>
 
           {/* TAB 1: WhatsApp */}
-          <TabsContent value="whatsapp" className="space-y-4 pt-3">
+          <TabsContent value="whatsapp" className="space-y-3 pt-2">
             <div className="p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-500/20 text-xs text-slate-600 dark:text-slate-300 space-y-2">
               <p className="font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                 <Share2 className="h-3.5 w-3.5" />
                 {locale === "en" ? "Ready-to-send WhatsApp invitation" : "Pesan undangan WhatsApp siap kirim"}
               </p>
-              <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-black/30 p-2.5 rounded-xl border border-slate-200/50 dark:border-white/[0.04] font-mono">
+              <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-black/30 p-2.5 rounded-xl border border-slate-200/50 dark:border-white/[0.04] font-mono break-all sm:break-normal">
                 {inviteMessage}
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleCopyMessage}
-                className="flex-1 rounded-2xl text-xs font-bold h-10 gap-2"
+                className="w-full sm:flex-1 rounded-2xl text-xs font-bold h-10 gap-2"
               >
                 {copiedMsg ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                 {t("familyManagement.copyInviteMsgBtn")}
@@ -187,7 +184,7 @@ export function InviteMemberModal({
               <Button
                 type="button"
                 onClick={handleOpenWhatsApp}
-                className="flex-1 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold h-10 gap-2 shadow-md shadow-emerald-500/20"
+                className="w-full sm:flex-1 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold h-10 gap-2 shadow-md shadow-emerald-500/20"
               >
                 <Send className="h-4 w-4" />
                 {t("familyManagement.openWhatsAppBtn")}
@@ -196,7 +193,7 @@ export function InviteMemberModal({
           </TabsContent>
 
           {/* TAB 2: Email */}
-          <TabsContent value="email" className="space-y-4 pt-3">
+          <TabsContent value="email" className="space-y-3 pt-2">
             <form onSubmit={handleSendEmail} className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="invite-email" className="text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -225,13 +222,13 @@ export function InviteMemberModal({
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
                     <SelectItem value="admin" className="text-xs font-medium">
-                      Administrator — {locale === "en" ? "Can manage transactions & budgets" : "Bisa kelola transaksi & anggaran"}
+                      Administrator — {locale === "en" ? "Manage records & budgets" : "Kelola mutasi & anggaran"}
                     </SelectItem>
                     <SelectItem value="member" className="text-xs font-medium">
-                      Member — {locale === "en" ? "Can record expenses & income" : "Bisa catat pemasukan & pengeluaran"}
+                      Member — {locale === "en" ? "Record income & expense" : "Catat pemasukan & pengeluaran"}
                     </SelectItem>
                     <SelectItem value="viewer" className="text-xs font-medium">
-                      Viewer — {locale === "en" ? "Read-only access (e.g. children)" : "Hanya melihat laporan (cocok untuk anak)"}
+                      Viewer — {locale === "en" ? "Read-only access" : "Hanya melihat laporan"}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -242,13 +239,13 @@ export function InviteMemberModal({
                 className="w-full h-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold gap-2 shadow-md shadow-blue-500/20"
               >
                 <Mail className="h-4 w-4" />
-                {locale === "en" ? "Send Invitation via Email Client" : "Kirim Undangan via Aplikasi Email"}
+                {locale === "en" ? "Send Invitation via Email Client" : "Kirim Undangan via Email"}
               </Button>
             </form>
           </TabsContent>
 
           {/* TAB 3: Direct Link */}
-          <TabsContent value="link" className="space-y-4 pt-3">
+          <TabsContent value="link" className="space-y-3 pt-2">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {locale === "en" ? "Direct Join URL" : "Tautan Langsung Bergabung"}
@@ -257,12 +254,12 @@ export function InviteMemberModal({
                 <Input
                   readOnly
                   value={joinUrl}
-                  className="h-10 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-xs font-mono select-all"
+                  className="h-10 rounded-2xl border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-[#07090E]/70 text-xs font-mono select-all truncate"
                 />
                 <Button
                   type="button"
                   onClick={handleCopyLink}
-                  className="h-10 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold px-4 shrink-0"
+                  className="h-10 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold px-3.5 shrink-0"
                 >
                   {copiedLink ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                 </Button>

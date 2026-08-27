@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ import {
   Smartphone,
   TrendingUp,
   Loader2,
+  LogIn,
 } from "lucide-react";
 import {
   createFamilyAction,
@@ -159,7 +161,7 @@ export default function OnboardingPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
           <p className="text-xs font-semibold text-slate-400">Memeriksa ruang kerja...</p>
@@ -171,15 +173,15 @@ export default function OnboardingPage() {
   const progressPercentage = (step / 7) * 100;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex flex-col justify-between p-4 sm:p-6 transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex flex-col justify-between p-3.5 sm:p-6 transition-colors duration-300 relative overflow-hidden">
       {/* Background glow accents */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Header & Progress Bar */}
-      <header className="max-w-2xl w-full mx-auto pt-4 pb-2 z-10">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2.5">
+      <header className="max-w-2xl w-full mx-auto pt-2 sm:pt-4 pb-2 z-10">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
               <TrendingUp className="h-5 w-5" />
             </div>
@@ -187,35 +189,43 @@ export default function OnboardingPage() {
               <span className="font-black text-sm text-slate-900 dark:text-white block leading-none font-display">
                 My<span className="text-blue-600 dark:text-blue-400">Finance</span>
               </span>
-              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mt-0.5">
                 {t("onboarding.headerTitle")}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 hidden sm:inline">
-              {t("onboarding.stepIndicator", { current: step, total: 7 })}
-            </span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Akses Login Button in Header */}
+            <Link href="/login">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-xl border-slate-200 dark:border-white/[0.08] text-[11px] font-bold gap-1 px-2.5 sm:px-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                <span>{t("onboarding.loginBtn")}</span>
+              </Button>
+            </Link>
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
-        <Progress value={progressPercentage} className="h-2 rounded-full bg-slate-200 dark:bg-white/[0.08]" />
+        <Progress value={progressPercentage} className="h-1.5 sm:h-2 rounded-full bg-slate-200 dark:bg-white/[0.08]" />
       </header>
 
       {/* Main Wizard Form Card */}
-      <main className="flex-1 flex items-center justify-center py-6 z-10">
-        <Card className="max-w-xl w-full rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#0E131F]/90 backdrop-blur-2xl shadow-xl shadow-blue-500/5 p-6 sm:p-8">
+      <main className="flex-1 flex items-center justify-center py-4 sm:py-6 z-10">
+        <Card className="max-w-xl w-full rounded-3xl border border-slate-200/80 dark:border-white/[0.08] bg-white/90 dark:bg-[#0E131F]/90 backdrop-blur-2xl shadow-xl shadow-blue-500/5 p-4 sm:p-8">
           <CardContent className="p-0">
             {/* STEP 1: Welcome */}
             {step === 1 && (
-              <div className="text-center py-4 space-y-6">
-                <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <Sparkles className="h-10 w-10" />
+              <div className="text-center py-2 sm:py-4 space-y-5 sm:space-y-6">
+                <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <Sparkles className="h-8 w-8 sm:h-10 sm:w-10" />
                 </div>
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
+                  <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
                     {t("onboarding.step1Title")}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed font-medium">
@@ -223,37 +233,52 @@ export default function OnboardingPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 pt-2 text-left">
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
-                    <ShieldCheck className="h-5 w-5 text-blue-500 mb-1" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1 text-left">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mb-1" />
                     <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature1Title")}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature1Desc")}</p>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
-                    <Users className="h-5 w-5 text-indigo-500 mb-1" />
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500 mb-1" />
                     <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature2Title")}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature2Desc")}</p>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
-                    <PieChart className="h-5 w-5 text-cyan-500 mb-1" />
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-[#07090E] border border-slate-200/70 dark:border-white/[0.06]">
+                    <PieChart className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-500 mb-1" />
                     <p className="font-bold text-xs text-slate-900 dark:text-slate-200">{t("onboarding.feature3Title")}</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">{t("onboarding.feature3Desc")}</p>
                   </div>
                 </div>
 
-                <Button
-                  onClick={() => setStep(2)}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-500/25"
-                >
-                  {t("onboarding.startBtn")}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                <div className="space-y-3 pt-2">
+                  <Button
+                    onClick={() => setStep(2)}
+                    className="w-full h-11 sm:h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
+                  >
+                    {t("onboarding.startBtn")}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+
+                  {/* Already have account bar */}
+                  <div className="text-center pt-1">
+                    <span className="text-xs text-slate-400 mr-1.5 font-medium">
+                      {t("onboarding.alreadyHaveAccount")}
+                    </span>
+                    <Link
+                      href="/login"
+                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      {t("onboarding.loginBtn")} &rarr;
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* STEP 2: Create or Join Family */}
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
                     {t("onboarding.step2Title")}
@@ -263,38 +288,38 @@ export default function OnboardingPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setFamilyMode("create")}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
+                    className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all ${
                       familyMode === "create"
                         ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 ring-2 ring-blue-500/20"
                         : "border-slate-200 dark:border-white/[0.08]"
                     }`}
                   >
-                    <Plus className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-2" />
-                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">{t("onboarding.createFamilyOpt")}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{t("onboarding.createFamilyDesc")}</p>
+                    <Plus className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-1.5 sm:mb-2" />
+                    <p className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">{t("onboarding.createFamilyOpt")}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{t("onboarding.createFamilyDesc")}</p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setFamilyMode("join")}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
+                    className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all ${
                       familyMode === "join"
                         ? "border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20"
                         : "border-slate-200 dark:border-white/[0.08]"
                     }`}
                   >
-                    <Users className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mb-2" />
-                    <p className="font-bold text-sm text-slate-900 dark:text-slate-100">{t("onboarding.joinFamilyOpt")}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{t("onboarding.joinFamilyDesc")}</p>
+                    <Users className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mb-1.5 sm:mb-2" />
+                    <p className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">{t("onboarding.joinFamilyOpt")}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{t("onboarding.joinFamilyDesc")}</p>
                   </button>
                 </div>
 
                 {familyMode === "create" ? (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label htmlFor="family-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       {t("onboarding.familyNameLabel")}
                     </Label>
@@ -307,7 +332,7 @@ export default function OnboardingPage() {
                     />
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label htmlFor="invite-code" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       {t("onboarding.inviteCodeLabel")}
                     </Label>
@@ -322,8 +347,8 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(1)} className="rounded-2xl h-11 text-xs font-bold">
+                <div className="flex gap-2.5 pt-2">
+                  <Button variant="outline" onClick={() => setStep(1)} className="rounded-2xl h-11 text-xs font-bold px-4">
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
@@ -339,7 +364,7 @@ export default function OnboardingPage() {
 
             {/* STEP 3: First Wallet Setup */}
             {step === 3 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
                     {t("onboarding.step3Title")}
@@ -351,20 +376,20 @@ export default function OnboardingPage() {
 
                 <div className="space-y-2">
                   <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">{t("onboarding.walletTypeLabel")}</Label>
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                     <button
                       type="button"
                       onClick={() => {
                         setWalletType("bank");
                         setWalletName("BCA Tabungan");
                       }}
-                      className={`p-3.5 rounded-2xl border text-center transition-all ${
+                      className={`p-3 sm:p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "bank"
                           ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 font-bold shadow-sm"
                           : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Building2 className="h-5 w-5 mx-auto mb-1.5" />
+                      <Building2 className="h-5 w-5 mx-auto mb-1" />
                       <span className="text-xs">{t("onboarding.bankOpt")}</span>
                     </button>
                     <button
@@ -373,13 +398,13 @@ export default function OnboardingPage() {
                         setWalletType("ewallet");
                         setWalletName("GoPay / OVO");
                       }}
-                      className={`p-3.5 rounded-2xl border text-center transition-all ${
+                      className={`p-3 sm:p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "ewallet"
                           ? "border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 font-bold shadow-sm"
                           : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Smartphone className="h-5 w-5 mx-auto mb-1.5" />
+                      <Smartphone className="h-5 w-5 mx-auto mb-1" />
                       <span className="text-xs">{t("onboarding.ewalletOpt")}</span>
                     </button>
                     <button
@@ -388,19 +413,19 @@ export default function OnboardingPage() {
                         setWalletType("cash");
                         setWalletName("Dompet Tunai");
                       }}
-                      className={`p-3.5 rounded-2xl border text-center transition-all ${
+                      className={`p-3 sm:p-3.5 rounded-2xl border text-center transition-all ${
                         walletType === "cash"
                           ? "border-cyan-500 bg-cyan-50/60 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400 font-bold shadow-sm"
                           : "border-slate-200 dark:border-white/[0.08]"
                       }`}
                     >
-                      <Wallet className="h-5 w-5 mx-auto mb-1.5" />
+                      <Wallet className="h-5 w-5 mx-auto mb-1" />
                       <span className="text-xs">{t("onboarding.cashOpt")}</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="step3-wallet-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     {t("onboarding.walletNameLabel")}
                   </Label>
@@ -412,8 +437,8 @@ export default function OnboardingPage() {
                   />
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(2)} className="rounded-2xl h-11 text-xs font-bold">
+                <div className="flex gap-2.5 pt-2">
+                  <Button variant="outline" onClick={() => setStep(2)} className="rounded-2xl h-11 text-xs font-bold px-4">
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
@@ -428,7 +453,7 @@ export default function OnboardingPage() {
 
             {/* STEP 4: Initial Balance */}
             {step === 4 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
                     {t("onboarding.step4Title", { name: walletName })}
@@ -457,8 +482,8 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(3)} className="rounded-2xl h-11 text-xs font-bold">
+                <div className="flex gap-2.5 pt-2">
+                  <Button variant="outline" onClick={() => setStep(3)} className="rounded-2xl h-11 text-xs font-bold px-4">
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
@@ -474,7 +499,7 @@ export default function OnboardingPage() {
 
             {/* STEP 5: Monthly Budget Setup */}
             {step === 5 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
                     {t("onboarding.step5Title")}
@@ -510,7 +535,7 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="step5-budget" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     {t("onboarding.budgetLimitLabel")}
                   </Label>
@@ -524,8 +549,8 @@ export default function OnboardingPage() {
                   />
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(4)} className="rounded-2xl h-11 text-xs font-bold">
+                <div className="flex gap-2.5 pt-2">
+                  <Button variant="outline" onClick={() => setStep(4)} className="rounded-2xl h-11 text-xs font-bold px-4">
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
@@ -540,7 +565,7 @@ export default function OnboardingPage() {
 
             {/* STEP 6: First Financial Goal */}
             {step === 6 && (
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-display">
                     {t("onboarding.step6Title")}
@@ -578,8 +603,8 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep(5)} className="rounded-2xl h-11 text-xs font-bold">
+                <div className="flex gap-2.5 pt-2">
+                  <Button variant="outline" onClick={() => setStep(5)} className="rounded-2xl h-11 text-xs font-bold px-4">
                     <ArrowLeft className="h-4 w-4 mr-1.5" /> {t("onboarding.backBtn")}
                   </Button>
                   <Button
@@ -594,12 +619,12 @@ export default function OnboardingPage() {
 
             {/* STEP 7: Celebration & Ready */}
             {step === 7 && (
-              <div className="text-center py-4 space-y-6">
-                <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce">
-                  <CheckCircle2 className="h-10 w-10" />
+              <div className="text-center py-3 sm:py-4 space-y-5 sm:space-y-6">
+                <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30 animate-bounce">
+                  <CheckCircle2 className="h-8 w-8 sm:h-10 sm:w-10" />
                 </div>
                 <div>
-                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
+                  <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight font-display">
                     {t("onboarding.step7Title")}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed font-medium">
@@ -609,7 +634,7 @@ export default function OnboardingPage() {
 
                 <Button
                   onClick={handleFinish}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-500/25"
+                  className="w-full h-11 sm:h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-500/25"
                 >
                   {t("onboarding.openDashboardBtn")}
                   <ArrowRight className="h-4 w-4" />
@@ -621,8 +646,12 @@ export default function OnboardingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-xs text-slate-400 font-medium">
-        &copy; {new Date().getFullYear()} My Finance — Modern Family Financial Hub
+      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-[11px] sm:text-xs text-slate-400 font-medium flex items-center justify-center gap-4 flex-wrap">
+        <span>&copy; {new Date().getFullYear()} My Finance</span>
+        <span>•</span>
+        <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">
+          {t("onboarding.loginBtn")}
+        </Link>
       </footer>
     </div>
   );
