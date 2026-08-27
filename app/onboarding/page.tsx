@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +29,7 @@ import {
   getCurrentFamilyAction,
 } from "@/features/family/actions/family-actions";
 import { createWalletAction } from "@/features/wallets/actions/wallet-actions";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/lib/i18n/i18n-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -59,6 +59,18 @@ export default function OnboardingPage() {
     }
     checkExistingFamily();
   }, [router]);
+
+  // Handle Switch / Login with another account (Sign out existing session and go to /login)
+  const handleSwitchAccount = async () => {
+    try {
+      setIsCheckingAuth(true);
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.replace("/login");
+    } catch {
+      router.replace("/login");
+    }
+  };
 
   // Family State
   const [familyMode, setFamilyMode] = useState<"create" | "join">("create");
@@ -196,17 +208,16 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Akses Login Button in Header */}
-            <Link href="/login">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 rounded-xl border-slate-200 dark:border-white/[0.08] text-[11px] font-bold gap-1 px-2.5 sm:px-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
-              >
-                <LogIn className="h-3.5 w-3.5" />
-                <span>{t("onboarding.loginBtn")}</span>
-              </Button>
-            </Link>
+            {/* Akses Login Button in Header (Signs out existing session if any and goes to /login) */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSwitchAccount}
+              className="h-8 rounded-xl border-slate-200 dark:border-white/[0.08] text-[11px] font-bold gap-1 px-2.5 sm:px-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span>{t("onboarding.loginBtn")}</span>
+            </Button>
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
@@ -260,17 +271,18 @@ export default function OnboardingPage() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
 
-                  {/* Already have account bar */}
+                  {/* Already have account bar in Step 1 */}
                   <div className="text-center pt-1">
                     <span className="text-xs text-slate-400 mr-1.5 font-medium">
                       {t("onboarding.alreadyHaveAccount")}
                     </span>
-                    <Link
-                      href="/login"
-                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                    <button
+                      type="button"
+                      onClick={handleSwitchAccount}
+                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-0.5"
                     >
                       {t("onboarding.loginBtn")} &rarr;
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -645,13 +657,9 @@ export default function OnboardingPage() {
         </Card>
       </main>
 
-      {/* Footer */}
-      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-[11px] sm:text-xs text-slate-400 font-medium flex items-center justify-center gap-4 flex-wrap">
-        <span>&copy; {new Date().getFullYear()} My Finance</span>
-        <span>•</span>
-        <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">
-          {t("onboarding.loginBtn")}
-        </Link>
+      {/* Clean Minimalist Footer */}
+      <footer className="max-w-2xl w-full mx-auto py-2 text-center text-[11px] sm:text-xs text-slate-400 font-medium">
+        &copy; {new Date().getFullYear()} My Finance
       </footer>
     </div>
   );
